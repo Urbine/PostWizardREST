@@ -9,62 +9,65 @@ import jakarta.json.bind.annotation.JsonbPropertyOrder;
 
 @JsonbPropertyOrder(value = {
 		"ID",
-		"postAuthor", 
-		"postContent", 
-		"postTitle", 
-		"postSlug", 
-		"postStatus", 
-		"postType" }
-)
+		"postAuthor",
+		"postContent",
+		"postTitle",
+		"postSlug",
+		"postStatus",
+		"postType" })
 public class PostMeta {
-	
+
 	@JsonbProperty("post_id")
 	private long ID;
-	
+
 	@JsonbProperty("production")
 	private String videoProduction;
-	
+
 	@JsonbProperty("orientation")
 	private String videoOrientation;
-	
+
 	@JsonbProperty("ethnicity")
-	private String ethnicity; 
-	
+	private String ethnicity;
+
 	@JsonbProperty("hair_color")
 	private String hairColor;
-	
+
 	@JsonbProperty("hd_video")
 	private Boolean videoHD;
-	
+
 	@JsonbProperty("video_url")
 	private String videoURL;
-	
+
 	@JsonbProperty("hours")
 	private int hours;
-	
+
 	@JsonbProperty("minutes")
 	private int minutes;
-	
+
 	@JsonbProperty("seconds")
 	private int seconds;
-	
+
 	@JsonbProperty("duration")
 	private Duration vidDuration;
-	
+
 	@JsonbProperty("thumbnail_uri")
 	private String thumbURI;
+	
+	@JsonbProperty("thumbnail_uri")
+	private String embedCode;
 
-	public PostMeta(long iD, 
-			String videoProduction, 
-			String videoOrientation, 
-			String ethnicity, 
+	public PostMeta(long iD,
+			String videoProduction,
+			String videoOrientation,
+			String ethnicity,
 			String hairColor,
-			Boolean videoHD, 
-			String videoURL, 
-			int hours, 
-			int minutes, 
-			int seconds, 
-			String thumbURI) {
+			Boolean videoHD,
+			String videoURL,
+			int hours,
+			int minutes,
+			int seconds,
+			String thumbURI, 
+			String embedCode) {
 		super();
 		ID = iD;
 		this.videoProduction = videoProduction;
@@ -77,9 +80,10 @@ public class PostMeta {
 		this.minutes = minutes;
 		this.seconds = seconds;
 		this.vidDuration = Duration.ofHours(hours)
-							.plusMinutes(minutes)
-							.plusSeconds(seconds);
+				.plusMinutes(minutes)
+				.plusSeconds(seconds);
 		this.thumbURI = thumbURI;
+		this.embedCode = embedCode;
 	}
 
 	public long getID() {
@@ -178,6 +182,14 @@ public class PostMeta {
 		this.thumbURI = thumbURI;
 	}
 
+	public String getEmbedCode() {
+		return embedCode;
+	}
+
+	public void setEmbedCode(String embedCode) {
+		this.embedCode = embedCode;
+	}
+
 	@Override
 	public String toString() {
 		return "PostMeta [ID=" + ID + ", videoProduction=" + videoProduction + ", videoOrientation=" + videoOrientation
@@ -186,5 +198,4 @@ public class PostMeta {
 				+ vidDuration + ", thumbURI=" + thumbURI + "]";
 	}
 
-	
 }
