@@ -1,0 +1,9 @@
+<tomee>
+<Resource id="WordPressLocal" type="jakarta.sql.DataSource">
+	      JdbcDriver = org.mariadb.jdbc.Driver
+	      JdbcUrl = jdbc:mysql://localhost:3306/wm_test
+	      Password = wmtest72!
+	      UserName = wm_test
+	      JtaManaged = true />
+	</Resource>
+</tomee>
