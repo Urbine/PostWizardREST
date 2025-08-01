@@ -6,30 +6,30 @@ import javax.sql.rowset.JdbcRowSet;
 
 public interface DBManager {
 
-    Connection getConnection() throws SQLException;
+	Connection getConnection() throws SQLException;
 
-    Statement getStatement() throws SQLException;
+	Statement getStatement() throws SQLException;
 
-    void setStatement(Statement newSt) throws SQLException;
+	void setStatement(Statement newSt) throws SQLException;
 
-    void setDBUrl(String dbUrl);
+	void setDBUrl(String dbUrl);
 
-    JdbcRowSet createJdbcRowSet(String sql) throws SQLException;
+	JdbcRowSet createJdbcRowSet(String sql) throws SQLException;
 
-    default DatabaseMetaData getDBMetaData() throws SQLException{
-        return this.getConnection().getMetaData();
-    }
+	default DatabaseMetaData getDBMetaData() throws SQLException {
+		return this.getConnection().getMetaData();
+	}
 
-    default ResultSet queryDB(String query) throws SQLException {
-        return this.getStatement().executeQuery(query);
-    }
+	default ResultSet queryDB(String query) throws SQLException {
+		return this.getStatement().executeQuery(query);
+	}
 
-    default int updateDB(String query) throws SQLException {
-        return this.getStatement().executeUpdate(query);
-    }
+	default int updateDB(String query) throws SQLException {
+		return this.getStatement().executeUpdate(query);
+	}
 
-    default PreparedStatement prepareStatement(String sql) throws SQLException {
-        return this.getConnection().prepareStatement(sql);
-    }
+	default PreparedStatement prepareStatement(String sql) throws SQLException {
+		return this.getConnection().prepareStatement(sql);
+	}
 
 }
