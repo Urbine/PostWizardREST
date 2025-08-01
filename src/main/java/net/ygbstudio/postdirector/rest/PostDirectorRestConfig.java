@@ -4,6 +4,6 @@ package net.ygbstudio.postdirector.rest;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
-
 @ApplicationPath("v1")
-public class PostDirectorRestConfig extends Application {}
+public class PostDirectorRestConfig extends Application {
+}

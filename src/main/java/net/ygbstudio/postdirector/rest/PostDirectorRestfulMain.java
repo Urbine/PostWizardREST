@@ -9,15 +9,14 @@ import jakarta.ws.rs.core.UriInfo;
 
 @Path("welcome")
 public class PostDirectorRestfulMain {
-	
+
 	@Context
 	private UriInfo context;
-	
+
 	@GET
-    @Produces("text/html")
-    public String getHtml() {
-        return "<html lang=\"en\"><body><h1>Welcome to PostDirector!</h1></body></html>";
-    }
-	
-	
+	@Produces("text/html")
+	public String getHtml() {
+		return "<html lang=\"en\"><body><h1>Welcome to PostDirector!</h1></body></html>";
+	}
+
 }

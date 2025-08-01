@@ -15,7 +15,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 // Local imports
-import net.ygbstudio.postdirector.models.WPMeta;
+import net.ygbstudio.postdirector.entities.WPMeta;
 
 @Stateless
 @Local(PostReaderDAO.class)
@@ -51,7 +51,7 @@ public class PostMetaReaderDAOMgr implements PostReaderDAO {
 	public Collection<WPMeta> getMetaValueMatches(String pattern) {
 		Predicate<String> metaValFind = Pattern.compile(pattern)
 				.asPredicate();
-		
+
 		return getAll()
 				.stream()
 				.filter((elem) -> metaValFind.test(elem.getMetaFieldValue()))
@@ -66,15 +66,15 @@ public class PostMetaReaderDAOMgr implements PostReaderDAO {
 	@Override
 	public Optional<WPMeta> updateMetaValue(long postID, String metaKey, String newValue) {
 		List<WPMeta> lst = getEntriesByPostID(postID)
-		.stream()
-		.filter(p -> p.getMetaFieldValue().equals(newValue))
-		.limit(1)
-		.toList();
-		
+				.stream()
+				.filter(p -> p.getMetaFieldValue().equals(newValue))
+				.limit(1)
+				.toList();
+
 		if (Objects.nonNull(lst) && !lst.isEmpty()) {
 			return Optional.empty();
 		} else {
-			WPMeta toModifyElem = lst.getFirst(); 
+			WPMeta toModifyElem = lst.getFirst();
 			toModifyElem.setMetaFieldValue(newValue);
 			em.persist(toModifyElem);
 			em.flush();

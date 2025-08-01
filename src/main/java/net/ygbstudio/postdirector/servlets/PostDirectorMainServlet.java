@@ -15,11 +15,11 @@ import java.util.Collection;
 
 // Local imports
 import net.ygbstudio.postdirector.dao.PostReaderDAO;
-import net.ygbstudio.postdirector.models.WPMeta;
+import net.ygbstudio.postdirector.entities.WPMeta;
 
 @WebServlet("/allposts")
-public class PostDirectorMainServlet extends HttpServlet{
-	
+public class PostDirectorMainServlet extends HttpServlet {
+
 	@EJB
 	private PostReaderDAO postReader;
 
@@ -27,7 +27,7 @@ public class PostDirectorMainServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Collection<WPMeta> allPostItems = postReader.getAll();
 		PrintWriter out = resp.getWriter();
-		
+
 		allPostItems.forEach(out::println);
 		allPostItems.forEach(System.out::println);
 
@@ -45,7 +45,5 @@ public class PostDirectorMainServlet extends HttpServlet{
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'doPut'");
 	}
-	
-	
 
 }

@@ -8,58 +8,55 @@ import jakarta.persistence.Id;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 
-
 @Entity
 @Table(name = "`wp_posts`")
 @JsonbPropertyOrder(value = {
 		"ID",
-		"postAuthor", 
-		"postContent", 
-		"postTitle", 
-		"postSlug", 
-		"postStatus", 
-		"postType" }
-)
+		"postAuthor",
+		"postContent",
+		"postTitle",
+		"postSlug",
+		"postStatus",
+		"postType" })
 public class WPost {
-	
+
 	@Id
-	@Column(name = "ID", 
-			insertable = false, 
-			updatable = false) 
+	@Column(name = "ID", insertable = false, updatable = false)
 	private long ID;
-	
+
 	@Column(name = "post_author")
 	@JsonbProperty("post_author")
 	private long postAuthor;
-	
+
 	@Column(name = "post_content")
 	@JsonbProperty("post_content")
 	private String postContent;
-	
+
 	@Column(name = "post_title")
 	@JsonbProperty("post_title")
 	private String postTitle;
-	
+
 	@Column(name = "post_name")
 	@JsonbProperty("post_name")
 	private String postSlug;
-	
+
 	@Column(name = "post_status")
 	@JsonbProperty("post_status")
 	private String postStatus;
-	
+
 	@Column(name = "post_type")
 	@JsonbProperty("post_type")
 	private String postType;
-	
-	public WPost() {}
+
+	public WPost() {
+	}
 
 	public WPost(
-			long iD, 
-			long postAuthor, 
-			String postContent, 
-			String postTitle, 
-			String postSlug, 
+			long iD,
+			long postAuthor,
+			String postContent,
+			String postTitle,
+			String postSlug,
 			String postStatus,
 			String postType) {
 		super();
@@ -133,8 +130,5 @@ public class WPost {
 		return "WPost [ID=" + ID + ", postAuthor=" + postAuthor + ", postContent=" + postContent + ", postTitle="
 				+ postTitle + ", postSlug=" + postSlug + ", postStatus=" + postStatus + ", postType=" + postType + "]";
 	}
-	
-	
-	
-	
+
 }

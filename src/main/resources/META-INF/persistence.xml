@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="3.0"
-    xmlns="https://jakarta.ee/xml/ns/persistence"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+	xmlns="https://jakarta.ee/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
 
-  <persistence-unit name="wpmeta" transaction-type="JTA">
-    
-    <!-- Force Hibernate as provider -->
-<!--     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
+	<persistence-unit name="wpmeta" transaction-type="JTA">
 
-    <!-- Your JTA datasource from TomEE -->
-    <jta-data-source>java:/WordPressLocal</jta-data-source>
+		<!-- Force Hibernate as provider -->
+		<!-- <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
 
-    <!-- Your entity class -->
-    <class>net.ygbstudio.postdirector.models.WPMeta</class>
+		<!-- Your JTA datasource from TomEE -->
+		<jta-data-source>java:/WordPressLocal</jta-data-source>
 
-    <!-- Hibernate-specific properties -->
-    <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect"/>
-      <property name="hibernate.show_sql" value="true"/>
-      <property name="hibernate.format_sql" value="true"/>
-      <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
-    </properties>
-  </persistence-unit>
+		<!-- Your entity class -->
+		<class>net.ygbstudio.postdirector.models.WPMeta</class>
+
+		<!-- Hibernate-specific properties -->
+		<properties>
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.MariaDBDialect" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.temp.use_jdbc_metadata_defaults"
+				value="false" />
+		</properties>
+	</persistence-unit>
 </persistence>

@@ -17,8 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.inject.Inject;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
-import jakarta.json.bind.JsonbConfig; 
-
+import jakarta.json.bind.JsonbConfig;
 
 // Local imports
 import net.ygbstudio.postdirector.dao.PostReaderDAO;
@@ -26,29 +25,29 @@ import net.ygbstudio.postdirector.dao.PostReaderDAO;
 @RequestScoped
 @Path("posts")
 public class PostDirectorDataSourceRest {
-	
+
 	@Context
 	private UriInfo context;
-	
+
 	@Inject
 	private PostReaderDAO dbDao;
-	
+
 	@GET
 	@Path("{postID: [0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getPost(@PathParam("postID") Long postId) {		
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getPost(@PathParam("postID") Long postId) {
 		JsonbConfig jsonConfig = new JsonbConfig()
 				.withFormatting(true);
-		
+
 		Jsonb jsonBuilder = JsonbBuilder.create(jsonConfig);
-        return jsonBuilder.toJson(dbDao.getEntriesByPostID(postId));
-    }
-	
+		return jsonBuilder.toJson(dbDao.getEntriesByPostID(postId));
+	}
+
 	@POST
 	@Path("update")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String updatePost(@PathParam("postObj") String postJSON) {
 		return "";
 	}
-	
+
 }
