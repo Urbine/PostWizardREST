@@ -9,11 +9,29 @@
 		<!-- Force Hibernate as provider -->
 		<!-- <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
 
-		<!-- Your JTA datasource from TomEE -->
+		<!-- Your JTA datasource -->
 		<jta-data-source>java:/WordPressLocal</jta-data-source>
 
 		<!-- Your entity class -->
-		<class>net.ygbstudio.postdirector.models.WPMeta</class>
+		<class>net.ygbstudio.postdirector.entities.WPMeta</class>
+
+		<!-- Hibernate-specific properties -->
+		<properties>
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.MariaDBDialect" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.temp.use_jdbc_metadata_defaults"
+				value="false" />
+		</properties>
+	</persistence-unit>
+	<persistence-unit name="wpost" transaction-type="JTA">
+
+		<!-- Your JTA datasource -->
+		<jta-data-source>java:/WordPressLocal</jta-data-source>
+
+		<!-- Your entity class -->
+		<class>net.ygbstudio.postdirector.entities.WPost</class>
 
 		<!-- Hibernate-specific properties -->
 		<properties>
