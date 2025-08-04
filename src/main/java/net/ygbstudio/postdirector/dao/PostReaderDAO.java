@@ -1,22 +1,22 @@
 package net.ygbstudio.postdirector.dao;
 
-// Java Imports
+// Java imports
 import java.util.Collection;
 import java.util.Optional;
 
-// Local imports
-import net.ygbstudio.postdirector.entities.WPMeta;
+// Local import
+import net.ygbstudio.postdirector.entities.WPost;
 
+/**
+ * Data Access Object (DAO) interface for reading WordPress posts.
+ * This interface defines methods to retrieve and manipulate posts
+ * in a WordPress-like environment.
+ * 
+ * @author Yoham Gabriel @ YGB Studio
+ */
 public interface PostReaderDAO {
-	Collection<WPMeta> getAll();
-
-	Collection<WPMeta> getEntriesByPostID(long id);
-
-	Collection<WPMeta> getEntriesByMetaKey(String key);
-
-	Collection<WPMeta> getMetaValueMatches(String pattern);
-
-	WPMeta getElemByMetaId(long id);
-
-	Optional<WPMeta> updateMetaValue(long postID, String metaKey, String newValue);
+	Collection<WPost> getAllPosts();
+	Optional<WPost> getPostById(long postID);
+	
+	 
 }

@@ -8,18 +8,24 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import jakarta.ejb.Local;
 // Jakarta imports
 import jakarta.ejb.Stateless;
-import jakarta.ejb.Local;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
 // Local imports
 import net.ygbstudio.postdirector.entities.WPMeta;
 
+/**
+ * Data Access Object (DAO) implementation for reading WordPress post metadata.
+ * This class provides methods to retrieve and manipulate post metadata
+ * in a WordPress-like environment.
+ * 
+ * @author Yoham Gabriel @ YGB Studio
+ */
 @Stateless
-@Local(PostReaderDAO.class)
-public class PostMetaReaderDAOMgr implements PostReaderDAO {
+@Local(PostMetaReaderDAO.class)
+public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
 	@PersistenceContext(unitName = "wpmeta")
 	private EntityManager em;
@@ -64,22 +70,36 @@ public class PostMetaReaderDAOMgr implements PostReaderDAO {
 	}
 
 	@Override
-	public Optional<WPMeta> updateMetaValue(long postID, String metaKey, String newValue) {
-		List<WPMeta> lst = getEntriesByPostID(postID)
-				.stream()
-				.filter(p -> p.getMetaFieldValue().equals(newValue))
-				.limit(1)
-				.toList();
+	public Optional<WPMeta> updatePostMetaValue(long postID, String metaKey, String newValue) {
+		return getEntriesByPostID(postID).stream()
+				.filter(p -> p.getMetaFieldKey().equals(metaKey))
+				.findFirst()
+				.map(existing -> {
+					existing.setMetaFieldValue(newValue);
+					return existing;
+				});
+	}
 
-		if (Objects.nonNull(lst) && !lst.isEmpty()) {
-			return Optional.empty();
-		} else {
-			WPMeta toModifyElem = lst.getFirst();
-			toModifyElem.setMetaFieldValue(newValue);
-			em.persist(toModifyElem);
-			em.flush();
-			return Optional.of(toModifyElem);
+	@Override
+	public void updatePostMetaAuto(long postID, String metaKey, String newValue) {
+		if (Objects.isNull(postID) || Objects.isNull(metaKey) || Objects.isNull(newValue)) {
+			return;
 		}
+
+		getEntriesByPostID(postID).stream()
+				.filter(p -> p.getMetaFieldKey().equals(metaKey))
+				.findFirst().ifPresent(p -> {
+					WPMeta existing = em.find(WPMeta.class, p.getMetaID());
+					existing.setMetaFieldValue(newValue);
+				});
+
+	}
+
+	@Override
+	public Boolean postExists(long postID) {
+		return getAll()
+				.stream()
+				.anyMatch(elem -> elem.getPostID() == postID);
 	}
 
 }

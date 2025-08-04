@@ -8,6 +8,15 @@ import jakarta.persistence.Id;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 
+/**
+ * Represents a WordPress post entity.
+ * <p>
+ * This class maps to the `wp_posts` table and provides fields
+ * for various attributes of a post, such as author, content,
+ * title, slug, status, and type.
+ * 
+ * @author Yoham Gabriel @ YGB Studio
+ */
 @Entity
 @Table(name = "`wp_posts`")
 @JsonbPropertyOrder(value = {
