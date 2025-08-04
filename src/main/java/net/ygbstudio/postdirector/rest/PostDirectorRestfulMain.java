@@ -7,6 +7,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
+/**
+ * RESTful web service for the PostDirector application.
+ * This class provides a welcome endpoint that returns a simple HTML message for debugging purposes.
+ * 
+ * @author Yoham Gabriel @ YGB Studio
+ */
 @Path("welcome")
 public class PostDirectorRestfulMain {
 
