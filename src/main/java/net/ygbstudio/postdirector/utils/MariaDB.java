@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.wrappers;
+package net.ygbstudio.postdirector.utils;
 
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetFactory;
@@ -8,6 +8,14 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+/**
+ * MariaDB database manager implementation.
+ * This class provides methods to connect to a MariaDB database,
+ * execute SQL statements, and create JdbcRowSet instances.
+ * 
+ * @author Yoham Gabriel B @ YGB Studio
+ */
 
 public class MariaDB implements DBManager {
 	private final String dbHost;

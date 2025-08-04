@@ -1,26 +1,22 @@
-package net.ygbstudio.postdirector.models;
-
-// Java imports
-import java.time.Duration;
+package net.ygbstudio.postdirector.dto;
 
 // Jakarta imports
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
+import jakarta.json.bind.annotation.JsonbNillable;
 
-//Third-party imports
+// Third-party imports
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 
 /**
- * Represents metadata for a post in the Post Director application.
- * <p>
- * This class contains various attributes related to a video post,
- * such as production details, orientation, and other fields that model the object.
+ * Data Transfer Object (DTO) for client post metadata.
+ * This class represents the metadata associated with a post in the
+ * Post Director application, including video details and other attributes.
  * 
  * @author Yoham Gabriel @ YGB Studio
  */
-
 @JsonbPropertyOrder(value = {
 		"ID",
 		"videoProduction",
@@ -35,48 +31,61 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 		"vidDuration",
 		"thumbURI",
 		"embedCode" })
-public class PostMeta {
+public class ClientPostMeta {
 
+	@JsonbNillable
 	@JsonbProperty("post_id")
 	private long ID;
 
+	@JsonbNillable
 	@JsonbProperty("production")
 	private String videoProduction;
 
-	@JsonbProperty("orientation")
+	@JsonbNillable
+	@JsonbProperty("video_orientation")
 	private String videoOrientation;
 
+	@JsonbNillable
 	@JsonbProperty("ethnicity")
 	private String ethnicity;
 
+	@JsonbNillable
 	@JsonbProperty("hair_color")
 	private String hairColor;
 
+	@JsonbNillable
 	@JsonbProperty("hd_video")
-	private Boolean videoHD;
+	private boolean videoHD;
 
+	@JsonbNillable
 	@JsonbProperty("video_url")
 	private String videoURL;
 
+	@JsonbNillable
 	@JsonbProperty("hours")
 	private int hours;
 
-	@JsonbProperty("minutes")
+	@JsonbNillable
+	@JsonbProperty("minute")
 	private int minutes;
 
-	@JsonbProperty("seconds")
+	@JsonbNillable
+	@JsonbProperty("second")
 	private int seconds;
 
-	@JsonbProperty("duration")
-	private Duration vidDuration;
-
-	@JsonbProperty("thumbnail_uri")
+	@JsonbNillable
+	@JsonbProperty("thumb")
 	private String thumbURI;
 
-	@JsonbProperty("thumbnail_uri")
+	@JsonbNillable
+	@JsonbProperty("embed")
 	private String embedCode;
 
-	public PostMeta(long iD,
+	public ClientPostMeta() {
+		super();
+	}
+
+	public ClientPostMeta(long iD,
 			String videoProduction,
 			String videoOrientation,
 			String ethnicity,
@@ -99,9 +108,6 @@ public class PostMeta {
 		this.hours = hours;
 		this.minutes = minutes;
 		this.seconds = seconds;
-		this.vidDuration = Duration.ofHours(hours)
-				.plusMinutes(minutes)
-				.plusSeconds(seconds);
 		this.thumbURI = thumbURI;
 		this.embedCode = embedCode;
 	}
@@ -186,14 +192,6 @@ public class PostMeta {
 		this.seconds = seconds;
 	}
 
-	public Duration getVidDuration() {
-		return vidDuration;
-	}
-
-	public void setVidDuration(Duration vidDuration) {
-		this.vidDuration = vidDuration;
-	}
-
 	public String getThumbURI() {
 		return thumbURI;
 	}
@@ -213,7 +211,7 @@ public class PostMeta {
 	@Override
 	public String toString() {
 		return ToStringBuilder
-				.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE, true);
+				.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
 	}
 
 }

@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.wrappers;
+package net.ygbstudio.postdirector.utils;
 
 import java.nio.file.Path;
 import java.security.InvalidParameterException;
@@ -15,6 +15,13 @@ import javax.sql.rowset.RowSetFactory;
 // Third-party classes
 import org.sqlite.SQLiteConfig;
 
+/**
+ * SQLiteDB is a utility class for managing SQLite database connections.
+ * It provides methods to connect to a SQLite database, execute SQL statements,
+ * and create JdbcRowSet instances.
+ * 
+ * @author Yoham Gabriel @ YGB Studio
+ */
 public class SQLiteDB implements DBManager {
 	private final Path dbName;
 
