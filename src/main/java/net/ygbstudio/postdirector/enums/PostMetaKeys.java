@@ -1,0 +1,46 @@
+package net.ygbstudio.postdirector.enums;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+/**
+ * Enum representing the keys used in post metadata.
+ * This enum provides a way to manage and retrieve post metadata keys
+ * in a type-safe manner.
+ * 
+ * @author Yoham Gabriel @ YGB Studio
+ */
+public enum PostMetaKeys {
+	POSTID("post_id"),
+	HOURS("hours"),
+	MINUTES("minute"),
+	SECONDS("second"),
+	EMBED("embed"),
+	PARTNER("partner"),
+	ORIENTATION("video_orientation"),
+	ETHNICITY("ethnicity"),
+	HAIRCOLOR("hair_color"),
+	HDVIDEO("hd_video"),
+	THUMBNAIL("thumb"),
+	PRODUCTION("production"),
+	VIDEOURL("video_url"),
+	DURATION("duration");
+
+	private final String value;
+
+	PostMetaKeys(String value) {
+		this.value = value;
+	}
+
+	public static Optional<PostMetaKeys> fromValue(String strKey) {
+		return Arrays.stream(PostMetaKeys.values())
+				.filter(key -> key.toString().equalsIgnoreCase(strKey))
+				.findFirst();
+	}
+
+	@Override
+	public String toString() {
+		return this.value;
+	}
+
+}
