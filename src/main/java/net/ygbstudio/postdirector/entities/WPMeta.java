@@ -13,6 +13,8 @@ import jakarta.json.bind.annotation.JsonbPropertyOrder;
  * <p>
  * This entity maps to the {@code wp_postmeta} table and allows
  * reading and updating key-value metadata pairs for posts.
+ * 
+ * @author Yoham Gabriel @ YGB Studio
  */
 
 @Entity
@@ -27,6 +29,7 @@ public class WPMeta {
 
 	/**
 	 * The post ID this metadata is associated with.
+	 * Not the primary key in the database.
 	 */
 	@Column(name = "post_id", nullable = false)
 	@JsonbProperty("post_id")
