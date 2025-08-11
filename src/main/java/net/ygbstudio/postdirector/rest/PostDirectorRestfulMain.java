@@ -1,8 +1,9 @@
 package net.ygbstudio.postdirector.rest;
 
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.GET;
 // Jakarta imports
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
@@ -13,7 +14,8 @@ import jakarta.ws.rs.core.UriInfo;
  * 
  * @author Yoham Gabriel @ YGB Studio
  */
-@Path("welcome")
+
+@Path("welcome") @RolesAllowed(value = { "user", "caller" })
 public class PostDirectorRestfulMain {
 
 	@Context
