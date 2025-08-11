@@ -1,5 +1,6 @@
 package net.ygbstudio.postdirector.mappers;
 
+import jakarta.ws.rs.core.MediaType;
 // Jakarta imports
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -34,6 +35,7 @@ public class InvalidIdentifierMapper implements ExceptionMapper<InvalidIdentifie
 		
 		return Response.status(Response.Status.NOT_FOUND)
 				.entity(errorObj)
+				.type(MediaType.APPLICATION_JSON)
 				.build();
 	}
 	

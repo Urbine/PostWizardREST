@@ -1,5 +1,8 @@
 package net.ygbstudio.postdirector.dto;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * ServerResponse is a DTO class that represents a response from the server.
  * It contains fields for a message, HTTP status code, and a timestamp
@@ -45,6 +48,11 @@ public class ServerResponse {
 
 	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
 	}
 
 }

@@ -47,3 +47,6 @@ Thumbs.db
 *.bak
 *.tmp
 *.txt
+
+# Individual files
+/src/main/resources/ApplicationProperties.properties

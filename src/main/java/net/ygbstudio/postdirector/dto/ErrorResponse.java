@@ -1,5 +1,8 @@
 package net.ygbstudio.postdirector.dto;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * ErrorResponse is a DTO class that represents an error response
  * from the REST API. It contains fields for the error type,
@@ -58,5 +61,9 @@ public class ErrorResponse {
 	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
-
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
+	}
 }
