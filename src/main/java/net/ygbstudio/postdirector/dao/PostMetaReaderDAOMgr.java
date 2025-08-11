@@ -98,7 +98,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 	@Override
 	public Boolean postExists(long postID) {
 		return getAll()
-				.stream()
+				.parallelStream()
 				.anyMatch(elem -> elem.getPostID() == postID);
 	}
 
