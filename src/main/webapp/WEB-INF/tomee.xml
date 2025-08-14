@@ -4,6 +4,6 @@
 		JdbcUrl = jdbc:mysql://localhost:3306/wm_test
 		Password = wmtest72!
 		UserName = wm_test
-		JtaManaged = true />
+		JtaManaged = true
 	</Resource>
 </tomee>
