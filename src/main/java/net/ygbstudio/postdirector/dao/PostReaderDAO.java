@@ -1,22 +1,56 @@
 package net.ygbstudio.postdirector.dao;
 
-// Java imports
 import java.util.Collection;
 import java.util.Optional;
-
-// Local import
 import net.ygbstudio.postdirector.entities.WPost;
 
 /**
- * Data Access Object (DAO) interface for reading WordPress posts.
- * This interface defines methods to retrieve and manipulate posts
- * in a WordPress-like environment.
- * 
+ * Data Access Object (DAO) interface for reading WordPress posts. This interface defines methods to
+ * retrieve and manipulate posts in a WordPress-like environment.
+ *
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface PostReaderDAO {
-	Collection<WPost> getAllPosts();
-	Optional<WPost> getPostById(long postID);
-	
-	 
+
+  /**
+   * Retrieves all posts.
+   *
+   * @return a collection of all WPost entries
+   */
+  Collection<WPost> getAllPosts();
+
+  /**
+   * Retrieves a specific post by its ID.
+   *
+   * @param postID | the ID of the post to retrieve
+   * @return an Optional containing the WPost entry if found, or empty if not found
+   */
+  Optional<WPost> getPostById(long postID);
+
+  /**
+   * Checks if a post exists by its ID.
+   *
+   * @param postID | the ID of the post to check
+   * @return true if the post exists, false otherwise
+   */
+  Boolean postExists(long postID);
+
+  /**
+   * Validates a WPost item to ensure it has all the required fields.
+   *
+   * @param postItem | the WPost item to validate
+   * @return true if the post item is valid, false otherwise
+   */
+  Boolean isValidPost(WPost postItem);
+
+  /**
+   * Updates a post entry with the provided WPost item. If the postID is less than or equal to 0, no
+   * action is taken. If autoCreate is true and the post does not exist, it should create a new
+   * post.
+   *
+   * @param postItem | the WPost item to update
+   * @param postID | the ID of the post to update
+   * @param autoCreate | whether to create a new post if it does not exist
+   */
+  void updatePostEntry(WPost postItem, boolean autoCreate);
 }
