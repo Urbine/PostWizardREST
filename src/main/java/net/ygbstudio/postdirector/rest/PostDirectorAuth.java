@@ -1,57 +1,94 @@
 package net.ygbstudio.postdirector.rest;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.security.enterprise.SecurityContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.SecretKey;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.security.enterprise.SecurityContext;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-// Local imports
 import net.ygbstudio.postdirector.dto.GrantToken;
+import net.ygbstudio.postdirector.utils.Logging;
 
+/**
+ * RESTful web service for handling authentication in the PostDirector application. This class
+ * provides an endpoint to generate a JWT token for authenticated users.
+ *
+ * @author Yoham Gabriel @ YGB Studio
+ */
 @RequestScoped
 @Path("auth")
 public class PostDirectorAuth {
 
-	@Inject
-	private SecurityContext securityContext;
-	
-	private static final byte[] SECRET_KEY = "change_this_to_a_secret_key_at_least_32_chars!".getBytes(StandardCharsets.UTF_8);
-	
-	@GET
-	@Path("login")
-	@RolesAllowed("user")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAppToken() {
-		String username = securityContext.getCallerPrincipal().getName();
-		SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY);
-		Date issuanceDate = Date.from(Instant.now());
-		Date expirationDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+  private static final Logger PostDirectorAuthEPoint =
+      Logger.getLogger(PostDirectorAuth.class.getName());
 
-		String jwt = Jwts.builder()
-				.subject(username)
-				.claim("roles", securityContext.isCallerInRole("user") ? List.of("user") : List.of("caller"))
-				.issuedAt(issuanceDate)
-				.expiration(expirationDate)
-				.signWith(key, Jwts.SIG.HS256)
-				.compact();
-		
-		return Response.ok(new GrantToken(Response.Status.OK.getStatusCode(), jwt, issuanceDate, expirationDate))
-				.type(MediaType.APPLICATION_JSON)
-				.build();
-	}
+  @SuppressWarnings("unused")
+  private static final FileHandler logFileHandler =
+      Logging.LoggingInit(PostDirectorAuthEPoint, Level.ALL, true);
 
+  @Inject private SecurityContext securityContext;
+
+  @Context private HttpServletRequest request;
+
+  @PostConstruct
+  public void init() {
+    PostDirectorAuthEPoint.fine("CDI -> PostDirectorAuth endpoint loaded.");
+  }
+
+  /**
+   * Endpoint to generate a JWT token for authenticated users. This endpoint is protected and
+   * requires the user to be authenticated.
+   *
+   * @return A Response containing the JWT token and its metadata.
+   */
+  @GET
+  @Path("login")
+  @RolesAllowed("user")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getAppToken() {
+    String userIP = request.getRemoteAddr();
+    PostDirectorAuthEPoint.entering("User with IP: " + userIP, "getAppToken()");
+
+    String username = securityContext.getCallerPrincipal().getName();
+    String secretKey = System.getenv("JWT_KEY");
+
+    SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    Date issuanceDate = Date.from(Instant.now());
+    Date expirationDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+
+    String jwt =
+        Jwts.builder()
+            .subject(username)
+            .claim(
+                "roles",
+                securityContext.isCallerInRole("user") ? List.of("user") : List.of("caller"))
+            .issuedAt(issuanceDate)
+            .expiration(expirationDate)
+            .signWith(key, Jwts.SIG.HS256)
+            .compact();
+
+    return Response.ok()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+        .entity(new GrantToken(Response.Status.OK.getStatusCode(), issuanceDate, expirationDate))
+        .type(MediaType.APPLICATION_JSON)
+        .build();
+  }
 }
