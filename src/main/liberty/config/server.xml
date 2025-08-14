@@ -4,6 +4,8 @@
     <!-- Enable features -->
     <featureManager>
         <feature>jakartaee-10.0</feature>
+        <feature>jdbc-4.2</feature>
+        <feature>jndi-1.0</feature>
     </featureManager>
 
     <!-- This template enables security. To get the full use of all the capabilities, a keystore and user registry are required. -->
@@ -29,7 +31,7 @@
                   httpsPort="9443" />
 
     <!-- Automatically expand WAR files and EAR files -->
-    <applicationManager autoExpand="false"/>
+    <applicationManager autoExpand="true"/>
 
     <!-- Configures the application on a specified context root -->
     <webApplication contextRoot="/postdirector" location="postdirector.war" />
@@ -37,15 +39,24 @@
     <!-- Default SSL configuration enables trust for default certificates from the Java runtime -->
     <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
     
-    <logging>
-    <logger name="jakarta.enterprise.inject.spi" level="TRACE"/>
-    <logger name="jakarta.security.enterprise" level="TRACE"/>
-    <logger name="org.jboss.weld" level="TRACE"/>
-    <logger name="org.jboss.weld.bean" level="TRACE"/>
-    <logger name="org.jboss.weld.deployer" level="TRACE"/>
-    <logger name="org.eclipse.microprofile.jwt" level="TRACE"/>
-    <logger name="com.ibm.ws.security" level="TRACE"/>
-    </logging>
-    
     <cdi enableImplicitBeanArchives="true" emptyBeansXmlCDI3Compatibility="true"/>
+    
+    <library id="mariadbDriver">
+    <fileset dir="${server.config.dir}/jdbc" includes="mariadb-java-client-*.jar"/>
+    </library>
+    
+    <!-- These are dummy creadentials -->
+    <dataSource id="WordPressLocal" jndiName="jdbc/wm_test" type="javax.sql.DataSource">
+	<jdbcDriver libraryRef="mariadbDriver"
+               javax.sql.DataSource="org.mariadb.jdbc.MariaDbDataSource"/>
+        <properties
+            url="jdbc:mariadb://localhost:3306/wm_test"
+            user="wm_test"
+            password="wmtest72!"/>
+        <connectionManager
+            maxPoolSize="20"
+            minPoolSize="5"
+            connectionTimeout="10s"/>
+    </dataSource>
+    
 </server>
