@@ -4,11 +4,13 @@ import jakarta.ejb.Local;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.ygbstudio.postdirector.entities.WPost;
+import net.ygbstudio.postdirector.utils.Reflection;
 
 /**
  * Data Access Object (DAO) implementation for reading WordPress posts. This class provides methods
@@ -36,7 +38,7 @@ public class PostReaderDAOMgr implements PostReaderDAO {
   @Override
   public Boolean isValidPost(WPost postItem) {
     long elemCount = Stream.of(postItem).filter(Objects::nonNull).count();
-    return elemCount == 7;
+    return elemCount == Reflection.getTransformClassFields(WPost.class, Field::getName).count();
   }
 
   @Override
