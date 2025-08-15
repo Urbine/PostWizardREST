@@ -35,5 +35,6 @@ public class UnauthorizedResponseFilter implements ContainerResponseFilter {
 
     if (resContext.getStatus() == unauthorizedStatusCode)
       resContext.setEntity(authException.toString());
+    resContext.getHeaders().add("Content-Type", "application/json");
   }
 }
