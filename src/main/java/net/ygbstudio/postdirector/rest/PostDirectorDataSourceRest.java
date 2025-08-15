@@ -136,7 +136,11 @@ public class PostDirectorDataSourceRest {
 
   /**
    * Endpoint to update a post based on the provided ClientPost object. This method validates the
-   * post ID and updates the post entry in the database.
+   * post ID and updates the post entry in the database. New posts cannot be created using this
+   * method; it is intended for updating existing posts only.
+   *
+   * <p>Creation of new post entries in the database must be done through the WordPress API, so that
+   * relevant entries can be modified using this method.
    *
    * @param postId | the ID of the post to update
    * @param clientPost | the ClientPost object containing post details to update
@@ -242,7 +246,8 @@ public class PostDirectorDataSourceRest {
   /**
    * Updates the post metadata based on the provided ClientPostMeta object. This method iterates
    * through the properties of the ClientPostMeta object and updates the corresponding metadata in
-   * the database.
+   * the database. Unlike posts, metadata fields can be created if the schema provided by the client
+   * is correct and constitutes a relevant key in the WordPress site.
    *
    * @param clientPost | the ClientPostMeta object containing post metadata to update
    * @param autoCreate | boolean indicating whether to create metadata if it does not exist
@@ -367,6 +372,10 @@ public class PostDirectorDataSourceRest {
    * WPost object, sets its properties from the ClientPost object, and updates the post entry in the
    * database.
    *
+   * <p>Creation of new post entries in the database have been temporarily disabled to prevent
+   * accidental data loss or malformed entries. The WordPress API should be used to create new
+   * posts, so that relevant entries can be modified using this method.
+   *
    * @param clientPost | the ClientPost object containing post details to update
    */
   private void ClientPostUpdateStrategy(ClientPost clientPost) {
@@ -385,7 +394,7 @@ public class PostDirectorDataSourceRest {
     inMemoryPost.setPostStatus(clientPost.getPostStatus());
     inMemoryPost.setPostType(clientPost.getPostType());
 
-    dbPostDao.updatePostEntry(inMemoryPost, true);
+    dbPostDao.updatePostEntry(inMemoryPost, false);
   }
 
   /**
