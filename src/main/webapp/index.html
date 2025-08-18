@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #007acc, #00c6ff);
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: white;
+    }
+    h1 {
+      font-size: 4rem;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
 </head>
 <body>
-	<h1>Welcome to this server!</h1>
+  <h1>Welcome 🚀</h1>
 </body>
 </html>
