@@ -20,7 +20,7 @@ public class Exceptions implements Util {
    * @return a RuntimeException wrapping the original exception
    */
   public static RuntimeException unchecked(Exception e) {
-    return !(e instanceof RuntimeException) ? (RuntimeException) e : new RuntimeException(e);
+    return (e instanceof RuntimeException) ? (RuntimeException) e : new RuntimeException(e);
   }
 
   /**
