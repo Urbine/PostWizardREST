@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.rest;
+package net.ygbstudio.postwizard.rest;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
@@ -17,30 +17,30 @@ import java.lang.reflect.Field;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.ygbstudio.postdirector.dao.PostMetaReaderDAO;
-import net.ygbstudio.postdirector.dao.PostReaderDAO;
-import net.ygbstudio.postdirector.dto.ClientPost;
-import net.ygbstudio.postdirector.dto.ClientPostMeta;
-import net.ygbstudio.postdirector.dto.ErrorResponse;
-import net.ygbstudio.postdirector.dto.ServerResponse;
-import net.ygbstudio.postdirector.entities.WPost;
-import net.ygbstudio.postdirector.enums.PostMetaKeys;
-import net.ygbstudio.postdirector.exceptions.InvalidIdentifier;
-import net.ygbstudio.postdirector.utils.Logging;
-import net.ygbstudio.postdirector.utils.Reflection;
+import net.ygbstudio.postwizard.dao.PostMetaReaderDAO;
+import net.ygbstudio.postwizard.dao.PostReaderDAO;
+import net.ygbstudio.postwizard.dto.ClientPost;
+import net.ygbstudio.postwizard.dto.ClientPostMeta;
+import net.ygbstudio.postwizard.dto.ErrorResponse;
+import net.ygbstudio.postwizard.dto.ServerResponse;
+import net.ygbstudio.postwizard.entities.WPost;
+import net.ygbstudio.postwizard.enums.PostMetaKeys;
+import net.ygbstudio.postwizard.exceptions.InvalidIdentifier;
+import net.ygbstudio.postwizard.utils.Logging;
+import net.ygbstudio.postwizard.utils.Reflection;
 
 /**
- * RESTful web service for managing post metadata in the PostDirector application. This class
- * provides endpoints to retrieve and update post metadata.
+ * RESTful web service for managing post metadata in the postwizard application. This class provides
+ * endpoints to retrieve and update post metadata.
  *
  * @author Yoham Gabriel @ YGB Studio
  */
 @RequestScoped
 @Path("posts")
-public class PostDirectorDataSourceRest {
+public class PostWizardDataSourceRest {
 
   private static final Logger dataSourceRestLog =
-      Logger.getLogger(PostDirectorDataSourceRest.class.getName());
+      Logger.getLogger(PostWizardDataSourceRest.class.getName());
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
