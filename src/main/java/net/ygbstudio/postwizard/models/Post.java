@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.models;
+package net.ygbstudio.postwizard.models;
 
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
