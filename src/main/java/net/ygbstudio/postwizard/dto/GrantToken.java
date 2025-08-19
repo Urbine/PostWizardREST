@@ -1,0 +1,63 @@
+package net.ygbstudio.postwizard.dto;
+
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbPropertyOrder;
+import java.util.Date;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+/**
+ * Data Transfer Object (DTO) for granting a token in the postwizard application. This class
+ * encapsulates the details of the granted token, including its status, issuance date, and
+ * expiration date.
+ *
+ * @author Yoham Gabriel @ YGB Studio
+ */
+@JsonbPropertyOrder({"accessToken", "type", "expiration"})
+public class GrantToken {
+
+  @JsonbProperty("access_token")
+  private String accessToken;
+
+  @JsonbProperty("type")
+  private String type;
+
+  @JsonbProperty("expiration")
+  private Date expirationDate;
+
+  public GrantToken(String accessToken, String type, Date expirationDate) {
+    super();
+    this.accessToken = accessToken;
+    this.type = type;
+    this.expirationDate = expirationDate;
+  }
+
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public Date getExpirationDate() {
+    return expirationDate;
+  }
+
+  public void setExpirationDate(Date expirationDate) {
+    this.expirationDate = expirationDate;
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
+  }
+}
