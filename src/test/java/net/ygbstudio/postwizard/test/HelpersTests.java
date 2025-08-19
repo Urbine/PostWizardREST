@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.test;
+package net.ygbstudio.postwizard.test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -7,9 +7,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Properties;
-import net.ygbstudio.postdirector.dto.ClientPostMeta;
-import net.ygbstudio.postdirector.utils.Helpers;
-import net.ygbstudio.postdirector.utils.Reflection;
+import net.ygbstudio.postwizard.dto.ClientPostMeta;
+import net.ygbstudio.postwizard.utils.Helpers;
+import net.ygbstudio.postwizard.utils.Reflection;
 import org.junit.jupiter.api.Test;
 
 /**
