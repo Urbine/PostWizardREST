@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.auth;
+package net.ygbstudio.postwizard.auth;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,9 +14,9 @@ import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.ygbstudio.postdirector.exceptions.InvalidAuthAttempt;
-import net.ygbstudio.postdirector.utils.Helpers;
-import net.ygbstudio.postdirector.utils.Logging;
+import net.ygbstudio.postwizard.exceptions.InvalidAuthAttempt;
+import net.ygbstudio.postwizard.utils.Helpers;
+import net.ygbstudio.postwizard.utils.Logging;
 
 /**
  * IdentityStore implementation for validating user credentials against authentication context
@@ -26,9 +26,9 @@ import net.ygbstudio.postdirector.utils.Logging;
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
-public class PDIdentityStore implements IdentityStore {
+public class PWIdentityStore implements IdentityStore {
 
-  private static final Logger identityLogger = Logger.getLogger(PDIdentityStore.class.getName());
+  private static final Logger identityLogger = Logger.getLogger(PWIdentityStore.class.getName());
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
