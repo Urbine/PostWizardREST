@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.dao;
+package net.ygbstudio.postwizard.dao;
 
 import jakarta.ejb.Local;
 import jakarta.ejb.Stateless;
@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-import net.ygbstudio.postdirector.entities.WPost;
-import net.ygbstudio.postdirector.utils.Reflection;
+import net.ygbstudio.postwizard.entities.WPost;
+import net.ygbstudio.postwizard.utils.Reflection;
 
 /**
  * Data Access Object (DAO) implementation for reading WordPress posts. This class provides methods
@@ -71,7 +71,6 @@ public class PostReaderDAOMgr implements PostReaderDAO {
           Objects.requireNonNullElse(postItem.getPostType(), targetPost.getPostType()));
 
       if (!em.contains(targetPost)) em.merge(targetPost);
-      return;
     }
   }
 }

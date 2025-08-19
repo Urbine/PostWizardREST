@@ -1,8 +1,8 @@
-package net.ygbstudio.postdirector.dao;
+package net.ygbstudio.postwizard.dao;
 
 import java.util.Collection;
 import java.util.Optional;
-import net.ygbstudio.postdirector.entities.WPost;
+import net.ygbstudio.postwizard.entities.WPost;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress posts. This interface defines methods to
@@ -49,8 +49,6 @@ public interface PostReaderDAO {
    * post.
    *
    * @param postItem | the WPost item to update
-   * @param postID | the ID of the post to update
-   * @param autoCreate | whether to create a new post if it does not exist
    */
   void updatePostEntry(WPost postItem, boolean autoCreate);
 }
