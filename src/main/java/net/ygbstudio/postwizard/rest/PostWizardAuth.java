@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.rest;
+package net.ygbstudio.postwizard.rest;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -12,7 +12,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.nio.charset.StandardCharsets;
@@ -24,25 +23,25 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
-import net.ygbstudio.postdirector.dto.GrantToken;
-import net.ygbstudio.postdirector.utils.Logging;
+import net.ygbstudio.postwizard.dto.GrantToken;
+import net.ygbstudio.postwizard.utils.Logging;
 
 /**
- * RESTful web service for handling authentication in the PostDirector application. This class
+ * RESTful web service for handling authentication in the postwizard application. This class
  * provides an endpoint to generate a JWT token for authenticated users.
  *
  * @author Yoham Gabriel @ YGB Studio
  */
 @RequestScoped
 @Path("auth")
-public class PostDirectorAuth {
+public class PostWizardAuth {
 
-  private static final Logger PostDirectorAuthEPoint =
-      Logger.getLogger(PostDirectorAuth.class.getName());
+  private static final Logger postwizardAuthEPoint =
+      Logger.getLogger(PostWizardAuth.class.getName());
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
-      Logging.LoggingInit(PostDirectorAuthEPoint, Level.ALL, true);
+      Logging.LoggingInit(postwizardAuthEPoint, Level.ALL, true);
 
   @Inject private SecurityContext securityContext;
 
@@ -50,7 +49,7 @@ public class PostDirectorAuth {
 
   @PostConstruct
   public void init() {
-    PostDirectorAuthEPoint.fine("CDI -> PostDirectorAuth endpoint loaded.");
+    postwizardAuthEPoint.fine("CDI -> postwizardAuth endpoint loaded.");
   }
 
   /**
@@ -65,7 +64,7 @@ public class PostDirectorAuth {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAppToken() {
     String userIP = request.getRemoteAddr();
-    PostDirectorAuthEPoint.entering("User with IP: " + userIP, "getAppToken()");
+    postwizardAuthEPoint.entering("User with IP: " + userIP, "getAppToken()");
 
     String username = securityContext.getCallerPrincipal().getName();
     String secretKey = System.getenv("JWT_KEY");
@@ -86,8 +85,7 @@ public class PostDirectorAuth {
             .compact();
 
     return Response.ok()
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-        .entity(new GrantToken(Response.Status.OK.getStatusCode(), issuanceDate, expirationDate))
+        .entity(new GrantToken(jwt, "bearer", expirationDate))
         .type(MediaType.APPLICATION_JSON)
         .build();
   }

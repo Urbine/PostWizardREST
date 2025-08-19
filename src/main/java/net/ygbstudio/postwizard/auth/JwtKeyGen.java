@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.auth;
+package net.ygbstudio.postwizard.auth;
 
 import java.security.SecureRandom;
 import java.util.Base64;

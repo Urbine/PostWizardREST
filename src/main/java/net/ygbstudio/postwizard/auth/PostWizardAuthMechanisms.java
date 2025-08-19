@@ -1,4 +1,4 @@
-package net.ygbstudio.postdirector.auth;
+package net.ygbstudio.postwizard.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -28,19 +28,19 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import net.ygbstudio.postdirector.utils.Logging;
+import net.ygbstudio.postwizard.utils.Logging;
 
 /**
- * Custom authentication mechanism for the PostDirector application. This class handles both Basic
- * and JWT authentication methods.
+ * Custom authentication mechanism for the postwizard application. This class handles both Basic and
+ * JWT authentication methods.
  *
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
-public class PostDirectorAuthMechanisms implements HttpAuthenticationMechanism {
+public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
 
   private static final Logger authMechanismsLogging =
-      Logger.getLogger(PostDirectorAuthMechanisms.class.getName());
+      Logger.getLogger(PostWizardAuthMechanisms.class.getName());
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
@@ -52,7 +52,7 @@ public class PostDirectorAuthMechanisms implements HttpAuthenticationMechanism {
 
   @PostConstruct
   public void init() {
-    authMechanismsLogging.fine("CDI -> PostDirectorAuthMechanisms Loaded");
+    authMechanismsLogging.fine("CDI -> postwizardAuthMechanisms Loaded");
   }
 
   @Override
