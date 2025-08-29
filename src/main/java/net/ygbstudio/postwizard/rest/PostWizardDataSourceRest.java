@@ -1,5 +1,6 @@
 package net.ygbstudio.postwizard.rest;
 
+import org.apache.commons.lang3.StringUtils;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -30,7 +31,7 @@ import net.ygbstudio.postwizard.utils.Logging;
 import net.ygbstudio.postwizard.utils.Reflection;
 
 /**
- * RESTful web service for managing post metadata in the postwizard application. This class provides
+ * RESTful web service for managing post metadata in the PostWizard application. This class provides
  * endpoints to retrieve and update post metadata.
  *
  * @author Yoham Gabriel @ YGB Studio
@@ -311,14 +312,14 @@ public class PostWizardDataSourceRest {
                   dbPostMetaDao.updatePostMetaAuto(
                       postId,
                       PostMetaKeys.ETHNICITY.toString(),
-                      clientPost.getEthnicity(),
+                      StringUtils.capitalize(clientPost.getEthnicity()),
                       autoCreate);
                   break;
                 case HAIRCOLOR:
                   dbPostMetaDao.updatePostMetaAuto(
                       postId,
                       PostMetaKeys.HAIRCOLOR.toString(),
-                      clientPost.getHairColor(),
+                      StringUtils.capitalize(clientPost.getHairColor()),
                       autoCreate);
                   break;
                 case HDVIDEO:
