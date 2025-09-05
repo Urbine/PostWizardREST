@@ -33,7 +33,7 @@ public interface PostReaderDAO {
    * @param postID | the ID of the post to check
    * @return true if the post exists, false otherwise
    */
-  Boolean postExists(long postID);
+  boolean postExists(long postID);
 
   /**
    * Validates a WPost item to ensure it has all the required fields.
@@ -41,7 +41,7 @@ public interface PostReaderDAO {
    * @param postItem | the WPost item to validate
    * @return true if the post item is valid, false otherwise
    */
-  Boolean isValidPost(WPost postItem);
+  boolean isValidPost(WPost postItem);
 
   /**
    * Updates a post entry with the provided WPost item. If the postID is less than or equal to 0, no
