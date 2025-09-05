@@ -2,8 +2,6 @@ package net.ygbstudio.postwizard.models;
 
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Represents a post in the Post Director application.
@@ -141,10 +139,5 @@ public class Post extends PostMeta {
 
   public void setPostType(String postType) {
     this.postType = postType;
-  }
-
-  @Override
-  public String toString() {
-    return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE, true);
   }
 }
