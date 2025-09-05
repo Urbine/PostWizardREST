@@ -1,6 +1,6 @@
 package net.ygbstudio.postwizard.utils;
 
-/** Utility interface for reusable logic in the project. * */
+/** Utility marker interface for reusable logic in the project. * */
 public interface Util {
 
   static void unsupportedUtil() {
