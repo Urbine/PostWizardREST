@@ -1,7 +1,8 @@
 package net.ygbstudio.postwizard.rest;
 
+import static net.ygbstudio.postwizard.auth.PostWizardAuthMechanisms.secretKey;
+
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
@@ -14,7 +15,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.SecretKey;
+import net.ygbstudio.postwizard.dto.ErrorResponse;
 import net.ygbstudio.postwizard.dto.GrantToken;
 import net.ygbstudio.postwizard.utils.Logging;
 
@@ -41,7 +41,7 @@ public class PostWizardAuth {
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
-      Logging.LoggingInit(postwizardAuthEPoint, Level.ALL, true);
+      Logging.loggingInit(postwizardAuthEPoint, Level.ALL, true);
 
   @Inject private SecurityContext securityContext;
 
@@ -67,26 +67,33 @@ public class PostWizardAuth {
     postwizardAuthEPoint.entering("User with IP: " + userIP, "getAppToken()");
 
     String username = securityContext.getCallerPrincipal().getName();
-    String secretKey = System.getenv("JWT_KEY");
-
-    SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     Date issuanceDate = Date.from(Instant.now());
     Date expirationDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
 
-    String jwt =
-        Jwts.builder()
-            .subject(username)
-            .claim(
-                "roles",
-                securityContext.isCallerInRole("user") ? List.of("user") : List.of("caller"))
-            .issuedAt(issuanceDate)
-            .expiration(expirationDate)
-            .signWith(key, Jwts.SIG.HS256)
-            .compact();
+    try {
+      String jwt =
+          Jwts.builder()
+              .subject(username)
+              .claim(
+                  "roles",
+                  securityContext.isCallerInRole("user") ? List.of("user") : List.of("caller"))
+              .issuedAt(issuanceDate)
+              .expiration(expirationDate)
+              .signWith(secretKey, Jwts.SIG.HS256)
+              .compact();
 
-    return Response.ok()
-        .entity(new GrantToken(jwt, "bearer", expirationDate))
-        .type(MediaType.APPLICATION_JSON)
-        .build();
+      return Response.ok()
+          .entity(new GrantToken(jwt, "bearer", expirationDate))
+          .type(MediaType.APPLICATION_JSON)
+          .build();
+
+    } catch (Exception anyEx) {
+      Response.StatusType internalServerError = Response.Status.INTERNAL_SERVER_ERROR;
+      return Response.status(internalServerError)
+          .entity(
+              new ErrorResponse(
+                  "Internal Server Error", "Try again later", internalServerError.getStatusCode()))
+          .build();
+    }
   }
 }
