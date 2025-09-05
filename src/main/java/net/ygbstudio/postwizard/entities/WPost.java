@@ -134,9 +134,8 @@ public class WPost {
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof WPost)) return false;
-    WPost anotherPost = (WPost) obj;
-    return this.getID() == anotherPost.getID()
+    if (!(obj instanceof WPost anotherPost)) return false;
+    return Objects.equals(this.getID(), anotherPost.getID())
         && Objects.equals(this.getPostAuthor(), anotherPost.getPostAuthor())
         && Objects.equals(this.getPostContent(), anotherPost.getPostContent())
         && Objects.equals(this.getPostTitle(), anotherPost.getPostTitle())
