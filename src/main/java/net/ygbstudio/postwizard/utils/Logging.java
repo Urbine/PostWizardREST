@@ -1,5 +1,7 @@
 package net.ygbstudio.postwizard.utils;
 
+import static net.ygbstudio.postwizard.utils.Debugging.getCallingMethod;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -8,14 +10,18 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
- * Utility class for logging functionalities in the postwizard application. This class provides
+ * Utility class for logging functionalities in the PostWizard application. This class provides
  * methods to create and configure FileHandlers for logging, as well as to determine the logging
  * level based on environment variables.
  *
  * @author Yoham Gabriel @ YGB Studio
  */
+@NullMarked
 public class Logging implements Util {
 
   private Logging() {
@@ -33,10 +39,10 @@ public class Logging implements Util {
    * @throws SecurityException if a security manager exists and it denies access to the file.
    * @throws IOException if an I/O error occurs while creating the FileHandler.
    */
-  public static FileHandler LogFileHandlerFactory(
+  public static FileHandler logFileHandlerFactory(
       String fileName, Level loggingLevel, boolean append) throws SecurityException, IOException {
-    String userHome = System.getProperty("user.home");
-    Path loggingPath = Path.of(userHome, "PDLogs");
+    String userDir = System.getProperty("user.dir");
+    Path loggingPath = Path.of(userDir, "PDLogs");
     File logDir = new File(loggingPath.toString());
     if (!logDir.exists()) logDir.mkdir();
 
@@ -46,7 +52,7 @@ public class Logging implements Util {
   }
 
   /**
-   * Initializes a FileHandler for logging with the specified logger, logging level, and append
+   * Initialises a FileHandler for logging with the specified logger, logging level, and append
    * mode.
    *
    * @param classLogger The logger to which the FileHandler will be added.
@@ -54,10 +60,11 @@ public class Logging implements Util {
    * @param append Whether to append to the existing log file or overwrite it.
    * @return A FileHandler configured with the specified parameters, or null if an error occurs.
    */
-  public static FileHandler LoggingInit(Logger classLogger, Level handlerLevel, boolean append) {
+  public static @Nullable FileHandler loggingInit(
+      Logger classLogger, Level handlerLevel, boolean append) {
     try {
       FileHandler classFileHandler =
-          LogFileHandlerFactory(classLogger.getName(), handlerLevel, append);
+          logFileHandlerFactory(classLogger.getName(), handlerLevel, append);
       classFileHandler.setFormatter(new SimpleFormatter());
       classLogger.addHandler(classFileHandler);
       classLogger.setLevel(Logging.pickEnvLoggingLevel());
@@ -76,10 +83,20 @@ public class Logging implements Util {
    * @return The logging level set by the environment variable, defaulting to INFO if not set or if
    *     the value is not recognized.
    */
-  public static Level pickEnvLoggingLevel() {
-    String globalLogLevel = System.getenv("PDLOG_LEVEL");
+  public static @NonNull Level pickEnvLoggingLevel() {
+    String globalLogLevel = System.getenv("PWLOG_LEVEL");
     return Objects.requireNonNullElse(globalLogLevel, "").equalsIgnoreCase("DEBUG")
         ? Level.ALL
         : Level.INFO;
+  }
+
+  public static void logStepIn(@NonNull Logger classLogger, @NonNull Object... inputParams) {
+    String[] stackInfo = getCallingMethod(true);
+    classLogger.entering(stackInfo[0], stackInfo[1], inputParams);
+  }
+
+  public static void logStepOut(@NonNull Logger classLogger, @NonNull Object... inputParams) {
+    String[] stackInfo = getCallingMethod(true);
+    classLogger.exiting(stackInfo[0], stackInfo[1], inputParams);
   }
 }
