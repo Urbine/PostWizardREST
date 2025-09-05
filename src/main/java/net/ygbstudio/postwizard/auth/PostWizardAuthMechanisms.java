@@ -28,7 +28,9 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.crypto.SecretKey;
 import net.ygbstudio.postwizard.utils.Logging;
+import net.ygbstudio.postwizard.utils.Security;
 
 /**
  * Custom authentication mechanism for the postwizard application. This class handles both Basic and
@@ -44,7 +46,9 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
-      Logging.LoggingInit(authMechanismsLogging, Level.ALL, true);
+      Logging.loggingInit(authMechanismsLogging, Level.ALL, true);
+
+  public static final SecretKey secretKey = initialiseSecretKey();
 
   @Inject private IdentityStoreHandler identityStoreHandler;
 
@@ -134,15 +138,10 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
         " ****Hit JWT Auth mechanism at method" + "****", authHeaders, new Object[] {context});
 
     String jwt = authHeaders.substring("Bearer ".length());
-    String jwtKey = System.getenv("JWT_KEY");
 
     try {
       Claims jwtClaims =
-          Jwts.parser()
-              .verifyWith(Keys.hmacShaKeyFor(jwtKey.getBytes(StandardCharsets.UTF_8)))
-              .build()
-              .parseSignedClaims(jwt)
-              .getPayload();
+          Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(jwt).getPayload();
 
       String user = jwtClaims.getSubject();
       Set<String> roles =
@@ -156,6 +155,20 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
       Throwable e = jwtEx;
       authMechanismsLogging.throwing(this.getClass().getName(), "handleJwtAuth", e);
       return context.responseUnauthorized();
+    }
+  }
+
+  /**
+   * Initialise SecretKey from environment variable or generate a new one if not set.
+   *
+   * @return SecretKey (HMAC SHA-256) for JWT signing.
+   */
+  private static SecretKey initialiseSecretKey() {
+    String secretKey = System.getenv("JWT_KEY");
+    if (secretKey != null) {
+      return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    } else {
+      return Security.generateHS256Key();
     }
   }
 }

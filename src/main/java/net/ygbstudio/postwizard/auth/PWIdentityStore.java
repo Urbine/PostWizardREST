@@ -6,7 +6,6 @@ import jakarta.security.enterprise.credential.Credential;
 import jakarta.security.enterprise.credential.UsernamePasswordCredential;
 import jakarta.security.enterprise.identitystore.CredentialValidationResult;
 import jakarta.security.enterprise.identitystore.IdentityStore;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +31,7 @@ public class PWIdentityStore implements IdentityStore {
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
-      Logging.LoggingInit(identityLogger, Level.FINE, true);
+      Logging.loggingInit(identityLogger, Level.FINE, true);
 
   @PostConstruct
   public void init() {
@@ -43,11 +42,9 @@ public class PWIdentityStore implements IdentityStore {
    * Retrieves authentication context properties from the resources file.
    *
    * @return a collection of key-value pairs representing the authentication context properties.
-   * @throws FileNotFoundException if the properties file is not found.
    * @throws RuntimeException if an error occurs while reading the properties.
    */
-  public Collection<Map.Entry<Object, Object>> getAuthContextProperties()
-      throws FileNotFoundException, RuntimeException {
+  public Collection<Map.Entry<Object, Object>> getAuthContextProperties() throws RuntimeException {
 
     return Helpers.getPropertiesFromResources("ApplicationProperties.properties").entrySet();
   }
