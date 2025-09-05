@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility class for reflection-related operations.
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
+@NullMarked
 public final class Reflection implements Util {
   private Reflection() {
     throw new AssertionError("Cannot instantiate utility class");

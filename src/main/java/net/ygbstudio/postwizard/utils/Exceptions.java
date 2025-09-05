@@ -1,11 +1,14 @@
 package net.ygbstudio.postwizard.utils;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Utility class for handling exceptions in the postwizard application. Provides methods to convert
  * checked exceptions to unchecked exceptions and to throw exceptions without declaring them.
  *
  * @author Yoham Gabriel @ YGB Studio
  */
+@NullMarked
 public class Exceptions implements Util {
 
   private Exceptions() {

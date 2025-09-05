@@ -16,6 +16,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility class for reusable logic in the project.
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
+@NullMarked
 public final class Helpers implements Util {
 
   private Helpers() {
@@ -37,7 +39,6 @@ public final class Helpers implements Util {
    *
    * @param propertyFileName The name of the property file to load.
    * @return A {@link Properties} object containing the loaded properties.
-   * @throws FileNotFoundException if the property file is not found in the resources.
    * @throws RuntimeException if an error occurs while reading the property file.
    */
   public static Properties getPropertiesFromResources(String propertyFileName) {
