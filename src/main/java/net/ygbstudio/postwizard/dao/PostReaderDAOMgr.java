@@ -36,20 +36,20 @@ public class PostReaderDAOMgr implements PostReaderDAO {
   }
 
   @Override
-  public Boolean isValidPost(WPost postItem) {
+  public boolean isValidPost(WPost postItem) {
     long elemCount = Stream.of(postItem).filter(Objects::nonNull).count();
     return elemCount == Reflection.getTransformClassFields(WPost.class, Field::getName).count();
   }
 
   @Override
-  public Boolean postExists(long postID) {
-    return getPostById(postID).map(p -> true).orElse(false);
+  public boolean postExists(long postID) {
+    return getPostById(postID).isPresent();
   }
 
   @Override
   public void updatePostEntry(WPost postItem, boolean autoCreate) {
 
-    Boolean postExists = postExists(postItem.getID());
+    boolean postExists = postExists(postItem.getID());
     if (autoCreate && !postExists) {
       if (isValidPost(postItem)) {
         em.persist(postItem);

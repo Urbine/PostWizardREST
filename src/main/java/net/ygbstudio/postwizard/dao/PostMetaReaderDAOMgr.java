@@ -5,7 +5,6 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -26,8 +25,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @Override
   public Collection<WPMeta> getAll() {
-    List<WPMeta> postList = em.createNamedQuery("WPMeta.FindAll", WPMeta.class).getResultList();
-    return postList;
+    return em.createNamedQuery("WPMeta.FindAll", WPMeta.class).getResultList();
   }
 
   @Override
@@ -45,7 +43,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
     Predicate<String> metaValFind = Pattern.compile(pattern).asPredicate();
 
     return getAll().parallelStream()
-        .filter((elem) -> metaValFind.test(elem.getMetaFieldValue()))
+        .filter(elem -> metaValFind.test(elem.getMetaFieldValue()))
         .toList();
   }
 
@@ -97,14 +95,11 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @Override
   public void persistNewPostMeta(WPMeta metaPair) {
-    if (metaPair == null) {
-      return;
-    } else if (metaPair.getPostID() == null
+    if (metaPair.getPostID() == null
         || metaPair.getMetaFieldKey() == null
         || metaPair.getMetaFieldValue() == null) {
       return;
     }
-
     em.persist(metaPair);
   }
 
