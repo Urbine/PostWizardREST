@@ -1,6 +1,5 @@
 package net.ygbstudio.postwizard.rest;
 
-import org.apache.commons.lang3.StringUtils;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -15,6 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +29,7 @@ import net.ygbstudio.postwizard.enums.PostMetaKeys;
 import net.ygbstudio.postwizard.exceptions.InvalidIdentifier;
 import net.ygbstudio.postwizard.utils.Logging;
 import net.ygbstudio.postwizard.utils.Reflection;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * RESTful web service for managing post metadata in the PostWizard application. This class provides
@@ -45,7 +46,7 @@ public class PostWizardDataSourceRest {
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
-      Logging.LoggingInit(dataSourceRestLog, Level.ALL, true);
+      Logging.loggingInit(dataSourceRestLog, Level.ALL, true);
 
   @Context private UriInfo context;
 
@@ -68,11 +69,11 @@ public class PostWizardDataSourceRest {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getPostMeta(@PathParam("postID") long postId) {
 
-    dataSourceRestLog.entering(
-        "Called getPostMeta at " + context.getPath(), "getPostMeta", new Object[] {postId});
+    Logging.logStepIn(dataSourceRestLog, postId);
 
     if (postId <= 0) {
-      dataSourceRestLog.exiting("Post ID - Bad Request", "getPostMeta", new Object[] {postId});
+      Logging.logStepOut(dataSourceRestLog, postId);
+      dataSourceRestLog.fine("Invalid post ID: Response.Status.BAD_REQUEST");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(
               new ErrorResponse(
@@ -82,7 +83,8 @@ public class PostWizardDataSourceRest {
           .build();
 
     } else if (!dbPostMetaDao.postExists(postId)) {
-      dataSourceRestLog.exiting("Post ID not found", "getPostMeta", new Object[] {postId});
+      Logging.logStepOut(dataSourceRestLog, postId);
+      dataSourceRestLog.fine("Post ID not found: Response.Status.NOT_FOUND");
       return Response.status(Response.Status.NOT_FOUND)
           .entity(
               new ErrorResponse(
@@ -91,9 +93,10 @@ public class PostWizardDataSourceRest {
                   Response.Status.NOT_FOUND.getStatusCode()))
           .build();
     }
-
-    dataSourceRestLog.exiting("Post ID found", "getPostMeta", new Object[] {postId});
-    return Response.ok(getClientPostMeta(postId), MediaType.APPLICATION_JSON).build();
+    ClientPostMeta postMetaResult = getClientPostMeta(postId);
+    Logging.logStepOut(dataSourceRestLog, postMetaResult);
+    dataSourceRestLog.fine("Post metadata retrieved successfully: Response.Status.OK");
+    return Response.ok(postMetaResult, MediaType.APPLICATION_JSON).build();
   }
 
   /**
@@ -108,11 +111,11 @@ public class PostWizardDataSourceRest {
   @RolesAllowed(value = {"user"})
   @Produces(MediaType.APPLICATION_JSON)
   public Response getPostById(@PathParam("postID") long postID) {
-    dataSourceRestLog.entering(
-        "Called getPostById at " + context.getPath(), "getPostById", new Object[] {postID});
+    Logging.logStepIn(dataSourceRestLog, postID);
 
     if (postID <= 0) {
-      dataSourceRestLog.exiting("Post ID - Bad Request", "getPostById", new Object[] {postID});
+      Logging.logStepOut(dataSourceRestLog, postID);
+      dataSourceRestLog.fine("Invalid Post ID: Response.Status.BAD_REQUEST");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(
               new ErrorResponse(
@@ -121,7 +124,8 @@ public class PostWizardDataSourceRest {
                   Response.Status.BAD_REQUEST.getStatusCode()))
           .build();
     } else if (!dbPostDao.postExists(postID)) {
-      dataSourceRestLog.exiting("Post ID not found", "getPostById", new Object[] {postID});
+      Logging.logStepOut(dataSourceRestLog, postID);
+      dataSourceRestLog.fine("Post ID not found: Response.Status.NOT_FOUND");
       return Response.status(Response.Status.NOT_FOUND)
           .entity(
               new ErrorResponse(
@@ -130,9 +134,9 @@ public class PostWizardDataSourceRest {
                   Response.Status.NOT_FOUND.getStatusCode()))
           .build();
     }
-
-    dataSourceRestLog.exiting("Post ID found", "getPostById", new Object[] {postID});
-    return Response.ok(getClientPost(postID), MediaType.APPLICATION_JSON).build();
+    ClientPost postResult = getClientPost(postID);
+    Logging.logStepOut(dataSourceRestLog, postResult);
+    return Response.ok(postResult, MediaType.APPLICATION_JSON).build();
   }
 
   /**
@@ -153,7 +157,10 @@ public class PostWizardDataSourceRest {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response updatePostWP(@PathParam("PostID") long postId, ClientPost clientPost) {
+    Logging.logStepIn(dataSourceRestLog, postId);
     if (postId <= 0) {
+      Logging.logStepOut(dataSourceRestLog, postId);
+      dataSourceRestLog.fine("Invalid Post ID: Response.Status.BAD_REQUEST");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(
               new ErrorResponse(
@@ -162,6 +169,8 @@ public class PostWizardDataSourceRest {
 
     } else {
       if (!dbPostDao.postExists(postId)) {
+        Logging.logStepOut(dataSourceRestLog, postId);
+        dataSourceRestLog.fine("Post ID not found: Response.Status.NOT_FOUND");
         return Response.status(Response.Status.NOT_FOUND)
             .entity(
                 new ErrorResponse(
@@ -171,7 +180,9 @@ public class PostWizardDataSourceRest {
             .build();
       } else {
         clientPost.setPostID(postId);
-        ClientPostUpdateStrategy(clientPost);
+        clientPostUpdateStrategy(clientPost);
+        Logging.logStepOut(dataSourceRestLog, postId);
+        dataSourceRestLog.fine("Post ID updated successfully: Response.Status.OK");
         return Response.ok(
                 new ServerResponse(
                     "Post ID " + postId + " has been modified with the fields provided",
@@ -195,19 +206,15 @@ public class PostWizardDataSourceRest {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response updatePostMeta(@PathParam("postID") long postID, ClientPostMeta postMetaFields) {
-    dataSourceRestLog.entering(
-        "Called updatePost at " + context.getPath(),
-        "updatePost",
-        new Object[] {postID, postMetaFields});
 
+    Logging.logStepIn(dataSourceRestLog, postID, postMetaFields);
     boolean isPostMetaPost = dbPostMetaDao.postExists(postID);
     boolean isWPost = dbPostDao.postExists(postID);
 
-    if (postMetaFields != null && postID > 0) {
+    if (postID >= 0) {
       if (!isPostMetaPost && !isWPost) {
-        dataSourceRestLog.exiting(
-            "Post ID not found", "updatePostMeta", new Object[] {postID, postMetaFields});
-
+        Logging.logStepOut(dataSourceRestLog, postID, postMetaFields);
+        dataSourceRestLog.fine("The post ID is neither a valid post nor is it linked to metadata.");
         return Response.status(Response.Status.NOT_FOUND)
             .entity(
                 new ErrorResponse(
@@ -219,7 +226,8 @@ public class PostWizardDataSourceRest {
       } else {
         postMetaFields.setID(postID);
         clientPostMetaUpdateStrategy(postMetaFields, true);
-
+        Logging.logStepOut(dataSourceRestLog, postID, postMetaFields);
+        dataSourceRestLog.fine("Post ID updated successfully: Response.Status.OK");
         return Response.ok(
                 new ServerResponse(
                     "Post ID: " + postID + " modified with the fields provided.",
@@ -229,11 +237,9 @@ public class PostWizardDataSourceRest {
       }
 
     } else {
-      dataSourceRestLog.exiting(
-          "Tried to update metadata by providing either null post id param or content",
-          "updatePostMeta",
-          new Object[] {postID, postMetaFields});
 
+      Logging.logStepOut(dataSourceRestLog, postID, postMetaFields);
+      dataSourceRestLog.fine("Invalid Post ID or metadata: Response.Status.BAD_REQUEST");
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(
               new ErrorResponse(
@@ -242,6 +248,60 @@ public class PostWizardDataSourceRest {
                   Response.Status.BAD_REQUEST.getStatusCode()))
           .build();
     }
+  }
+
+  /**
+   * Endpoint to update multiple post metadata entries in a single batch operation. This method
+   * accepts a collection of ClientPostMeta objects, each representing the metadata for a specific
+   * post. The method iterates through the collection and updates the metadata for each post
+   * accordingly. This batch update helps to reduce the number of individual requests needed to
+   * update multiple posts.
+   *
+   * @param postMetaColl | a collection of ClientPostMeta objects containing post metadata to update
+   * @return Response indicating the result of the batch update operation
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed(value = {"user"})
+  @Path("meta/batch")
+  public Response postMetaBatchUpdate(Collection<ClientPostMeta> postMetaColl) {
+    Response.Status malformedRequest = Response.Status.BAD_REQUEST;
+    if (postMetaColl.isEmpty()) {
+      Logging.logStepOut(dataSourceRestLog, postMetaColl);
+      dataSourceRestLog.fine("No items to process: Response.Status.BAD_REQUEST");
+      return Response.status(malformedRequest)
+          .entity(
+              new ErrorResponse(
+                  "Unable to process items",
+                  "No items to process",
+                  malformedRequest.getStatusCode()))
+          .build();
+    }
+
+    try {
+      postMetaColl.forEach(item -> clientPostMetaUpdateStrategy(item, true));
+    } catch (Exception anyEx) {
+      Response.Status serverError = Response.Status.INTERNAL_SERVER_ERROR;
+      Logging.logStepOut(dataSourceRestLog, postMetaColl);
+      dataSourceRestLog.fine(
+          "Update finished/interrupted with errors: Response.Status.INTERNAL_SERVER_ERROR");
+      return Response.status(serverError)
+          .entity(
+              new ErrorResponse(
+                  "Update finished/interrupted with errors",
+                  "Try again later",
+                  serverError.getStatusCode()))
+          .build();
+    }
+
+    Logging.logStepOut(dataSourceRestLog, postMetaColl);
+    dataSourceRestLog.fine("Batch job executed successfully: Response.Status.OK");
+    return Response.ok()
+        .entity(
+            new ServerResponse(
+                "Batch job executed successfully", Response.Status.OK.getStatusCode()))
+        .build();
   }
 
   /**
@@ -254,12 +314,11 @@ public class PostWizardDataSourceRest {
    * @param autoCreate | boolean indicating whether to create metadata if it does not exist
    */
   private void clientPostMetaUpdateStrategy(ClientPostMeta clientPost, boolean autoCreate) {
-    dataSourceRestLog.entering(
-        "Called clientPostUpdateStrategy at " + context.getPath(),
-        "clientPostUpdateStrategy",
-        new Object[] {clientPost});
+    Logging.logStepIn(dataSourceRestLog, clientPost);
 
     long postId = clientPost.getID();
+    if (postId <= 0) return;
+
     Reflection.getTransformClassFields(clientPost.getClass(), Field::getName)
         .forEach(
             p -> {
@@ -327,7 +386,7 @@ public class PostWizardDataSourceRest {
                     dbPostMetaDao.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.HDVIDEO.toString(),
-                        clientPost.getVideoHD() ? "on" : "off",
+                        Boolean.TRUE.equals(clientPost.getVideoHD()) ? "on" : "off",
                         autoCreate);
                   break;
                 case THUMBNAIL:
@@ -379,7 +438,7 @@ public class PostWizardDataSourceRest {
    *
    * @param clientPost | the ClientPost object containing post details to update
    */
-  private void ClientPostUpdateStrategy(ClientPost clientPost) {
+  private void clientPostUpdateStrategy(ClientPost clientPost) {
     dataSourceRestLog.entering(
         "Called ClientPostUpdateStrategy at " + context.getPath(),
         "ClientPostUpdateStrategy",
@@ -444,7 +503,7 @@ public class PostWizardDataSourceRest {
                   convertedObj.setHairColor(p.getMetaFieldValue());
                   break;
                 case HDVIDEO:
-                  convertedObj.setVideoHD(p.getMetaFieldValue().equals("on") ? true : false);
+                  convertedObj.setVideoHD(p.getMetaFieldValue().equals("on"));
                   break;
                 case THUMBNAIL:
                   convertedObj.setThumb(p.getMetaFieldValue());
@@ -480,8 +539,9 @@ public class PostWizardDataSourceRest {
   private ClientPost getClientPost(long postID) {
     ClientPost convertedObj = new ClientPost();
 
-    dbPostDao.getPostById(postID).stream()
-        .forEach(
+    dbPostDao
+        .getPostById(postID)
+        .ifPresent(
             p -> {
               convertedObj.setPostID(p.getID());
               convertedObj.setPostAuthor(p.getPostAuthor());
