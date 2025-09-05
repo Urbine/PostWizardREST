@@ -1,9 +1,10 @@
-package net.ygbstudio.postwizard.auth;
+package net.ygbstudio.postwizard.utils;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility class for generating JWT signing keys. This class provides methods to generate random
@@ -11,7 +12,8 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
-public class JwtKeyGen {
+@NullMarked
+public class Security implements Util {
 
   /**
    * Generates a random secret key for JWT signing.
