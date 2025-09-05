@@ -26,7 +26,7 @@ public class InvalidIdentifierMapper implements ExceptionMapper<InvalidIdentifie
   public Response toResponse(InvalidIdentifier ex) {
     ErrorResponse errorObj =
         new ErrorResponse(
-            "Error - Reosurce Not Found",
+            "Error - Resource Not Found",
             ex.getMessage(),
             Response.Status.NOT_FOUND.getStatusCode());
 
