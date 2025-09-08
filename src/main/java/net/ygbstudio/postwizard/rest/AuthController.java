@@ -34,10 +34,10 @@ import net.ygbstudio.postwizard.utils.Logging;
  */
 @RequestScoped
 @Path("auth")
-public class PostWizardAuth {
+public class AuthController {
 
   private static final Logger postwizardAuthEPoint =
-      Logger.getLogger(PostWizardAuth.class.getName());
+      Logger.getLogger(AuthController.class.getName());
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =

@@ -15,4 +15,4 @@ import jakarta.ws.rs.core.Application;
 @ApplicationScoped
 @DeclareRoles({"user", "caller"})
 @ApplicationPath("v1")
-public class PostWizardRestConfig extends Application {}
+public class RestServiceConfig extends Application {}
