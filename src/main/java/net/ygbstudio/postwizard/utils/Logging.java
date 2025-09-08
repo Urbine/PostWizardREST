@@ -2,6 +2,8 @@ package net.ygbstudio.postwizard.utils;
 
 import static net.ygbstudio.postwizard.utils.Debugging.getCallingMethod;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,8 +31,8 @@ public class Logging implements Util {
   }
 
   /**
-   * Creates a FileHandler for logging to a specified file in the user's home directory under a
-   * "PDLogs" folder.
+   * Creates a FileHandler for logging to a specified file under a "PWLogs" folder. in the local
+   * Java classpath.
    *
    * @param fileName The name of the log file.
    * @param loggingLevel The logging level for the FileHandler.
@@ -41,12 +43,12 @@ public class Logging implements Util {
    */
   public static FileHandler logFileHandlerFactory(
       String fileName, Level loggingLevel, boolean append) throws SecurityException, IOException {
-    String userDir = System.getProperty("user.dir");
-    Path loggingPath = Path.of(userDir, "PDLogs");
+    String classPathDir = System.getProperty("java.class.path");
+    Path loggingPath = Path.of(classPathDir, "PWLogs");
     File logDir = new File(loggingPath.toString());
     if (!logDir.exists()) logDir.mkdir();
 
-    FileHandler globalFileHandler = new FileHandler("%h" + "/PDLogs/" + fileName + "-%g", append);
+    FileHandler globalFileHandler = new FileHandler("%h" + "/PWLogs/" + fileName + "-%g", append);
     globalFileHandler.setLevel(loggingLevel);
     return globalFileHandler;
   }
@@ -90,13 +92,40 @@ public class Logging implements Util {
         : Level.INFO;
   }
 
+  /**
+   * Logs the entry into a method along with its input parameters. The method automatically
+   * determines the calling class and method name.
+   *
+   * @param classLogger | The logger to use for logging.
+   * @param inputParams | The input parameters of the method being logged.
+   */
   public static void logStepIn(@NonNull Logger classLogger, @NonNull Object... inputParams) {
     String[] stackInfo = getCallingMethod(true);
     classLogger.entering(stackInfo[0], stackInfo[1], inputParams);
   }
 
-  public static void logStepOut(@NonNull Logger classLogger, @NonNull Object... inputParams) {
+  /**
+   * Logs the exit from a method along with its output parameters. The method automatically
+   * determines the calling class and method name.
+   *
+   * @param classLogger | The logger to use for logging.
+   * @param inputParams | The output parameters of the method being logged.
+   */
+  public static void logStepOut(@NonNull Logger classLogger, @NonNull Object... outputParams) {
     String[] stackInfo = getCallingMethod(true);
-    classLogger.exiting(stackInfo[0], stackInfo[1], inputParams);
+    classLogger.exiting(stackInfo[0], stackInfo[1], outputParams);
+  }
+
+  /**
+   * Logs the path reached in a controller along with the IP address of the requester. Particularly
+   * useful for RESTful services to track endpoint access.
+   *
+   * @param classLogger | The logger to use for logging.
+   * @param context | The UriInfo context containing path information.
+   * @param request | The HttpServletRequest containing requester information.
+   */
+  public static void logControllerPath(
+      Logger classLogger, UriInfo context, HttpServletRequest request) {
+    classLogger.fine("Reached path: " + context.getPath() + "from IP" + request.getRemoteAddr());
   }
 }
