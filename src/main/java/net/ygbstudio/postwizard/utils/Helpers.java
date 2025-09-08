@@ -8,12 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NullMarked;
@@ -117,5 +122,40 @@ public final class Helpers implements Util {
       List<? extends K> elementOne, List<? extends V> elementTwo) {
     return IntStream.range(0, Math.min(elementOne.size(), elementTwo.size()))
         .mapToObj(i -> Map.entry(elementOne.get(i), elementTwo.get(i)));
+  }
+
+  /**
+   * Checks if any enum constant's transformed value matches a given condition.
+   *
+   * @param <T> The type of the enum.
+   * @param <R> The type of the transformed value.
+   * @param enumType The class of the enum to check.
+   * @param transformer A function that transforms an enum constant to a value of type R.
+   * @param condition A predicate that tests the transformed value.
+   * @return true if any transformed value matches the condition, false otherwise.
+   */
+  public static <T extends Enum<T>, R> boolean isInEnum(
+      Class<T> enumType,
+      Function<? super T, ? extends R> transformer,
+      Predicate<? super R> condition) {
+    return Arrays.stream(enumType.getEnumConstants()).map(transformer).anyMatch(condition);
+  }
+
+  /**
+   * Retrieves an enum constant from a string value, with an option to ignore case sensitivity. This
+   * method uses a regex pattern to match the string representation of the enum constants.
+   *
+   * @param <T> | The type of the enum.
+   * @param enumType | The class of the enum to search.
+   * @param strEnumKey | The string value to match against the enum constants.
+   * @param ignoreCase | If true, the match is case-insensitive; otherwise, it is case-sensitive.
+   * @return An Optional containing the matching enum constant, or empty if no match is found.
+   */
+  public static <T extends Enum<T>> Optional<T> enumFromValue(
+      Class<T> enumType, String strEnumKey, boolean ignoreCase) {
+    Predicate<String> valuePattern = Pattern.compile(strEnumKey, ignoreCase ? 2 : 0).asPredicate();
+    return Arrays.stream(enumType.getEnumConstants())
+        .filter(key -> valuePattern.test(key.toString()))
+        .findFirst();
   }
 }
