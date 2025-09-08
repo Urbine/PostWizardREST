@@ -1,9 +1,9 @@
 package net.ygbstudio.postwizard.dao;
 
-import jakarta.ejb.Local;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -16,13 +16,13 @@ import net.ygbstudio.postwizard.entities.WPMeta;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
-@Stateless
-@Local(PostMetaReaderDAO.class)
+@ApplicationScoped
 public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @PersistenceContext(unitName = "wpmeta")
   private EntityManager em;
 
+  @Transactional
   @Override
   public Collection<WPMeta> getAll() {
     return em.createNamedQuery("WPMeta.FindAll", WPMeta.class).getResultList();
@@ -47,11 +47,13 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
         .toList();
   }
 
+  @Transactional
   @Override
   public WPMeta getElemByMetaId(long id) {
     return em.find(WPMeta.class, id);
   }
 
+  @Transactional
   @Override
   public Optional<WPMeta> updatePostMetaValue(long postID, String metaKey, String newValue) {
     return getEntriesByPostID(postID).parallelStream()
@@ -64,6 +66,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
             });
   }
 
+  @Transactional
   @Override
   public void updatePostMetaAuto(long postID, String metaKey, String newValue, boolean autoCreate) {
     if (postID <= 0 || (metaKey == null && newValue == null)) {
@@ -93,6 +96,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
     return getAll().parallelStream().anyMatch(elem -> elem.getPostID() == postID);
   }
 
+  @Transactional
   @Override
   public void persistNewPostMeta(WPMeta metaPair) {
     if (metaPair.getPostID() == null

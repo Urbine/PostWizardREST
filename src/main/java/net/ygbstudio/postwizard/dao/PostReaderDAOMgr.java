@@ -1,9 +1,9 @@
 package net.ygbstudio.postwizard.dao;
 
-import jakarta.ejb.Local;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Objects;
@@ -18,13 +18,13 @@ import net.ygbstudio.postwizard.utils.Reflection;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
-@Stateless
-@Local(PostReaderDAO.class)
+@ApplicationScoped
 public class PostReaderDAOMgr implements PostReaderDAO {
 
   @PersistenceContext(unitName = "wpost")
   private EntityManager em;
 
+  @Transactional
   @Override
   public Collection<WPost> getAllPosts() {
     return em.createNamedQuery("WPosts.FindAll", WPost.class).getResultList();
@@ -46,6 +46,7 @@ public class PostReaderDAOMgr implements PostReaderDAO {
     return getPostById(postID).isPresent();
   }
 
+  @Transactional
   @Override
   public void updatePostEntry(WPost postItem, boolean autoCreate) {
 
