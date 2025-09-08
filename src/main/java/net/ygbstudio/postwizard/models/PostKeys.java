@@ -1,7 +1,4 @@
-package net.ygbstudio.postwizard.enums;
-
-import java.util.Arrays;
-import java.util.Optional;
+package net.ygbstudio.postwizard.models;
 
 /**
  * Enum representing the keys used in WordPress posts. This enum provides a way to manage and
@@ -25,13 +22,8 @@ public enum PostKeys {
     this.value = value;
   }
 
-  public String getValue() {
-    return value;
-  }
-
-  public static Optional<PostKeys> fromValue(String strKey) {
-    return Arrays.stream(PostKeys.values())
-        .filter(key -> key.toString().equalsIgnoreCase(strKey))
-        .findFirst();
+  @Override
+  public String toString() {
+    return this.value;
   }
 }

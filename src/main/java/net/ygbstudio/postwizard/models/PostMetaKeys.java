@@ -1,7 +1,4 @@
-package net.ygbstudio.postwizard.enums;
-
-import java.util.Arrays;
-import java.util.Optional;
+package net.ygbstudio.postwizard.models;
 
 /**
  * Enum representing the keys used in post metadata. This enum provides a way to manage and retrieve
@@ -32,12 +29,6 @@ public enum PostMetaKeys {
 
   PostMetaKeys(String value) {
     this.value = value;
-  }
-
-  public static Optional<PostMetaKeys> fromValue(String strKey) {
-    return Arrays.stream(PostMetaKeys.values())
-        .filter(key -> key.toString().equalsIgnoreCase(strKey))
-        .findFirst();
   }
 
   @Override
