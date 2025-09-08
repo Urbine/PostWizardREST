@@ -1,6 +1,8 @@
 package net.ygbstudio.postwizard.dto;
 
 import jakarta.json.bind.config.PropertyVisibilityStrategy;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * A custom field access strategy for JSON-B that makes all fields visible to the client, while
@@ -14,13 +16,13 @@ import jakarta.json.bind.config.PropertyVisibilityStrategy;
 public class ClientDTOVisibilityStrategy implements PropertyVisibilityStrategy {
 
   @Override
-  public boolean isVisible(java.lang.reflect.Field field) {
+  public boolean isVisible(Field field) {
     // Make all fields visible since the application will be receiving schema from the client.
     return true;
   }
 
   @Override
-  public boolean isVisible(java.lang.reflect.Method method) {
+  public boolean isVisible(Method method) {
     // Ignores setters and getters to keep those as idiomatic as possible.
     return false;
   }
