@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ygbstudio.postwizard.dao.PostMetaReaderDAO;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
-import net.ygbstudio.postwizard.exceptions.InvalidIdentifier;
 import net.ygbstudio.postwizard.models.Ethnicity;
 import net.ygbstudio.postwizard.models.HairColor;
 import net.ygbstudio.postwizard.models.Orientation;
@@ -25,6 +24,16 @@ import net.ygbstudio.postwizard.models.Production;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Service class for managing post metadata in the postwizard application. This class provides
+ * methods to validate, update, and retrieve post metadata based on the ClientPostMeta DTO and
+ * various enumerations representing valid metadata values.
+ *
+ * <p>The service interacts with the PostMetaReaderDAO to perform database operations related to
+ * post metadata.
+ *
+ * @author Yoham Gabriel @ YGB Studio
+ */
 @ApplicationScoped
 public class PostMetaService {
 
@@ -41,7 +50,7 @@ public class PostMetaService {
   /**
    * Checks if the post has any metadata fields.
    *
-   * @param postID | the ID of the post to check
+   * @param postID the ID of the post to check
    * @return true if the post has metadata fields, false otherwise
    */
   public boolean hasMetaFields(long postID) {
@@ -102,8 +111,8 @@ public class PostMetaService {
    * the database. Unlike posts, metadata fields can be created if the schema provided by the client
    * is correct and constitutes a relevant key in the WordPress site.
    *
-   * @param clientPost | the ClientPostMeta object containing post metadata to update
-   * @param autoCreate | boolean indicating whether to create metadata if it does not exist
+   * @param clientPost the ClientPostMeta object containing post metadata to update
+   * @param autoCreate boolean indicating whether to create metadata if it does not exist
    */
   public void clientPostMetaUpdateStrategy(ClientPostMeta clientPost, boolean autoCreate) {
     logStepIn(postMetaServiceLog, clientPost);
@@ -114,7 +123,7 @@ public class PostMetaService {
     getTransformClassFields(clientPost.getClass(), Field::getName)
         .forEach(
             p -> {
-              switch (enumFromValue(PostMetaKeys.class, p, true).get()) {
+              switch (enumFromValue(PostMetaKeys.class, p, true).orElse(PostMetaKeys.OTHERS)) {
                 case ID:
                   break;
                 case HOURS:
@@ -209,11 +218,7 @@ public class PostMetaService {
                       autoCreate);
                   break;
                 default:
-                  postMetaServiceLog.throwing(
-                      this.getClass().getName(),
-                      "clientPostUpdateStrategy",
-                      new InvalidIdentifier("Unexpected value: " + p));
-                  throw new InvalidIdentifier("Unexpected value: " + p);
+                  break;
               }
             });
   }
@@ -227,7 +232,7 @@ public class PostMetaService {
    * object that can be easily consumed by the client without exposing the underlying database
    * structure.
    *
-   * @param postID | the ID of the post for which metadata is requested
+   * @param postID the ID of the post for which metadata is requested
    * @return ClientPostMeta object containing the post metadata
    */
   public ClientPostMeta getClientPostMeta(long postID) {

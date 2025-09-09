@@ -13,6 +13,12 @@ import net.ygbstudio.postwizard.dao.PostReaderDAO;
 import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.entities.WPost;
 
+/**
+ * Service class for managing WordPress posts. This class provides methods to check post existence,
+ * update post details, and retrieve post information in a structured format.
+ *
+ * @author Yoham Gabriel @ YGB Studio
+ */
 @ApplicationScoped
 public class PostService {
 
@@ -43,7 +49,7 @@ public class PostService {
    * accidental data loss or malformed entries. The WordPress API should be used to create new
    * posts, so that relevant entries can be modified using this method.
    *
-   * @param clientPost | the ClientPost object containing post details to update
+   * @param clientPost the ClientPost object containing post details to update
    */
   public void clientPostUpdateStrategy(ClientPost clientPost) {
     logStepIn(postServiceLog, clientPost);
@@ -69,7 +75,7 @@ public class PostService {
    * <p>This method is used to convert the raw post entries into a structured ClientPost object that
    * can be easily consumed by the client without exposing the underlying database structure.
    *
-   * @param postID | the ID of the post for which details are requested
+   * @param postID the ID of the post for which details are requested
    * @return ClientPost object containing the post details
    */
   public ClientPost getClientPost(long postID) {
