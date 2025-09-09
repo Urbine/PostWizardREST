@@ -20,8 +20,8 @@ public class UnknownAPICredentialsMapper implements ExceptionMapper<UnknownAPICr
   /**
    * Converts an UnknownAPICredentials exception into a Response object.
    *
-   * @param ex | the UnknownAPICredentials exception to be mapped
-   * @return a | Response object with a 401 Unauthorized status and an error message
+   * @param ex the UnknownAPICredentials exception to be mapped
+   * @return a Response object with a 401 Unauthorized status and an error message
    */
   @Override
   public Response toResponse(UnknownAPICredentials ex) {

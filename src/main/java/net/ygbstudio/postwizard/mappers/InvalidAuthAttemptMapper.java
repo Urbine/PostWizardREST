@@ -20,8 +20,8 @@ public class InvalidAuthAttemptMapper implements ExceptionMapper<InvalidAuthAtte
   /**
    * Converts an InvalidAuthAttempt exception into a Response object.
    *
-   * @param ex | the InvalidAuthAttempt exception to be mapped
-   * @return a | Response object with a 401 Unauthorized status and an error message
+   * @param ex the InvalidAuthAttempt exception to be mapped
+   * @return a Response object with a 401 Unauthorized status and an error message
    */
   @Override
   public Response toResponse(InvalidAuthAttempt ex) {

@@ -19,8 +19,8 @@ public class InvalidIdentifierMapper implements ExceptionMapper<InvalidIdentifie
   /**
    * Converts an InvalidIdentifier exception into a Response object.
    *
-   * @param ex | the InvalidIdentifier exception to be mapped
-   * @return a | Response object with a 404 Not Found status and an error message
+   * @param ex the InvalidIdentifier exception to be mapped
+   * @return a Response object with a 404 Not Found status and an error message
    */
   @Override
   public Response toResponse(InvalidIdentifier ex) {

@@ -19,8 +19,8 @@ public class Debugging implements Util {
   /**
    * Retrieves the name of the method that called this method.
    *
-   * @param includeClass | If true, includes the class name in the returned string; otherwise,
-   *     returns only the method name.
+   * @param includeClass If true, includes the class name in the returned string; otherwise, returns
+   *     only the method name.
    * @return The name of the calling method, optionally prefixed by the class name.
    */
   public static String[] getCallingMethod(boolean includeClass) {
