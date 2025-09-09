@@ -113,8 +113,8 @@ public final class Helpers implements Util {
    *
    * @param <K>
    * @param <V>
-   * @param elementOne | A list of elements to be used as keys in the map entries.
-   * @param elementTwo | A list of elements to be used as values in the map entries.
+   * @param elementOne A list of elements to be used as keys in the map entries.
+   * @param elementTwo A list of elements to be used as values in the map entries.
    * @return A stream of map entries where each entry pairs an element from the first list with an
    *     element from the second list.
    */
@@ -145,15 +145,16 @@ public final class Helpers implements Util {
    * Retrieves an enum constant from a string value, with an option to ignore case sensitivity. This
    * method uses a regex pattern to match the string representation of the enum constants.
    *
-   * @param <T> | The type of the enum.
-   * @param enumType | The class of the enum to search.
-   * @param strEnumKey | The string value to match against the enum constants.
-   * @param ignoreCase | If true, the match is case-insensitive; otherwise, it is case-sensitive.
+   * @param <T> The type of the enum.
+   * @param enumType The class of the enum to search.
+   * @param strEnumKey The string value to match against the enum constants.
+   * @param ignoreCase If true, the match is case-insensitive; otherwise, it is case-sensitive.
    * @return An Optional containing the matching enum constant, or empty if no match is found.
    */
   public static <T extends Enum<T>> Optional<T> enumFromValue(
       Class<T> enumType, String strEnumKey, boolean ignoreCase) {
-    Predicate<String> valuePattern = Pattern.compile(strEnumKey, ignoreCase ? 2 : 0).asPredicate();
+    Predicate<String> valuePattern =
+        Pattern.compile(strEnumKey, ignoreCase ? Pattern.CASE_INSENSITIVE : 0).asPredicate();
     return Arrays.stream(enumType.getEnumConstants())
         .filter(key -> valuePattern.test(key.toString()))
         .findFirst();
