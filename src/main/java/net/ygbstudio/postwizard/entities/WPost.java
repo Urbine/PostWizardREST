@@ -57,6 +57,17 @@ public class WPost {
 
   public WPost() {}
 
+  /**
+   * Constructor for WPost.
+   *
+   * @param iD the ID of the post
+   * @param postAuthor the author ID of the post
+   * @param postContent the content of the post
+   * @param postTitle the title of the post
+   * @param postSlug the slug of the post
+   * @param postStatus the status of the post (e.g., "publish", "draft")
+   * @param postType the type of the post (e.g., "post", "page")
+   */
   public WPost(
       Long iD,
       Long postAuthor,

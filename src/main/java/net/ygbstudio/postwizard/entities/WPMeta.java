@@ -46,6 +46,14 @@ public class WPMeta {
 
   public WPMeta() {}
 
+  /**
+   * Constructs a WPMeta instance with the specified parameters.
+   *
+   * @param metaID the unique identifier for the metadata entry
+   * @param postID the ID of the post this metadata is associated with
+   * @param metaFieldKey the key/name of the metadata field
+   * @param metaFieldValue the value associated with the metadata field
+   */
   public WPMeta(Long metaID, Long postID, String metaFieldKey, String metaFieldValue) {
     super();
     this.metaID = metaID;
