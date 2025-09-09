@@ -19,6 +19,13 @@ public class ErrorResponse {
   private int status;
   private String timestamp;
 
+  /**
+   * Constructor for ErrorResponse.
+   *
+   * @param error A brief description of the error type.
+   * @param message A detailed message describing the error.
+   * @param status The HTTP status code representing the error.
+   */
   public ErrorResponse(String error, String message, int status) {
     super();
     this.error = error;
