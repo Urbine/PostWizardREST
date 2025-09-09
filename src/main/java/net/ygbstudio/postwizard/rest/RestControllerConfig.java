@@ -15,4 +15,4 @@ import jakarta.ws.rs.core.Application;
 @ApplicationScoped
 @DeclareRoles({"user", "caller"})
 @ApplicationPath("v1")
-public class RestServiceConfig extends Application {}
+public class RestControllerConfig extends Application {}
