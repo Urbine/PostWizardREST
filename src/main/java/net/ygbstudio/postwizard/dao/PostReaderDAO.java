@@ -22,7 +22,7 @@ public interface PostReaderDAO {
   /**
    * Retrieves a specific post by its ID.
    *
-   * @param postID | the ID of the post to retrieve
+   * @param postID the ID of the post to retrieve
    * @return an Optional containing the WPost entry if found, or empty if not found
    */
   Optional<WPost> getPostById(long postID);
@@ -30,7 +30,7 @@ public interface PostReaderDAO {
   /**
    * Checks if a post exists by its ID.
    *
-   * @param postID | the ID of the post to check
+   * @param postID the ID of the post to check
    * @return true if the post exists, false otherwise
    */
   boolean postExists(long postID);
@@ -38,7 +38,7 @@ public interface PostReaderDAO {
   /**
    * Validates a WPost item to ensure it has all the required fields.
    *
-   * @param postItem | the WPost item to validate
+   * @param postItem the WPost item to validate
    * @return true if the post item is valid, false otherwise
    */
   boolean isValidPost(WPost postItem);
@@ -48,7 +48,7 @@ public interface PostReaderDAO {
    * action is taken. If autoCreate is true and the post does not exist, it should create a new
    * post.
    *
-   * @param postItem | the WPost item to update
+   * @param postItem the WPost item to update
    */
   void updatePostEntry(WPost postItem, boolean autoCreate);
 }
