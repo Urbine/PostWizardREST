@@ -48,5 +48,8 @@ Thumbs.db
 *.tmp
 *.txt
 
+# Generated JavaDoc
+./doc
+
 # Individual files
 /src/main/resources/ApplicationProperties.properties
