@@ -60,7 +60,7 @@ public class PostDataController {
    * Endpoint to retrieve post metadata by post ID. This method returns a JSON representation of the
    * post metadata associated with the specified post ID.
    *
-   * @param postId | the ID of the post for which metadata is requested
+   * @param postId the ID of the post for which metadata is requested
    * @return JSON representation of the post metadata
    */
   @GET
@@ -104,7 +104,7 @@ public class PostDataController {
    * Endpoint to retrieve a post by its ID. This method returns a JSON representation of the post
    * associated with the specified post ID.
    *
-   * @param postID | the ID of the post to retrieve
+   * @param postID the ID of the post to retrieve
    * @return JSON representation of the post
    */
   @GET
@@ -149,8 +149,8 @@ public class PostDataController {
    * <p>Creation of new post entries in the database must be done through the WordPress API, so that
    * relevant entries can be modified using this method.
    *
-   * @param postId | the ID of the post to update
-   * @param clientPost | the ClientPost object containing post details to update
+   * @param postId the ID of the post to update
+   * @param clientPost the ClientPost object containing post details to update
    * @return Response indicating the result of the update operation
    */
   @POST
@@ -200,8 +200,8 @@ public class PostDataController {
    * Endpoint to update post metadata based on the provided ClientPostMeta object. This method
    * validates the post ID and updates the metadata in the database.
    *
-   * @param postID | the ID of the post for which metadata is to be updated
-   * @param postMetaFields | the ClientPostMeta object containing post metadata to update
+   * @param postID the ID of the post for which metadata is to be updated
+   * @param postMetaFields the ClientPostMeta object containing post metadata to update
    * @return Response indicating the result of the update operation
    */
   @POST
@@ -263,7 +263,7 @@ public class PostDataController {
    * accordingly. This batch update helps to reduce the number of individual requests needed to
    * update multiple posts.
    *
-   * @param postMetaColl | a collection of ClientPostMeta objects containing post metadata to update
+   * @param postMetaColl a collection of ClientPostMeta objects containing post metadata to update
    * @return Response indicating the result of the batch update operation
    */
   @POST
