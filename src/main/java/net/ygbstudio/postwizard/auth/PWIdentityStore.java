@@ -1,5 +1,8 @@
 package net.ygbstudio.postwizard.auth;
 
+import static net.ygbstudio.postwizard.utils.Helpers.getPropertiesFromResources;
+import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.security.enterprise.credential.Credential;
@@ -14,8 +17,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ygbstudio.postwizard.exceptions.InvalidAuthAttempt;
-import net.ygbstudio.postwizard.utils.Helpers;
-import net.ygbstudio.postwizard.utils.Logging;
 
 /**
  * IdentityStore implementation for validating user credentials against authentication context
@@ -30,8 +31,7 @@ public class PWIdentityStore implements IdentityStore {
   private static final Logger identityLogger = Logger.getLogger(PWIdentityStore.class.getName());
 
   @SuppressWarnings("unused")
-  private static final FileHandler logFileHandler =
-      Logging.loggingInit(identityLogger, Level.FINE, true);
+  private static final FileHandler logFileHandler = loggingInit(identityLogger, Level.FINE, true);
 
   @PostConstruct
   public void init() {
@@ -46,7 +46,7 @@ public class PWIdentityStore implements IdentityStore {
    */
   public Collection<Map.Entry<Object, Object>> getAuthContextProperties() throws RuntimeException {
 
-    return Helpers.getPropertiesFromResources("ApplicationProperties.properties").entrySet();
+    return getPropertiesFromResources("ApplicationProperties.properties").entrySet();
   }
 
   /**

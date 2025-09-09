@@ -1,5 +1,8 @@
 package net.ygbstudio.postwizard.auth;
 
+import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
+import static net.ygbstudio.postwizard.utils.Security.generateHS256Key;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -29,8 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
-import net.ygbstudio.postwizard.utils.Logging;
-import net.ygbstudio.postwizard.utils.Security;
 
 /**
  * Custom authentication mechanism for the postwizard application. This class handles both Basic and
@@ -46,7 +47,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
 
   @SuppressWarnings("unused")
   private static final FileHandler logFileHandler =
-      Logging.loggingInit(authMechanismsLogging, Level.ALL, true);
+      loggingInit(authMechanismsLogging, Level.ALL, true);
 
   public static final SecretKey secretKey = initialiseSecretKey();
 
@@ -168,7 +169,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
     if (secretKey != null) {
       return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     } else {
-      return Security.generateHS256Key();
+      return generateHS256Key();
     }
   }
 }
