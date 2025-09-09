@@ -25,6 +25,13 @@ public class GrantToken {
   @JsonbProperty("expiration")
   private Date expirationDate;
 
+  /**
+   * Constructor for GrantToken.
+   *
+   * @param accessToken The access token string.
+   * @param type The type of the token (e.g., Bearer).
+   * @param expirationDate The expiration date of the token.
+   */
   public GrantToken(String accessToken, String type, Date expirationDate) {
     super();
     this.accessToken = accessToken;

@@ -32,6 +32,13 @@ public class BatchJobResponse {
   @JsonbProperty("processed")
   private List<Long> postIds;
 
+  /**
+   * Constructor for BatchJobResponse.
+   *
+   * @param message A message describing the result of the batch job.
+   * @param status The HTTP status code representing the outcome of the batch job.
+   * @param postIds A list of post IDs that were processed in the batch job.
+   */
   public BatchJobResponse(String message, int status, List<Long> postIds) {
     super();
     this.message = message;

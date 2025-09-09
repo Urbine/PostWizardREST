@@ -17,6 +17,12 @@ public class ServerResponse {
   private int status;
   private String timestamp;
 
+  /**
+   * Constructor for ServerResponse.
+   *
+   * @param message A message describing the result of the server operation.
+   * @param status The HTTP status code representing the outcome of the server operation.
+   */
   public ServerResponse(String message, int status) {
     super();
     this.message = message;

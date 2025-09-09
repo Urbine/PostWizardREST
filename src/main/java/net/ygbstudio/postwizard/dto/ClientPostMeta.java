@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  * <p>The class fields are named according to the actual entries in the WordPress database, allowing
  * for easy validation when compared with the constants defined at {@link
- * net.ygbstudio.postwizard.enums} while also avoiding the need to expose the database structure
+ * net.ygbstudio.postwizard.models} while also avoiding the need to expose the database structure
  * directly to the client.
  *
  * @author Yoham Gabriel @ YGB Studio
@@ -99,6 +99,27 @@ public class ClientPostMeta {
     super();
   }
 
+  /**
+   * Constructor for ClientPostMeta. When receiving data from the client, all fields are optional
+   * and nullable, which means that the client will send only the fields that need to be updated.
+   *
+   * <p>** post_id will be provided in the path of the request or in batch operations **
+   *
+   * @param post_id the ID of the post
+   * @param production the production means (e.g., "Professional", "Homemade")
+   * @param video_orientation the orientation of the video (e.g., "straight", "trans")
+   * @param ethnicity ethnicity of the performer (e.g., "White", "Asian")
+   * @param hair_color the hair color of the performer (e.g., "Blonde", "Brown")
+   * @param hd_video indicates if the video is in HD quality
+   * @param video_url source URL of the video, if any
+   * @param hours duration hours of the video
+   * @param minute duration minutes of the video
+   * @param second duration seconds of the video
+   * @param thumb URL of the video's thumbnail image
+   * @param embed embed code for the video, if any
+   * @param _yoast_wpseo_focuskw Yoast SEO focus keyword for the post, if any
+   * @param _yoast_wpseo_metadesc Yoast SEO meta description for the post, if any
+   */
   public ClientPostMeta(
       long post_id,
       String production,

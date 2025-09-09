@@ -62,6 +62,21 @@ public class ClientPost {
     super();
   }
 
+  /**
+   * Constructor for ClientPost.
+   *
+   * <p>Just like {@link ClientPostMeta}, the fields are expected to be optional and can be null.
+   * postID can also be null when creating a new post, as it will be provided by the client in the
+   * request path or in the corresponding payload.
+   *
+   * @param postID the ID of the post
+   * @param postAuthor the author ID of the post
+   * @param postContent the content of the post
+   * @param postTitle the title of the post
+   * @param postSlug the slug of the post
+   * @param postStatus the status of the post (e.g., "publish", "draft")
+   * @param postType the type of the post (e.g., "post", "page")
+   */
   public ClientPost(
       Long postID,
       Long postAuthor,
