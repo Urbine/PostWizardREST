@@ -96,8 +96,8 @@ public class Logging implements Util {
    * Logs the entry into a method along with its input parameters. The method automatically
    * determines the calling class and method name.
    *
-   * @param classLogger | The logger to use for logging.
-   * @param inputParams | The input parameters of the method being logged.
+   * @param classLogger The logger to use for logging.
+   * @param inputParams The input parameters of the method being logged.
    */
   public static void logStepIn(@NonNull Logger classLogger, @NonNull Object... inputParams) {
     String[] stackInfo = getCallingMethod(true);
@@ -108,8 +108,8 @@ public class Logging implements Util {
    * Logs the exit from a method along with its output parameters. The method automatically
    * determines the calling class and method name.
    *
-   * @param classLogger | The logger to use for logging.
-   * @param inputParams | The output parameters of the method being logged.
+   * @param classLogger The logger to use for logging.
+   * @param inputParams The output parameters of the method being logged.
    */
   public static void logStepOut(@NonNull Logger classLogger, @NonNull Object... outputParams) {
     String[] stackInfo = getCallingMethod(true);
@@ -120,9 +120,9 @@ public class Logging implements Util {
    * Logs the path reached in a controller along with the IP address of the requester. Particularly
    * useful for RESTful services to track endpoint access.
    *
-   * @param classLogger | The logger to use for logging.
-   * @param context | The UriInfo context containing path information.
-   * @param request | The HttpServletRequest containing requester information.
+   * @param classLogger The logger to use for logging.
+   * @param context The UriInfo context containing path information.
+   * @param request The HttpServletRequest containing requester information.
    */
   public static void logControllerPath(
       Logger classLogger, UriInfo context, HttpServletRequest request) {
