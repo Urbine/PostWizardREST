@@ -18,7 +18,7 @@ public class LoggingExceptionMapper implements ExceptionMapper<LoggingException>
   /**
    * Converts a LoggingException into a Response object.
    *
-   * @param logEx | the LoggingException to be mapped
+   * @param logEx the LoggingException to be mapped
    * @return a Response object with a 500 Internal Server Error status and an error message
    */
   @Override
