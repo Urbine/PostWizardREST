@@ -10,6 +10,7 @@ import static net.ygbstudio.postwizard.utils.Reflection.getTransformClassFields;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -106,6 +107,20 @@ public class PostMetaService {
   }
 
   /**
+   * Retrieves metadata for all posts and converts them into a collection of ClientPostMeta objects.
+   * This method fetches all post IDs from the database and maps each ID to its corresponding
+   * ClientPostMeta object using the getClientPostMeta method.
+   *
+   * @return a collection of ClientPostMeta objects representing metadata for all posts
+   */
+  public Collection<ClientPostMeta> getClientPostMetaAll() {
+    return dbPostMetaDao.getPostIDs().parallelStream()
+        .map(post -> getClientPostMeta(post))
+        .filter(post -> Objects.nonNull(post.getVideoURL()) || Objects.nonNull(post.getEmbedCode()))
+        .toList();
+  }
+
+  /**
    * Updates the post metadata based on the provided ClientPostMeta object. This method iterates
    * through the properties of the ClientPostMeta object and updates the corresponding metadata in
    * the database. Unlike posts, metadata fields can be created if the schema provided by the client
@@ -179,7 +194,10 @@ public class PostMetaService {
                   String clientHairColor = clientPost.getHairColor();
                   if (isValidHairColor(clientHairColor))
                     dbPostMetaDao.updatePostMetaAuto(
-                        postId, PostMetaKeys.HAIRCOLOR.toString(), clientHairColor, autoCreate);
+                        postId,
+                        PostMetaKeys.HAIRCOLOR.toString(),
+                        StringUtils.capitalize(clientHairColor),
+                        autoCreate);
                   break;
                 case HDVIDEO:
                   if (clientPost.getVideoHD() != null)
@@ -243,47 +261,55 @@ public class PostMetaService {
         .getEntriesByPostID(postID)
         .forEach(
             p -> {
-              if (convertedObj.getID() <= 0) convertedObj.setID(p.getPostID());
-              switch (enumFromValue(PostMetaKeys.class, p.getMetaFieldKey(), true)
+              String metaFieldKey = p.getMetaFieldKey();
+              String metaFieldValue = p.getMetaFieldValue();
+
+              if (convertedObj.getID() == 0) convertedObj.setID(p.getPostID());
+
+              switch (enumFromValue(PostMetaKeys.class, metaFieldKey, true)
                   .orElse(PostMetaKeys.OTHERS)) {
                 case HOURS:
-                  convertedObj.setHours(Integer.parseInt(p.getMetaFieldValue()));
+                  if (metaFieldValue != null && metaFieldValue.matches("\\d+"))
+                    convertedObj.setHours(Integer.parseInt(metaFieldValue));
                   break;
                 case MINUTES:
-                  convertedObj.setMinutes(Integer.parseInt(p.getMetaFieldValue()));
+                  if (metaFieldValue != null && metaFieldValue.matches("\\d+"))
+                    convertedObj.setMinutes(Integer.parseInt(metaFieldValue));
                   break;
                 case SECONDS:
-                  convertedObj.setSeconds(Integer.parseInt(p.getMetaFieldValue()));
+                  if (metaFieldValue != null && metaFieldValue.matches("\\d+"))
+                    convertedObj.setSeconds(Integer.parseInt(metaFieldValue));
                   break;
                 case EMBED:
-                  convertedObj.setEmbedCode(p.getMetaFieldValue());
+                  convertedObj.setEmbedCode(metaFieldValue);
                   break;
                 case PRODUCTION:
-                  convertedObj.setVideoProduction(p.getMetaFieldValue());
+                  convertedObj.setVideoProduction(metaFieldValue);
                   break;
                 case ORIENTATION:
-                  convertedObj.setVideoOrientation(p.getMetaFieldValue());
+                  convertedObj.setVideoOrientation(metaFieldValue);
                   break;
                 case ETHNICITY:
-                  convertedObj.setEthnicity(p.getMetaFieldValue());
+                  convertedObj.setEthnicity(metaFieldValue);
                   break;
                 case HAIRCOLOR:
-                  convertedObj.setHairColor(p.getMetaFieldValue());
+                  convertedObj.setHairColor(metaFieldValue);
                   break;
                 case HDVIDEO:
-                  convertedObj.setVideoHD(p.getMetaFieldValue().equals("on"));
+                  convertedObj.setVideoHD(
+                      Objects.requireNonNullElse(metaFieldValue, "").equals("on"));
                   break;
                 case THUMBNAIL:
-                  convertedObj.setThumb(p.getMetaFieldValue());
+                  convertedObj.setThumb(metaFieldValue);
                   break;
                 case VIDEOURL:
-                  convertedObj.setVideoURL(p.getMetaFieldValue());
+                  convertedObj.setVideoURL(metaFieldValue);
                   break;
                 case YOAST_FOCUSKW:
-                  convertedObj.setYoastFocusKW(p.getMetaFieldValue());
+                  convertedObj.setYoastFocusKW(metaFieldValue);
                   break;
                 case YOAST_METADESC:
-                  convertedObj.setYoastMetaDesc(p.getMetaFieldValue());
+                  convertedObj.setYoastMetaDesc(metaFieldValue);
                   break;
                 default:
                   break;
