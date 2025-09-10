@@ -29,14 +29,29 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
     return em.createNamedQuery("WPMeta.FindAll", WPMeta.class).getResultList();
   }
 
+  @Transactional(value = TxType.REQUIRED)
   @Override
   public Collection<WPMeta> getEntriesByPostID(long id) {
-    return getAll().parallelStream().filter(elem -> elem.getPostID() == id).toList();
+    return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
+        .setParameter("postId", id)
+        .getResultList();
   }
 
+  @Transactional(value = TxType.REQUIRED)
+  @Override
+  public Collection<Long> getPostIDs() {
+    return em.createNamedQuery("WPMeta.FindAllPostIDs", Long.class)
+        .getResultStream()
+        .distinct()
+        .toList();
+  }
+
+  @Transactional(value = TxType.REQUIRED)
   @Override
   public Collection<WPMeta> getEntriesByMetaKey(String key) {
-    return getAll().parallelStream().filter(elem -> elem.getMetaFieldKey().equals(key)).toList();
+    return em.createNamedQuery("WPMeta.FindByMetaKey", WPMeta.class)
+        .setParameter("metaKey", key)
+        .getResultList();
   }
 
   @Override
@@ -81,7 +96,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
       newMetaPair.setMetaFieldValue(newValue);
       persistNewPostMeta(newMetaPair);
     } else {
-      getEntriesByPostID(postID).parallelStream()
+      getEntriesByPostID(postID).stream()
           .filter(p -> p.getMetaFieldKey().equals(metaKey))
           .findFirst()
           .ifPresent(

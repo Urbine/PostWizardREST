@@ -28,6 +28,13 @@ public interface PostMetaReaderDAO {
   Collection<WPMeta> getEntriesByPostID(long id);
 
   /**
+   * Retrieves all unique post IDs that have associated metadata entries.
+   *
+   * @return a collection of Long values representing unique post IDs
+   */
+  Collection<Long> getPostIDs();
+
+  /**
    * Retrieves all post metadata entries that match a specific meta key.
    *
    * @param key the meta key to filter the metadata entries
