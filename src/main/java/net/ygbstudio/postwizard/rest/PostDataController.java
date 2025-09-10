@@ -19,6 +19,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.FileHandler;
@@ -96,7 +97,9 @@ public class PostDataController {
     }
     ClientPostMeta postMetaResult = postMetaService.getClientPostMeta(postId);
     logStepOut(postDataControllerLog, postMetaResult);
-    postDataControllerLog.fine("Post metadata retrieved successfully: Response.Status.OK");
+    postDataControllerLog.fine(
+        "Post metadata retrieved successfully: Response.Status.OK - Requested by "
+            + request.getRemoteAddr());
     return Response.ok(postMetaResult, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
@@ -114,6 +117,13 @@ public class PostDataController {
     logStepIn(postDataControllerLog, context.getPath());
     try {
       Collection<ClientPostMeta> allMeta = postMetaService.getClientPostMetaAll();
+      postDataControllerLog.info(
+          "Returned "
+              + allMeta.stream().count()
+              + " posts on "
+              + LocalDateTime.now()
+              + " - Requested by "
+              + request.getRemoteAddr());
       logStepOut(postDataControllerLog, allMeta);
       return Response.ok(allMeta, MediaType.APPLICATION_JSON_TYPE).build();
     } catch (Exception anyEx) {
@@ -168,6 +178,11 @@ public class PostDataController {
     }
     ClientPost postResult = postService.getClientPost(postID);
     logStepOut(postDataControllerLog, postResult);
+    postDataControllerLog.fine(
+        "Post metadata retrieved successfully post id "
+            + postID
+            + " : Response.Status.OK - Requested by "
+            + request.getRemoteAddr());
     return Response.ok(postResult, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
@@ -216,7 +231,9 @@ public class PostDataController {
         clientPost.setPostID(postId);
         postService.clientPostUpdateStrategy(clientPost);
         logStepOut(postDataControllerLog, postId);
-        postDataControllerLog.fine("Post ID updated successfully: Response.Status.OK");
+        postDataControllerLog.fine(
+            "Post ID updated successfully: Response.Status.OK - Requested by "
+                + request.getRemoteAddr());
         return Response.ok(
                 new ServerResponse(
                     "Post ID " + postId + " has been modified with the fields provided",
@@ -264,7 +281,9 @@ public class PostDataController {
         postMetaFields.setID(postID);
         postMetaService.clientPostMetaUpdateStrategy(postMetaFields, true);
         logStepOut(postDataControllerLog, postID, postMetaFields);
-        postDataControllerLog.fine("Post ID updated successfully: Response.Status.OK");
+        postDataControllerLog.fine(
+            "Post ID updated successfully: Response.Status.OK - Requested by "
+                + request.getRemoteAddr());
         return Response.ok(
                 new ServerResponse(
                     "Post ID: " + postID + " modified with the fields provided.",
@@ -340,7 +359,9 @@ public class PostDataController {
         postMetaColl.stream().filter(p -> p.getID() > 0).map(ClientPostMeta::getID).toList();
 
     logStepOut(postDataControllerLog, postMetaColl, postsModified);
-    postDataControllerLog.fine("Batch job executed successfully: Response.Status.OK");
+    postDataControllerLog.fine(
+        "Batch job executed successfully: Response.Status.OK - Requested by "
+            + request.getRemoteAddr());
     return Response.ok(
             new BatchJobResponse(
                 "Batch job executed successfully",
