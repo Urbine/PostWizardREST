@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -43,12 +44,15 @@ public class Logging implements Util {
    */
   public static FileHandler logFileHandlerFactory(
       String fileName, Level loggingLevel, boolean append) throws SecurityException, IOException {
-    String classPathDir = System.getProperty("java.class.path");
-    Path loggingPath = Path.of(classPathDir, "PWLogs");
-    File logDir = new File(loggingPath.toString());
+
+    String platformSeparator = System.getProperty("file.separator");
+    Path logsPath = Paths.get(".", "PWLogs");
+    File logDir = new File(logsPath.toString());
     if (!logDir.exists()) logDir.mkdir();
 
-    FileHandler globalFileHandler = new FileHandler("%h" + "/PWLogs/" + fileName + "-%g", append);
+    FileHandler globalFileHandler =
+        new FileHandler(
+            logsPath.toAbsolutePath().toString() + platformSeparator + fileName + "-%g", append);
     globalFileHandler.setLevel(loggingLevel);
     return globalFileHandler;
   }
