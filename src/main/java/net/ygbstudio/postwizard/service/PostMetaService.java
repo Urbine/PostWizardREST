@@ -9,6 +9,8 @@ import static net.ygbstudio.postwizard.utils.Reflection.getTransformClassFields;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Objects;
@@ -126,9 +128,13 @@ public class PostMetaService {
    * the database. Unlike posts, metadata fields can be created if the schema provided by the client
    * is correct and constitutes a relevant key in the WordPress site.
    *
+   * <p>This method runs within a new transaction to ensure that the updates are isolated from other
+   * operations and can be committed or rolled back independently.
+   *
    * @param clientPost the ClientPostMeta object containing post metadata to update
    * @param autoCreate boolean indicating whether to create metadata if it does not exist
    */
+  @Transactional(value = TxType.REQUIRES_NEW)
   public void clientPostMetaUpdateStrategy(ClientPostMeta clientPost, boolean autoCreate) {
     logStepIn(postMetaServiceLog, clientPost);
 
@@ -248,11 +254,13 @@ public class PostMetaService {
    *
    * <p>This method is used to convert the raw metadata entries into a structured ClientPostMeta
    * object that can be easily consumed by the client without exposing the underlying database
-   * structure.
+   * structure and runs within a new transaction to ensure data consistency and isolation from other
+   * operations.
    *
    * @param postID the ID of the post for which metadata is requested
    * @return ClientPostMeta object containing the post metadata
    */
+  @Transactional(value = TxType.REQUIRES_NEW)
   public ClientPostMeta getClientPostMeta(long postID) {
     logStepIn(postMetaServiceLog, postID);
     ClientPostMeta convertedObj = new ClientPostMeta();
