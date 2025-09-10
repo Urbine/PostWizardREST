@@ -33,7 +33,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
   @Override
   public Collection<WPMeta> getEntriesByPostID(long id) {
     return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
-        .setParameter("postId", id)
+        .setParameter("postID", id)
         .getResultList();
   }
 
@@ -54,11 +54,13 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
         .getResultList();
   }
 
+  @Transactional(value = TxType.REQUIRED)
   @Override
   public Collection<WPMeta> getMetaValueMatches(String pattern) {
     Predicate<String> metaValFind = Pattern.compile(pattern).asPredicate();
 
-    return getAll().parallelStream()
+    return em.createNamedQuery("WPMeta.FindAll", WPMeta.class)
+        .getResultStream()
         .filter(elem -> metaValFind.test(elem.getMetaFieldValue()))
         .toList();
   }
@@ -69,10 +71,12 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
     return em.find(WPMeta.class, id);
   }
 
-  @Transactional(value = TxType.SUPPORTS)
+  @Transactional(value = TxType.REQUIRED)
   @Override
   public Optional<WPMeta> updatePostMetaValue(long postID, String metaKey, String newValue) {
-    return getEntriesByPostID(postID).parallelStream()
+    return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
+        .setParameter("postID", postID)
+        .getResultStream()
         .filter(p -> p.getMetaFieldKey().equals(metaKey))
         .findFirst()
         .map(
@@ -107,9 +111,14 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
     }
   }
 
+  @Transactional(value = TxType.REQUIRED)
   @Override
   public boolean postExists(long postID) {
-    return getAll().parallelStream().anyMatch(elem -> elem.getPostID() == postID);
+    return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
+        .setParameter("postID", postID)
+        .getResultStream()
+        .findFirst()
+        .isPresent();
   }
 
   @Transactional(value = TxType.REQUIRED)
@@ -123,10 +132,13 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
     em.persist(metaPair);
   }
 
+  @Transactional(value = TxType.REQUIRED)
   @Override
   public boolean metaKeyExists(long postID, String metaKey) {
-    return getEntriesByMetaKey(metaKey).stream()
-        .filter(elem -> elem.getPostID() == postID)
-        .anyMatch(elem -> elem.getMetaFieldKey().equals(metaKey));
+    return em.createNamedQuery("WPMeta.FindByMetaKey", WPMeta.class)
+        .setParameter("metaKey", metaKey)
+        .getResultStream()
+        .findFirst()
+        .isPresent();
   }
 }
