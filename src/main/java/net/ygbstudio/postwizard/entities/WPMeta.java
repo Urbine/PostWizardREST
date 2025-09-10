@@ -22,6 +22,13 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "`wp_postmeta`")
 @NamedQuery(name = "WPMeta.FindAll", query = "SELECT post FROM WPMeta post")
+@NamedQuery(
+    name = "WPMeta.FindPostByID",
+    query = "SELECT post FROM WPMeta post WHERE post.postID = :postId")
+@NamedQuery(name = "WPMeta.FindAllPostIDs", query = "SELECT post.postID FROM WPMeta post")
+@NamedQuery(
+    name = "WPMeta.FindByMetaKey",
+    query = "SELECT post FROM WPMeta post WHERE post.metaFieldKey = :metaKey")
 @JsonbPropertyOrder(value = {"postID", "metaFieldKey", "metaFieldValue"})
 public class WPMeta {
 
