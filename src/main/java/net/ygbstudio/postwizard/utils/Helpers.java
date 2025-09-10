@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utility class for reusable logic in the project.
@@ -152,7 +153,9 @@ public final class Helpers implements Util {
    * @return An Optional containing the matching enum constant, or empty if no match is found.
    */
   public static <T extends Enum<T>> Optional<T> enumFromValue(
-      Class<T> enumType, String strEnumKey, boolean ignoreCase) {
+      Class<T> enumType, @Nullable String strEnumKey, boolean ignoreCase) {
+    if (strEnumKey == null || strEnumKey.isBlank()) return Optional.empty();
+
     Predicate<String> valuePattern =
         Pattern.compile(strEnumKey, ignoreCase ? Pattern.CASE_INSENSITIVE : 0).asPredicate();
     return Arrays.stream(enumType.getEnumConstants())
