@@ -97,7 +97,37 @@ public class PostDataController {
     ClientPostMeta postMetaResult = postMetaService.getClientPostMeta(postId);
     logStepOut(postDataControllerLog, postMetaResult);
     postDataControllerLog.fine("Post metadata retrieved successfully: Response.Status.OK");
-    return Response.ok().entity(postMetaResult).build();
+    return Response.ok(postMetaResult, MediaType.APPLICATION_JSON_TYPE).build();
+  }
+
+  /**
+   * Endpoint to retrieve all post metadata entries. This method returns a JSON representation of
+   * all post metadata in the system.
+   *
+   * @return JSON representation of all post metadata
+   */
+  @GET
+  @Path("meta/dump")
+  @RolesAllowed(value = {"user"})
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getPostMetaDump() {
+    logStepIn(postDataControllerLog, context.getPath());
+    try {
+      Collection<ClientPostMeta> allMeta = postMetaService.getClientPostMetaAll();
+      logStepOut(postDataControllerLog, allMeta);
+      return Response.ok(allMeta, MediaType.APPLICATION_JSON_TYPE).build();
+    } catch (Exception anyEx) {
+      postDataControllerLog.log(Level.SEVERE, "Exception caught: ", anyEx);
+      logStepOut(postDataControllerLog, anyEx);
+      Response.StatusType internalError = Response.Status.INTERNAL_SERVER_ERROR;
+      return Response.status(internalError)
+          .entity(
+              new ErrorResponse(
+                  "Error while processing this batch request",
+                  "Try again later",
+                  internalError.getStatusCode()))
+          .build();
+    }
   }
 
   /**
@@ -138,7 +168,7 @@ public class PostDataController {
     }
     ClientPost postResult = postService.getClientPost(postID);
     logStepOut(postDataControllerLog, postResult);
-    return Response.ok().entity(postResult).build();
+    return Response.ok(postResult, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   /**
@@ -238,7 +268,8 @@ public class PostDataController {
         return Response.ok(
                 new ServerResponse(
                     "Post ID: " + postID + " modified with the fields provided.",
-                    Response.Status.OK.getStatusCode()))
+                    Response.Status.OK.getStatusCode()),
+                MediaType.APPLICATION_JSON_TYPE)
             .build();
       }
 
@@ -289,7 +320,8 @@ public class PostDataController {
     }
 
     try {
-      postMetaColl.forEach(item -> postMetaService.clientPostMetaUpdateStrategy(item, true));
+      postMetaColl.parallelStream()
+          .forEach(item -> postMetaService.clientPostMetaUpdateStrategy(item, true));
     } catch (Exception anyEx) {
       Response.Status serverError = Response.Status.INTERNAL_SERVER_ERROR;
       logStepOut(postDataControllerLog, postMetaColl);
@@ -309,12 +341,12 @@ public class PostDataController {
 
     logStepOut(postDataControllerLog, postMetaColl, postsModified);
     postDataControllerLog.fine("Batch job executed successfully: Response.Status.OK");
-    return Response.ok()
-        .entity(
+    return Response.ok(
             new BatchJobResponse(
                 "Batch job executed successfully",
                 Response.Status.OK.getStatusCode(),
-                postsModified))
+                postsModified),
+            MediaType.APPLICATION_JSON_TYPE)
         .build();
   }
 }
