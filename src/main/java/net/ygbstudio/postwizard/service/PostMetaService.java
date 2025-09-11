@@ -172,8 +172,10 @@ public class PostMetaService {
                         autoCreate);
                   break;
                 case EMBED:
-                  dbPostMetaDao.updatePostMetaAuto(
-                      postId, PostMetaKeys.EMBED.toString(), clientPost.getEmbedCode(), autoCreate);
+                  String embedCode = clientPost.getEmbedCode();
+                  if (Objects.nonNull(embedCode) && !embedCode.isBlank())
+                    dbPostMetaDao.updatePostMetaAuto(
+                        postId, PostMetaKeys.EMBED.toString(), embedCode, autoCreate);
                   break;
                 case PRODUCTION:
                   String clientProduction = clientPost.getVideoProduction();
@@ -214,32 +216,28 @@ public class PostMetaService {
                         autoCreate);
                   break;
                 case THUMBNAIL:
-                  dbPostMetaDao.updatePostMetaAuto(
-                      postId,
-                      PostMetaKeys.THUMBNAIL.toString(),
-                      clientPost.getThumbURI(),
-                      autoCreate);
+                  String thumbURI = clientPost.getThumbURI();
+                  if (Objects.nonNull(thumbURI) && !thumbURI.isBlank())
+                    dbPostMetaDao.updatePostMetaAuto(
+                        postId, PostMetaKeys.THUMBNAIL.toString(), thumbURI, autoCreate);
                   break;
                 case VIDEOURL:
-                  dbPostMetaDao.updatePostMetaAuto(
-                      postId,
-                      PostMetaKeys.VIDEOURL.toString(),
-                      clientPost.getVideoURL(),
-                      autoCreate);
+                  String videoURL = clientPost.getVideoURL();
+                  if (Objects.nonNull(videoURL) && !videoURL.isBlank())
+                    dbPostMetaDao.updatePostMetaAuto(
+                        postId, PostMetaKeys.VIDEOURL.toString(), videoURL, autoCreate);
                   break;
                 case YOAST_FOCUSKW:
-                  dbPostMetaDao.updatePostMetaAuto(
-                      postId,
-                      PostMetaKeys.YOAST_FOCUSKW.toString(),
-                      clientPost.getYoastFocusKW(),
-                      autoCreate);
+                  String focusKW = clientPost.getYoastFocusKW();
+                  if (Objects.nonNull(focusKW) && !focusKW.isBlank())
+                    dbPostMetaDao.updatePostMetaAuto(
+                        postId, PostMetaKeys.YOAST_FOCUSKW.toString(), focusKW, autoCreate);
                   break;
                 case YOAST_METADESC:
-                  dbPostMetaDao.updatePostMetaAuto(
-                      postId,
-                      PostMetaKeys.YOAST_METADESC.toString(),
-                      clientPost.getYoastMetaDesc(),
-                      autoCreate);
+                  String metaDesc = clientPost.getYoastMetaDesc();
+                  if (Objects.nonNull(metaDesc) && !metaDesc.isBlank())
+                    dbPostMetaDao.updatePostMetaAuto(
+                        postId, PostMetaKeys.YOAST_METADESC.toString(), metaDesc, autoCreate);
                   break;
                 default:
                   break;
