@@ -4,6 +4,7 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -17,7 +18,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  * @author Yoham Gabriel B @ YGB Studio
  */
-@JsonbPropertyOrder({"message", "status", "postIds", "timestamp"})
+@JsonbPropertyOrder({"message", "status", "postIds", "totalProcessed", "timestamp"})
 public class BatchJobResponse {
 
   @JsonbProperty("message")
@@ -32,6 +33,9 @@ public class BatchJobResponse {
   @JsonbProperty("processed")
   private List<Long> postIds;
 
+  @JsonbProperty("totalProcessed")
+  private long totalProcessed;
+
   /**
    * Constructor for BatchJobResponse.
    *
@@ -45,6 +49,7 @@ public class BatchJobResponse {
     this.status = status;
     this.timestamp = LocalDateTime.now().toString();
     this.postIds = postIds;
+    this.totalProcessed = Objects.nonNull(postIds) ? postIds.size() : 0;
   }
 
   public String getMessage() {
@@ -77,6 +82,14 @@ public class BatchJobResponse {
 
   public void setPostIds(List<Long> postIds) {
     this.postIds = postIds;
+  }
+
+  public long getTotalProcessed() {
+    return totalProcessed;
+  }
+
+  public void setTotalProcessed(long totalProcessed) {
+    this.totalProcessed = totalProcessed;
   }
 
   @Override
