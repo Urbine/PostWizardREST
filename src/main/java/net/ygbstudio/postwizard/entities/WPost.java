@@ -1,7 +1,5 @@
 package net.ygbstudio.postwizard.entities;
 
-import jakarta.json.bind.annotation.JsonbProperty;
-import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Represents a WordPress post entity.
@@ -17,13 +18,16 @@ import java.util.Objects;
  * <p>This class maps to the `wp_posts` table and provides fields for various attributes of a post,
  * such as author, content, title, slug, status, and type.
  *
+ * @see <a href="https://developer.wordpress.org/reference/classes/wp_post/">WP_Post</a>
  * @author Yoham Gabriel @ YGB Studio
  */
 @Entity
 @Table(name = "`wp_posts`")
 @NamedQuery(name = "WPosts.FindAll", query = "SELECT p from WPost P")
-@JsonbPropertyOrder(
-    value = {"ID", "postAuthor", "postContent", "postTitle", "postSlug", "postStatus", "postType"})
+@NamedQuery(name = "WPosts.FindByID", query = "SELECT p from WPost P where p.ID = :postID")
+@NamedQuery(
+    name = "WPosts.FindByType",
+    query = "SELECT p from WPost P where p.postType = :postType")
 public class WPost {
 
   @Id
@@ -32,58 +36,94 @@ public class WPost {
   private Long ID;
 
   @Column(name = "post_author")
-  @JsonbProperty("post_author")
   private Long postAuthor;
 
+  @Column(name = "post_date_gmt")
+  private LocalDateTime createdAtGMT;
+
+  @Column(name = "post_date")
+  private LocalDateTime createdAtLocal;
+
+  @Column(name = "post_modified_gmt")
+  private LocalDateTime modifiedAtGMT;
+
+  @Column(name = "post_modified")
+  private LocalDateTime modifiedAtLocal;
+
   @Column(name = "post_content")
-  @JsonbProperty("post_content")
   private String postContent;
 
   @Column(name = "post_title")
-  @JsonbProperty("post_title")
   private String postTitle;
 
   @Column(name = "post_name")
-  @JsonbProperty("post_name")
   private String postSlug;
 
   @Column(name = "post_status")
-  @JsonbProperty("post_status")
   private String postStatus;
 
   @Column(name = "post_type")
-  @JsonbProperty("post_type")
   private String postType;
+
+  @Column(name = "post_parent")
+  private Long postParent;
+
+  @Column(name = "guid")
+  private String guid;
+
+  @Column(name = "post_mime_type")
+  private String postMimeType;
 
   public WPost() {}
 
   /**
-   * Constructor for WPost.
+   * Constructor for WPost. Fields are mapped to the corresponding columns in the `wp_posts` table.
    *
-   * @param iD the ID of the post
-   * @param postAuthor the author ID of the post
-   * @param postContent the content of the post
-   * @param postTitle the title of the post
-   * @param postSlug the slug of the post
-   * @param postStatus the status of the post (e.g., "publish", "draft")
-   * @param postType the type of the post (e.g., "post", "page")
+   * @param iD
+   * @param postAuthor
+   * @param createdAtGMT
+   * @param createdAtLocal
+   * @param modifiedAtGMT
+   * @param modifiedAtLocal
+   * @param postContent
+   * @param postTitle
+   * @param postSlug
+   * @param postStatus
+   * @param postType
+   * @param postParent
+   * @param guid
+   * @param postMimeType
    */
   public WPost(
       Long iD,
       Long postAuthor,
+      LocalDateTime createdAtGMT,
+      LocalDateTime createdAtLocal,
+      LocalDateTime modifiedAtGMT,
+      LocalDateTime modifiedAtLocal,
       String postContent,
       String postTitle,
       String postSlug,
       String postStatus,
-      String postType) {
+      String postType,
+      Long postParent,
+      String guid,
+      String postMimeType) {
     super();
     ID = iD;
     this.postAuthor = postAuthor;
+    this.createdAtGMT = createdAtGMT;
+    this.createdAtLocal = createdAtLocal;
+    this.modifiedAtGMT = modifiedAtGMT;
+    this.modifiedAtLocal = modifiedAtLocal;
     this.postContent = postContent;
     this.postTitle = postTitle;
     this.postSlug = postSlug;
     this.postStatus = postStatus;
     this.postType = postType;
+    this.postParent = postParent;
+    this.guid = guid;
+    this.postMimeType = postMimeType;
   }
 
   public Long getID() {
@@ -100,6 +140,38 @@ public class WPost {
 
   public void setPostAuthor(Long postAuthor) {
     this.postAuthor = postAuthor;
+  }
+
+  public LocalDateTime getCreatedAtGMT() {
+    return createdAtGMT;
+  }
+
+  public void setCreatedAtGMT(LocalDateTime createdAtGMT) {
+    this.createdAtGMT = createdAtGMT;
+  }
+
+  public LocalDateTime getCreatedAtLocal() {
+    return createdAtLocal;
+  }
+
+  public void setCreatedAtLocal(LocalDateTime createdAtLocal) {
+    this.createdAtLocal = createdAtLocal;
+  }
+
+  public LocalDateTime getModifiedAtGMT() {
+    return modifiedAtGMT;
+  }
+
+  public void setModifiedAtGMT(LocalDateTime modifiedAtGMT) {
+    this.modifiedAtGMT = modifiedAtGMT;
+  }
+
+  public LocalDateTime getModifiedAtLocal() {
+    return modifiedAtLocal;
+  }
+
+  public void setModifiedAtLocal(LocalDateTime modifiedAtLocal) {
+    this.modifiedAtLocal = modifiedAtLocal;
   }
 
   public String getPostContent() {
@@ -142,47 +214,72 @@ public class WPost {
     this.postType = postType;
   }
 
+  public Long getPostParent() {
+    return postParent;
+  }
+
+  public void setPostParent(Long postParent) {
+    this.postParent = postParent;
+  }
+
+  public String getGuid() {
+    return guid;
+  }
+
+  public void setGuid(String guid) {
+    this.guid = guid;
+  }
+
+  public String getPostMimeType() {
+    return postMimeType;
+  }
+
+  public void setPostMimeType(String postMimeType) {
+    this.postMimeType = postMimeType;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof WPost anotherPost)) return false;
-    return Objects.equals(this.getID(), anotherPost.getID())
-        && Objects.equals(this.getPostAuthor(), anotherPost.getPostAuthor())
-        && Objects.equals(this.getPostContent(), anotherPost.getPostContent())
-        && Objects.equals(this.getPostTitle(), anotherPost.getPostTitle())
-        && Objects.equals(this.getPostSlug(), anotherPost.getPostSlug())
-        && Objects.equals(this.getPostStatus(), anotherPost.getPostStatus())
-        && Objects.equals(this.getPostType(), anotherPost.getPostType());
+    if (obj == null || getClass() != obj.getClass()) return false;
+    WPost other = (WPost) obj;
+    return Objects.equals(getID(), other.getID())
+        && Objects.equals(getPostAuthor(), other.getPostAuthor())
+        && Objects.equals(getPostContent(), other.getPostContent())
+        && Objects.equals(getPostTitle(), other.getPostTitle())
+        && Objects.equals(getPostSlug(), other.getPostSlug())
+        && Objects.equals(getPostStatus(), other.getPostStatus())
+        && Objects.equals(getPostType(), other.getPostType())
+        && Objects.equals(getCreatedAtGMT(), other.getCreatedAtGMT())
+        && Objects.equals(getCreatedAtLocal(), other.getCreatedAtLocal())
+        && Objects.equals(getModifiedAtGMT(), other.getModifiedAtGMT())
+        && Objects.equals(getModifiedAtLocal(), other.getModifiedAtLocal())
+        && Objects.equals(getPostParent(), other.getPostParent())
+        && Objects.equals(getGuid(), other.getGuid())
+        && Objects.equals(getPostMimeType(), other.getPostMimeType());
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(
-        getID(),
-        getPostAuthor(),
-        getPostContent(),
-        getPostTitle(),
-        getPostSlug(),
-        getPostStatus(),
-        getPostType());
+        ID,
+        postAuthor,
+        postContent,
+        postTitle,
+        postSlug,
+        postStatus,
+        postType,
+        createdAtGMT,
+        createdAtLocal,
+        modifiedAtGMT,
+        modifiedAtLocal,
+        postParent,
+        guid,
+        postMimeType);
   }
 
   @Override
   public String toString() {
-    return "WPost [ID="
-        + ID
-        + ", postAuthor="
-        + postAuthor
-        + ", postContent="
-        + postContent
-        + ", postTitle="
-        + postTitle
-        + ", postSlug="
-        + postSlug
-        + ", postStatus="
-        + postStatus
-        + ", postType="
-        + postType
-        + "]";
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
   }
 }

@@ -1,8 +1,5 @@
 package net.ygbstudio.postwizard.entities;
 
-import jakarta.json.bind.annotation.JsonbProperty;
-import jakarta.json.bind.annotation.JsonbPropertyOrder;
-import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,26 +26,21 @@ import jakarta.persistence.Table;
 @NamedQuery(
     name = "WPMeta.FindByMetaKey",
     query = "SELECT post FROM WPMeta post WHERE post.metaFieldKey = :metaKey")
-@JsonbPropertyOrder(value = {"postID", "metaFieldKey", "metaFieldValue"})
 public class WPMeta {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "meta_id")
-  @JsonbTransient
   private Long metaID;
 
   /** The post ID this metadata is associated with. Not the primary key in the database. */
   @Column(name = "post_id", nullable = false)
-  @JsonbProperty("post_id")
   private Long postID;
 
   @Column(name = "meta_key")
-  @JsonbProperty("meta_key")
   private String metaFieldKey;
 
   @Column(name = "meta_value", columnDefinition = "LONGTEXT")
-  @JsonbProperty("meta_value")
   private String metaFieldValue;
 
   public WPMeta() {}
