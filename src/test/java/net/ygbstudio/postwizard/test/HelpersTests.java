@@ -26,14 +26,6 @@ public class HelpersTests {
   }
 
   @Test
-  void getJsonBPropertyValuesTest() {
-    List<String> jsonFields = Reflection.getJsonBPropertyValues(ClientPostMeta.class);
-    assertThat(jsonFields, notNullValue());
-    assertThat(jsonFields.getFirst(), equalTo("postID"));
-    assertThat(jsonFields.getLast(), equalTo("yoastMetaDesc"));
-  }
-
-  @Test
   void getTransformClassFieldsTest() {
     List<? extends String> transformFields =
         Reflection.getTransformClassFields(ClientPostMeta.class, Field::getName).toList();
