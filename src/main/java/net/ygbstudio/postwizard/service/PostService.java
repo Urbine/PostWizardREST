@@ -1,17 +1,27 @@
 package net.ygbstudio.postwizard.service;
 
+import static net.ygbstudio.postwizard.utils.Helpers.isInEnum;
 import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
 import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ygbstudio.postwizard.dao.PostReaderDAO;
 import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.entities.WPost;
+import net.ygbstudio.postwizard.models.PostType;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Service class for managing WordPress posts. This class provides methods to check post existence,
@@ -36,8 +46,45 @@ public class PostService {
    * @param postID
    * @return
    */
+  @Transactional(value = TxType.REQUIRES_NEW)
   public boolean postExists(long postID) {
     return dbPostDao.postExists(postID);
+  }
+
+  /**
+   * Retrieves all posts from the database and converts them into ClientPost objects.
+   *
+   * @return a collection of ClientPost objects representing all posts
+   */
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public Collection<ClientPost> getClientPostAll() {
+    return dbPostDao.getAllPosts().stream()
+        .filter(post -> Objects.nonNull(post.getID()))
+        .map(post -> getClientPost(post.getID()))
+        .toList();
+  }
+
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public Collection<ClientPost> getAllClientPostByType(PostType postType) {
+    Collection<WPost> postByType =
+        postType != PostType.ALL
+            ? dbPostDao.getAllByType(postType.getTypeName())
+            : dbPostDao.getAllPosts();
+    return postByType.stream()
+        .filter(post -> Objects.nonNull(post.getID()))
+        .map(post -> getClientPost(post.getID()))
+        .toList();
+  }
+
+  /**
+   * Validates if the provided post type is a valid PostType enumeration value.
+   *
+   * @param postType the post type to validate
+   * @return true if the post type is valid, false otherwise
+   */
+  public boolean isValidPostType(@Nullable String postType) {
+    return Objects.nonNull(postType)
+        && isInEnum(PostType.class, String::valueOf, postType::equalsIgnoreCase);
   }
 
   /**
@@ -49,20 +96,36 @@ public class PostService {
    * accidental data loss or malformed entries. The WordPress API should be used to create new
    * posts, so that relevant entries can be modified using this method.
    *
+   * <p>This method runs within a new transaction context to ensure that the update operation is
+   * isolated from other transactions.
+   *
    * @param clientPost the ClientPost object containing post details to update
    */
+  @Transactional(value = TxType.REQUIRES_NEW)
   public void clientPostUpdateStrategy(ClientPost clientPost) {
     logStepIn(postServiceLog, clientPost);
 
     WPost inMemoryPost = new WPost();
 
-    inMemoryPost.setID(clientPost.getPostID());
-    inMemoryPost.setPostAuthor(clientPost.getPostAuthor());
-    inMemoryPost.setPostContent(clientPost.getPostContent());
-    inMemoryPost.setPostTitle(clientPost.getPostTitle());
-    inMemoryPost.setPostSlug(clientPost.getPostSlug());
-    inMemoryPost.setPostStatus(clientPost.getPostStatus());
-    inMemoryPost.setPostType(clientPost.getPostType());
+    inMemoryPost.setID(clientPost.getID());
+    inMemoryPost.setPostAuthor(clientPost.getAuthor());
+    inMemoryPost.setPostContent(clientPost.getContent());
+    inMemoryPost.setPostTitle(clientPost.getTitle());
+    inMemoryPost.setPostSlug(clientPost.getSlug());
+    inMemoryPost.setPostStatus(clientPost.getStatus());
+    inMemoryPost.setPostType(clientPost.getType());
+    inMemoryPost.setGuid(clientPost.getGuid());
+    inMemoryPost.setPostMimeType(clientPost.getMimeType());
+    inMemoryPost.setPostParent(clientPost.getParent());
+    inMemoryPost.setModifiedAtLocal(LocalDateTime.now());
+    inMemoryPost.setModifiedAtGMT(ZonedDateTime.now(ZoneId.of("Etc/GMT-0")).toLocalDateTime());
+
+    if (!isValidPostType(inMemoryPost.getPostType()))
+      if (inMemoryPost.getID() != null && !dbPostDao.postExists(inMemoryPost.getID())) return;
+
+      // postType is set to "null" in order that updatePostEntry() can use
+      // the value of the existing post so as to not overwrite it with an invalid value.
+      else inMemoryPost.setPostType(null);
 
     dbPostDao.updatePostEntry(inMemoryPost, false);
   }
@@ -73,11 +136,14 @@ public class PostService {
    * corresponding values based on the PostKeys enumeration.
    *
    * <p>This method is used to convert the raw post entries into a structured ClientPost object that
-   * can be easily consumed by the client without exposing the underlying database structure.
+   * can be easily consumed by the client without exposing the underlying database structure. Also,
+   * {@code getClientPost} runs within a new transaction context to ensure that the retrieval
+   * operation is isolated from other transactions.
    *
    * @param postID the ID of the post for which details are requested
    * @return ClientPost object containing the post details
    */
+  @Transactional(value = TxType.REQUIRES_NEW)
   public ClientPost getClientPost(long postID) {
     logStepIn(postServiceLog, postID);
     ClientPost convertedObj = new ClientPost();
@@ -86,13 +152,22 @@ public class PostService {
         .getPostById(postID)
         .ifPresent(
             p -> {
-              convertedObj.setPostID(p.getID());
-              convertedObj.setPostAuthor(p.getPostAuthor());
-              convertedObj.setPostContent(p.getPostContent());
-              convertedObj.setPostTitle(p.getPostTitle());
-              convertedObj.setPostSlug(p.getPostSlug());
-              convertedObj.setPostStatus(p.getPostStatus());
-              convertedObj.setPostType(p.getPostType());
+              Long id = p.getID();
+              if (id == null || id <= 0) return;
+              convertedObj.setID(id);
+              convertedObj.setAuthor(p.getPostAuthor());
+              convertedObj.setContent(p.getPostContent());
+              convertedObj.setTitle(p.getPostTitle());
+              convertedObj.setSlug(p.getPostSlug());
+              convertedObj.setStatus(p.getPostStatus());
+              convertedObj.setType(p.getPostType());
+              convertedObj.setParent(p.getPostParent());
+              convertedObj.setGuid(p.getGuid());
+              convertedObj.setMimeType(p.getPostMimeType());
+              convertedObj.setCreateDate(p.getCreatedAtLocal());
+              convertedObj.setCreateDateGMT(p.getCreatedAtGMT());
+              convertedObj.setDateModified(p.getModifiedAtLocal());
+              convertedObj.setDateModifiedGMT(p.getModifiedAtGMT());
             });
 
     logStepOut(postServiceLog, convertedObj);
