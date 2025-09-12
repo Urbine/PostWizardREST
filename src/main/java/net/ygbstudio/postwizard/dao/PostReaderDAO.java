@@ -20,6 +20,14 @@ public interface PostReaderDAO {
   Collection<WPost> getAllPosts();
 
   /**
+   * Retrieves all posts of a specific type.
+   *
+   * @param postType the type of posts to retrieve
+   * @return a collection of WPost entries matching the specified type
+   */
+  Collection<WPost> getAllByType(String postType);
+
+  /**
    * Retrieves a specific post by its ID.
    *
    * @param postID the ID of the post to retrieve
