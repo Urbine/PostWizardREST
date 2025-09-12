@@ -1,5 +1,6 @@
 package net.ygbstudio.postwizard.rest;
 
+import static net.ygbstudio.postwizard.utils.Helpers.enumFromValue;
 import static net.ygbstudio.postwizard.utils.Logging.logControllerPath;
 import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
 import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
@@ -9,12 +10,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -22,6 +18,7 @@ import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +26,9 @@ import net.ygbstudio.postwizard.dto.BatchJobResponse;
 import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.dto.ErrorResponse;
+import net.ygbstudio.postwizard.dto.PostDumpResponse;
 import net.ygbstudio.postwizard.dto.ServerResponse;
+import net.ygbstudio.postwizard.models.PostType;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
 
@@ -118,24 +117,80 @@ public class PostDataController {
     try {
       Collection<ClientPostMeta> allMeta = postMetaService.getClientPostMetaAll();
       postDataControllerLog.info(
-          "Returned "
-              + allMeta.stream().count()
-              + " posts on "
-              + LocalDateTime.now()
-              + " - Requested by "
-              + request.getRemoteAddr());
+          "Returned %d posts on %s - Requested by %s"
+              .formatted(allMeta.size(), LocalDateTime.now(), request.getRemoteAddr()));
       logStepOut(postDataControllerLog, allMeta);
-      return Response.ok(allMeta, MediaType.APPLICATION_JSON_TYPE).build();
+      return Response.ok(
+              new PostDumpResponse(
+                  "Dump request processed successfully",
+                  Response.Status.OK.getStatusCode(),
+                  allMeta),
+              MediaType.APPLICATION_JSON_TYPE)
+          .build();
     } catch (Exception anyEx) {
       postDataControllerLog.log(Level.SEVERE, "Exception caught: ", anyEx);
-      logStepOut(postDataControllerLog, anyEx);
       Response.StatusType internalError = Response.Status.INTERNAL_SERVER_ERROR;
+      logStepOut(postDataControllerLog, anyEx, internalError);
       return Response.status(internalError)
           .entity(
               new ErrorResponse(
                   "Error while processing this batch request",
                   "Try again later",
                   internalError.getStatusCode()))
+          .build();
+    }
+  }
+
+  /**
+   * Endpoint to retrieve all posts of a specific type. This method returns a JSON representation of
+   * all posts matching the specified type.
+   *
+   * @param postType the type of posts to retrieve (e.g., "post", "attachment", "photos", or "all")
+   * @return JSON representation of all posts of the specified type
+   */
+  @GET
+  @Path("dump")
+  @RolesAllowed(value = {"user"})
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getPostDump(@DefaultValue("post") @QueryParam("type") String postType) {
+    logStepIn(postDataControllerLog, context.getPath());
+    try {
+      if (postService.isValidPostType(postType)) {
+        Collection<ClientPost> allPosts =
+            postService.getAllClientPostByType(
+                enumFromValue(PostType.class, postType, true).orElseThrow());
+        postDataControllerLog.info(
+            "Returned %d posts on %s - Requested by %s"
+                .formatted(allPosts.size(), LocalDateTime.now(), request.getRemoteAddr()));
+        return Response.ok(
+                new PostDumpResponse(
+                    "Dump request processed successfully",
+                    Response.Status.OK.getStatusCode(),
+                    allPosts),
+                MediaType.APPLICATION_JSON_TYPE)
+            .build();
+      } else {
+        Response.StatusType badRequest = Response.Status.BAD_REQUEST;
+        logStepOut(postDataControllerLog, postType, badRequest);
+        return Response.status(badRequest)
+            .entity(
+                new ErrorResponse(
+                    "Invalid post type " + postType,
+                    "Post types can be: (e.g., \"post\", \"attachment\", \"photos\", or \"all\")",
+                    badRequest.getStatusCode()))
+            .build();
+      }
+    } catch (Exception anyEx) {
+      postDataControllerLog.log(Level.SEVERE, "Exception caught: ", anyEx);
+      Response.StatusType internalServerError = Response.Status.INTERNAL_SERVER_ERROR;
+      logStepOut(postDataControllerLog, anyEx, internalServerError);
+      return Response.status(internalServerError)
+          .entity(
+              new ErrorResponse(
+                  "Unable to obtain a batch dump of site posts",
+                  "Try again later",
+                  internalServerError.getStatusCode()))
           .build();
     }
   }
@@ -179,10 +234,8 @@ public class PostDataController {
     ClientPost postResult = postService.getClientPost(postID);
     logStepOut(postDataControllerLog, postResult);
     postDataControllerLog.fine(
-        "Post metadata retrieved successfully post id "
-            + postID
-            + " : Response.Status.OK - Requested by "
-            + request.getRemoteAddr());
+        "Post metadata retrieved successfully post id %d : Response.Status.OK - Requested by %s"
+            .formatted(postID, request.getRemoteAddr()));
     return Response.ok(postResult, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
@@ -228,7 +281,7 @@ public class PostDataController {
                     Response.Status.NOT_FOUND.getStatusCode()))
             .build();
       } else {
-        clientPost.setPostID(postId);
+        clientPost.setID(postId);
         postService.clientPostUpdateStrategy(clientPost);
         logStepOut(postDataControllerLog, postId);
         postDataControllerLog.fine(
@@ -356,7 +409,7 @@ public class PostDataController {
     }
 
     List<Long> postsModified =
-        postMetaColl.stream().filter(p -> p.getID() > 0).map(ClientPostMeta::getID).toList();
+        postMetaColl.stream().map(ClientPostMeta::getID).filter(p -> p > 0).toList();
 
     logStepOut(postDataControllerLog, postMetaColl, postsModified);
     postDataControllerLog.fine(
@@ -369,5 +422,56 @@ public class PostDataController {
                 postsModified),
             MediaType.APPLICATION_JSON_TYPE)
         .build();
+  }
+
+  /**
+   * Endpoint to update multiple posts in a single batch operation. This method accepts a collection
+   * of ClientPost objects, each representing a post to be updated. The method iterates through the
+   * collection and updates each post accordingly. This batch update helps to reduce the number of
+   * individual requests needed to update multiple posts.
+   *
+   * @param clientPosts a collection of ClientPost objects containing post details to update
+   * @return Response indicating the result of the batch update operation
+   */
+  @POST
+  @Path("batch")
+  @RolesAllowed(value = {"user"})
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response postBatchUpdate(Collection<ClientPost> clientPosts) {
+    logStepIn(postDataControllerLog, clientPosts);
+    if (clientPosts.isEmpty()) {
+      logStepOut(postDataControllerLog, "No items to process");
+      Response.StatusType badRequest = Response.Status.BAD_REQUEST;
+      return Response.status(badRequest)
+          .entity(
+              new ErrorResponse(
+                  "Unable to complete batch job",
+                  "No items to process",
+                  badRequest.getStatusCode()))
+          .build();
+    } else {
+
+      try {
+        clientPosts.forEach(post -> postService.clientPostUpdateStrategy(post));
+        return Response.ok(
+                new BatchJobResponse(
+                    "Post batch job executed successfully",
+                    Response.Status.OK.getStatusCode(),
+                    clientPosts.stream().map(ClientPost::getID).filter(Objects::nonNull).toList()),
+                MediaType.APPLICATION_JSON_TYPE)
+            .build();
+
+      } catch (Exception anyEx) {
+        Response.StatusType internalServerError = Response.Status.INTERNAL_SERVER_ERROR;
+        return Response.status(internalServerError)
+            .entity(
+                new ErrorResponse(
+                    "An error ocurred while processing this batch",
+                    "Try again later",
+                    internalServerError.getStatusCode()))
+            .build();
+      }
+    }
   }
 }
