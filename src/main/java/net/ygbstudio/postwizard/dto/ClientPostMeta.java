@@ -37,7 +37,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
       "_yoast_wpseo_metadesc"
     })
 @JsonbVisibility(ClientDTOVisibilityStrategy.class)
-public class ClientPostMeta {
+public class ClientPostMeta implements BatchDeliverable {
 
   @JsonbNillable
   @JsonbProperty("postID")

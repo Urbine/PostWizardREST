@@ -1,5 +1,6 @@
 package net.ygbstudio.postwizard.dto;
 
+import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -17,7 +18,7 @@ public class ErrorResponse {
   private String error;
   private String message;
   private int status;
-  private String timestamp;
+  private Instant timestamp;
 
   /**
    * Constructor for ErrorResponse.
@@ -31,7 +32,7 @@ public class ErrorResponse {
     this.error = error;
     this.message = message;
     this.status = status;
-    this.timestamp = java.time.LocalDateTime.now().toString();
+    this.timestamp = Instant.now();
   }
 
   public String getError() {
@@ -58,11 +59,11 @@ public class ErrorResponse {
     this.status = status;
   }
 
-  public String getTimestamp() {
+  public Instant getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(String timestamp) {
+  public void setTimestamp(Instant timestamp) {
     this.timestamp = timestamp;
   }
 

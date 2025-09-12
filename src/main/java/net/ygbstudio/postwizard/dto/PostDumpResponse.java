@@ -9,17 +9,18 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * BatchJobResponse is a DTO class that represents a response from the server for batch job
+ * PostDumpResponse is a DTO class that represents a response from the server for post dump
  * operations. It contains fields for a message, HTTP status code, a timestamp indicating when the
- * response was created, and a list of post IDs that were processed in the batch job.
+ * response was created, and a collection of items that were processed in the post dump operation.
+ * The items can be of any type that implements the BatchDeliverable interface.
  *
- * <p>This class is used to standardize responses for batch operations across the API, making it
+ * <p>This class is used to standardize responses for post dump operations across the API, making it
  * easier for clients to handle responses consistently.
  *
  * @author Yoham Gabriel B @ YGB Studio
  */
-@JsonbPropertyOrder({"message", "status", "postIds", "totalProcessed", "timestamp"})
-public class BatchJobResponse {
+@JsonbPropertyOrder({"message", "status", "siteItems", "totalProcessed", "timestamp"})
+public class PostDumpResponse {
 
   @JsonbProperty("message")
   private String message;
@@ -30,26 +31,27 @@ public class BatchJobResponse {
   @JsonbProperty("timestamp")
   private Instant timestamp;
 
-  @JsonbProperty("processed")
-  private Collection<Long> postIds;
+  @JsonbProperty("dump")
+  private Collection<? extends BatchDeliverable> siteItems;
 
   @JsonbProperty("totalProcessed")
   private long totalProcessed;
 
   /**
-   * Constructor for BatchJobResponse.
+   * Constructor for PostDumpResponse.
    *
-   * @param message A message describing the result of the batch job.
-   * @param status The HTTP status code representing the outcome of the batch job.
-   * @param postIds A list of post IDs that were processed in the batch job.
+   * @param message A message describing the result of the post dump operation.
+   * @param status The HTTP status code representing the outcome of the post dump operation.
+   * @param siteItems A collection of items that were processed in the post dump operation.
    */
-  public BatchJobResponse(String message, int status, Collection<Long> postIds) {
+  public PostDumpResponse(
+      String message, int status, Collection<? extends BatchDeliverable> siteItems) {
     super();
     this.message = message;
     this.status = status;
     this.timestamp = Instant.now();
-    this.postIds = postIds;
-    this.totalProcessed = Objects.nonNull(postIds) ? postIds.size() : 0;
+    this.siteItems = siteItems;
+    this.totalProcessed = Objects.nonNull(siteItems) ? siteItems.size() : 0;
   }
 
   public String getMessage() {
@@ -76,12 +78,12 @@ public class BatchJobResponse {
     this.timestamp = timestamp;
   }
 
-  public Collection<Long> getPostIds() {
-    return postIds;
+  public Collection<? extends BatchDeliverable> getSiteItems() {
+    return siteItems;
   }
 
-  public void setPostIds(Collection<Long> postIds) {
-    this.postIds = postIds;
+  public void setSiteItems(Collection<? extends BatchDeliverable> siteItems) {
+    this.siteItems = siteItems;
   }
 
   public long getTotalProcessed() {

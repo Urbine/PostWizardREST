@@ -1,5 +1,6 @@
 package net.ygbstudio.postwizard.dto;
 
+import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -15,7 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class ServerResponse {
   private String message;
   private int status;
-  private String timestamp;
+  private Instant timestamp;
 
   /**
    * Constructor for ServerResponse.
@@ -27,7 +28,7 @@ public class ServerResponse {
     super();
     this.message = message;
     this.status = status;
-    this.timestamp = java.time.LocalDateTime.now().toString();
+    this.timestamp = Instant.now();
   }
 
   public String getMessage() {
@@ -46,11 +47,11 @@ public class ServerResponse {
     this.status = status;
   }
 
-  public String getTimestamp() {
+  public Instant getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(String timestamp) {
+  public void setTimestamp(Instant timestamp) {
     this.timestamp = timestamp;
   }
 
