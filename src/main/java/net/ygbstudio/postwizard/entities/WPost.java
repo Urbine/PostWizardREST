@@ -23,11 +23,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @Entity
 @Table(name = "`wp_posts`")
-@NamedQuery(name = "WPosts.FindAll", query = "SELECT p from WPost P")
-@NamedQuery(name = "WPosts.FindByID", query = "SELECT p from WPost P where p.ID = :postID")
-@NamedQuery(
-    name = "WPosts.FindByType",
-    query = "SELECT p from WPost P where p.postType = :postType")
+@NamedQuery(name = "WPost.FindAll", query = "SELECT p FROM WPost p")
+@NamedQuery(name = "WPost.FindByID", query = "SELECT p from WPost p WHERE p.ID = :postID")
+@NamedQuery(name = "WPost.FindByType", query = "SELECT p FROM WPost p WHERE p.postType = :postType")
 public class WPost {
 
   @Id
