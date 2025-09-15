@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
  * @author Yoham Gabriel @ YGB Studio
  */
 @NullMarked
-public class Logging implements Util {
+public final class Logging implements Util {
 
   private Logging() {
     throw new AssertionError("Cannot instantiate utility class");
@@ -76,7 +76,9 @@ public class Logging implements Util {
       classLogger.setLevel(Logging.pickEnvLoggingLevel());
       return classFileHandler;
     } catch (SecurityException | IOException e) {
-      Exceptions.unchecked(e);
+      Exception ex = Exceptions.unchecked(e);
+      Logger.getLogger(Logging.class.getName())
+          .severe("Error initializing logging FileHandler. " + ex.getMessage());
     }
     return null;
   }

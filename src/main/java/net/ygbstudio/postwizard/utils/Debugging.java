@@ -11,7 +11,7 @@ import org.jspecify.annotations.NullMarked;
  * @author Yoham Gabriel @ YGB Studio
  */
 @NullMarked
-public class Debugging implements Util {
+public final class Debugging implements Util {
   private Debugging() {
     throw new AssertionError("Cannot instantiate utility class");
   }
