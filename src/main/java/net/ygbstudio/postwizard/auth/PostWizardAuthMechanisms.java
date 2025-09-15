@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -169,7 +170,12 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
     if (secretKey != null) {
       return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     } else {
-      return generateHS256Key();
+      try {
+        return generateHS256Key();
+      } catch (NoSuchAlgorithmException e) {
+        authMechanismsLogging.log(Level.SEVERE, "Error generating secret key: ", e);
+        return null;
+      }
     }
   }
 }
