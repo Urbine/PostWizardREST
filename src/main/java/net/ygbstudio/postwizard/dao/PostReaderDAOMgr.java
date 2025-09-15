@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,14 +31,14 @@ public class PostReaderDAOMgr implements PostReaderDAO {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Collection<WPost> getAllPosts() {
-    return em.createNamedQuery("WPosts.FindAll", WPost.class).getResultList();
+  public List<WPost> getAllPosts() {
+    return em.createNamedQuery("WPost.FindAll", WPost.class).getResultList();
   }
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Collection<WPost> getAllByType(String postType) {
-    return em.createNamedQuery("WPosts.FindByType", WPost.class)
+  public List<WPost> getAllByType(String postType) {
+    return em.createNamedQuery("WPost.FindByType", WPost.class)
         .setParameter("postType", postType)
         .getResultList();
   }
@@ -46,7 +46,7 @@ public class PostReaderDAOMgr implements PostReaderDAO {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public Optional<WPost> getPostById(long postID) {
-    return em.createNamedQuery("WPosts.FindByID", WPost.class)
+    return em.createNamedQuery("WPost.FindByID", WPost.class)
         .setParameter("postID", postID)
         .getResultStream()
         .findFirst();

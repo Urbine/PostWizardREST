@@ -1,6 +1,6 @@
 package net.ygbstudio.postwizard.dao;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import net.ygbstudio.postwizard.entities.WPost;
 
@@ -15,17 +15,17 @@ public interface PostReaderDAO {
   /**
    * Retrieves all posts.
    *
-   * @return a collection of all WPost entries
+   * @return a List of all WPost entries
    */
-  Collection<WPost> getAllPosts();
+  List<WPost> getAllPosts();
 
   /**
    * Retrieves all posts of a specific type.
    *
    * @param postType the type of posts to retrieve
-   * @return a collection of WPost entries matching the specified type
+   * @return a List of WPost entries matching the specified type
    */
-  Collection<WPost> getAllByType(String postType);
+  List<WPost> getAllByType(String postType);
 
   /**
    * Retrieves a specific post by its ID.

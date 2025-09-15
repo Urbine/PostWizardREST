@@ -5,7 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -25,13 +25,13 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Collection<WPMeta> getAll() {
+  public List<WPMeta> getAll() {
     return em.createNamedQuery("WPMeta.FindAll", WPMeta.class).getResultList();
   }
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Collection<WPMeta> getEntriesByPostID(long id) {
+  public List<WPMeta> getEntriesByPostID(long id) {
     return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
         .setParameter("postID", id)
         .getResultList();
@@ -39,7 +39,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Collection<Long> getPostIDs() {
+  public List<Long> getPostIDs() {
     return em.createNamedQuery("WPMeta.FindAllPostIDs", Long.class)
         .getResultStream()
         .distinct()
@@ -48,7 +48,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Collection<WPMeta> getEntriesByMetaKey(String key) {
+  public List<WPMeta> getEntriesByMetaKey(String key) {
     return em.createNamedQuery("WPMeta.FindByMetaKey", WPMeta.class)
         .setParameter("metaKey", key)
         .getResultList();
@@ -56,7 +56,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Collection<WPMeta> getMetaValueMatches(String pattern) {
+  public List<WPMeta> getMetaValueMatches(String pattern) {
     Predicate<String> metaValFind = Pattern.compile(pattern).asPredicate();
 
     return em.createNamedQuery("WPMeta.FindAll", WPMeta.class)

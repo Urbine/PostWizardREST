@@ -1,6 +1,6 @@
 package net.ygbstudio.postwizard.dao;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import net.ygbstudio.postwizard.entities.WPMeta;
 
@@ -15,40 +15,40 @@ public interface PostMetaReaderDAO {
   /**
    * Retrieves all post metadata entries.
    *
-   * @return a collection of all WPMeta entries
+   * @return a List of all WPMeta entries
    */
-  Collection<WPMeta> getAll();
+  List<WPMeta> getAll();
 
   /**
    * Retrieves all post metadata entries associated with a specific post ID.
    *
    * @param id the ID of the post for which metadata is requested
-   * @return a collection of WPMeta entries associated with the specified post ID
+   * @return a List of WPMeta entries associated with the specified post ID
    */
-  Collection<WPMeta> getEntriesByPostID(long id);
+  List<WPMeta> getEntriesByPostID(long id);
 
   /**
    * Retrieves all unique post IDs that have associated metadata entries.
    *
-   * @return a collection of Long values representing unique post IDs
+   * @return a List of Long values representing unique post IDs
    */
-  Collection<Long> getPostIDs();
+  List<Long> getPostIDs();
 
   /**
    * Retrieves all post metadata entries that match a specific meta key.
    *
    * @param key the meta key to filter the metadata entries
-   * @return a collection of WPMeta entries that match the specified meta key
+   * @return a List of WPMeta entries that match the specified meta key
    */
-  Collection<WPMeta> getEntriesByMetaKey(String key);
+  List<WPMeta> getEntriesByMetaKey(String key);
 
   /**
    * Retrieves all post metadata entries that match a specific pattern in their value.
    *
    * @param pattern the regex String pattern to match against the metadata values
-   * @return a collection of WPMeta entries whose values match the specified pattern
+   * @return a List of WPMeta entries whose values match the specified pattern
    */
-  Collection<WPMeta> getMetaValueMatches(String pattern);
+  List<WPMeta> getMetaValueMatches(String pattern);
 
   /**
    * Retrieves a specific post metadata entry by its ID.
