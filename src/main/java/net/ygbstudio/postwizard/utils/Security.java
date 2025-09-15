@@ -1,5 +1,6 @@
 package net.ygbstudio.postwizard.utils;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import javax.crypto.SecretKey;
@@ -13,7 +14,11 @@ import org.jspecify.annotations.NullMarked;
  * @author Yoham Gabriel @ YGB Studio
  */
 @NullMarked
-public class Security implements Util {
+public final class Security implements Util {
+
+  private Security() {
+    throw new AssertionError("Cannot instantiate utility class");
+  }
 
   /**
    * Generates a random secret key for JWT signing.
@@ -23,13 +28,15 @@ public class Security implements Util {
    *     https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyGenerator}
    *     for available algorithm names supported by {@link javax.crypto.spec.SecretKeySpec}.
    * @return
+   * @throws NoSuchAlgorithmException If the specified algorithm is not available. Exception is
+   *     thrown by {@link SecureRandom#getInstanceStrong()} and passed to the caller for handling.
    */
-  public static SecretKey generateKey(int bits, String algorithm) {
+  public static SecretKey generateKey(int bits, String algorithm) throws NoSuchAlgorithmException {
     if (bits % 8 != 0) throw new IllegalArgumentException("Bit strength must be multiple of 8.");
 
     int bytes = bits / 8;
     byte[] keyBytes = new byte[bytes];
-    SecureRandom secRand = new SecureRandom();
+    SecureRandom secRand = SecureRandom.getInstanceStrong();
     secRand.nextBytes(keyBytes);
     return new SecretKeySpec(keyBytes, algorithm);
   }
@@ -38,8 +45,10 @@ public class Security implements Util {
    * Generates a random secret key for HMAC SHA-256 signing.
    *
    * @return A SecretKey object for HMAC SHA-256.
+   * @throws NoSuchAlgorithmException If the specified algorithm is not available. Exception is
+   *     thrown by {@link SecureRandom#getInstanceStrong()} and passed to the caller for handling
    */
-  public static SecretKey generateHS256Key() {
+  public static SecretKey generateHS256Key() throws NoSuchAlgorithmException {
     return generateKey(256, "HmacSHA256");
   }
 
@@ -47,8 +56,10 @@ public class Security implements Util {
    * Generates a random secret key for HMAC SHA-256 signing and encodes it in Base64.
    *
    * @return A Base64 encoded string representation of the HMAC SHA-256 key.
+   * @throws NoSuchAlgorithmException If the specified algorithm is not available. Exception is
+   *     thrown by {@link SecureRandom#getInstanceStrong()} and passed to the caller for handling
    */
-  public static String generateHS256KeyB64() {
+  public static String generateHS256KeyB64() throws NoSuchAlgorithmException {
     SecretKey keyHS256 = generateHS256Key();
     return Base64.getEncoder().encodeToString(keyHS256.getEncoded());
   }
