@@ -83,7 +83,7 @@ public class AuthController {
               .compact();
 
       return Response.ok()
-          .entity(new GrantToken(jwt, "bearer", expirationDate))
+          .entity(new GrantToken(jwt, "bearer"))
           .type(MediaType.APPLICATION_JSON)
           .build();
 
