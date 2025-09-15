@@ -3,22 +3,24 @@ package net.ygbstudio.postwizard.dto;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import java.time.Instant;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * PostDumpResponse is a DTO class that represents a response from the server for post dump
  * operations. It contains fields for a message, HTTP status code, a timestamp indicating when the
- * response was created, and a collection of items that were processed in the post dump operation.
- * The items can be of any type that implements the BatchDeliverable interface.
+ * response was created, and a List of items that were processed in the post dump operation. The
+ * items can be of any type that implements the BatchDeliverable interface.
  *
  * <p>This class is used to standardize responses for post dump operations across the API, making it
  * easier for clients to handle responses consistently.
  *
  * @author Yoham Gabriel B @ YGB Studio
  */
+@NullMarked
 @JsonbPropertyOrder({"message", "status", "siteItems", "totalProcessed", "timestamp"})
 public class PostDumpResponse {
 
@@ -32,7 +34,7 @@ public class PostDumpResponse {
   private Instant timestamp;
 
   @JsonbProperty("dump")
-  private Collection<? extends BatchDeliverable> siteItems;
+  private List<? extends BatchDeliverable> siteItems;
 
   @JsonbProperty("totalProcessed")
   private long totalProcessed;
@@ -42,15 +44,14 @@ public class PostDumpResponse {
    *
    * @param message A message describing the result of the post dump operation.
    * @param status The HTTP status code representing the outcome of the post dump operation.
-   * @param siteItems A collection of items that were processed in the post dump operation.
+   * @param siteItems A List of items that were processed in the post dump operation.
    */
-  public PostDumpResponse(
-      String message, int status, Collection<? extends BatchDeliverable> siteItems) {
+  public PostDumpResponse(String message, int status, List<? extends BatchDeliverable> siteItems) {
     super();
     this.message = message;
     this.status = status;
     this.timestamp = Instant.now();
-    this.siteItems = siteItems;
+    this.siteItems = List.copyOf(siteItems);
     this.totalProcessed = Objects.nonNull(siteItems) ? siteItems.size() : 0;
   }
 
@@ -78,12 +79,12 @@ public class PostDumpResponse {
     this.timestamp = timestamp;
   }
 
-  public Collection<? extends BatchDeliverable> getSiteItems() {
-    return siteItems;
+  public List<? extends BatchDeliverable> getSiteItems() {
+    return List.copyOf(siteItems);
   }
 
-  public void setSiteItems(Collection<? extends BatchDeliverable> siteItems) {
-    this.siteItems = siteItems;
+  public void setSiteItems(List<? extends BatchDeliverable> siteItems) {
+    this.siteItems = List.copyOf(siteItems);
   }
 
   public long getTotalProcessed() {

@@ -3,7 +3,7 @@ package net.ygbstudio.postwizard.dto;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import java.time.Instant;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -31,7 +31,7 @@ public class BatchJobResponse {
   private Instant timestamp;
 
   @JsonbProperty("processed")
-  private Collection<Long> postIds;
+  private List<Long> postIds;
 
   @JsonbProperty("totalProcessed")
   private long totalProcessed;
@@ -43,12 +43,12 @@ public class BatchJobResponse {
    * @param status The HTTP status code representing the outcome of the batch job.
    * @param postIds A list of post IDs that were processed in the batch job.
    */
-  public BatchJobResponse(String message, int status, Collection<Long> postIds) {
+  public BatchJobResponse(String message, int status, List<Long> postIds) {
     super();
     this.message = message;
     this.status = status;
     this.timestamp = Instant.now();
-    this.postIds = postIds;
+    this.postIds = List.copyOf(postIds);
     this.totalProcessed = Objects.nonNull(postIds) ? postIds.size() : 0;
   }
 
@@ -76,12 +76,12 @@ public class BatchJobResponse {
     this.timestamp = timestamp;
   }
 
-  public Collection<Long> getPostIds() {
-    return postIds;
+  public List<Long> getPostIds() {
+    return List.copyOf(postIds);
   }
 
-  public void setPostIds(Collection<Long> postIds) {
-    this.postIds = postIds;
+  public void setPostIds(List<Long> postIds) {
+    this.postIds = List.copyOf(postIds);
   }
 
   public long getTotalProcessed() {
