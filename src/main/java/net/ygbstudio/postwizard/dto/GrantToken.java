@@ -2,7 +2,7 @@ package net.ygbstudio.postwizard.dto;
 
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
-import java.util.Date;
+import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -23,7 +23,7 @@ public class GrantToken {
   private String type;
 
   @JsonbProperty("expiration")
-  private Date expirationDate;
+  private Instant expirationDate;
 
   /**
    * Constructor for GrantToken.
@@ -32,11 +32,11 @@ public class GrantToken {
    * @param type The type of the token (e.g., Bearer).
    * @param expirationDate The expiration date of the token.
    */
-  public GrantToken(String accessToken, String type, Date expirationDate) {
+  public GrantToken(String accessToken, String type) {
     super();
     this.accessToken = accessToken;
     this.type = type;
-    this.expirationDate = expirationDate;
+    this.expirationDate = Instant.now();
   }
 
   public String getAccessToken() {
@@ -55,12 +55,12 @@ public class GrantToken {
     this.type = type;
   }
 
-  public Date getExpirationDate() {
-    return expirationDate;
+  public Instant getExpirationDate() {
+    return Instant.from(expirationDate);
   }
 
-  public void setExpirationDate(Date expirationDate) {
-    this.expirationDate = expirationDate;
+  public void setExpirationDate(Instant expirationDate) {
+    this.expirationDate = Instant.from(expirationDate);
   }
 
   @Override
