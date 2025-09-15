@@ -16,7 +16,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.FileHandler;
@@ -115,7 +114,7 @@ public class PostDataController {
   public Response getPostMetaDump() {
     logStepIn(postDataControllerLog, context.getPath());
     try {
-      Collection<ClientPostMeta> allMeta = postMetaService.getClientPostMetaAll();
+      List<ClientPostMeta> allMeta = postMetaService.getClientPostMetaAll();
       postDataControllerLog.info(
           "Returned %d posts on %s - Requested by %s"
               .formatted(allMeta.size(), LocalDateTime.now(), request.getRemoteAddr()));
@@ -157,7 +156,7 @@ public class PostDataController {
     logStepIn(postDataControllerLog, context.getPath());
     try {
       if (postService.isValidPostType(postType)) {
-        Collection<ClientPost> allPosts =
+        List<ClientPost> allPosts =
             postService.getAllClientPostByType(
                 enumFromValue(PostType.class, postType, true).orElseThrow());
         postDataControllerLog.info(
@@ -361,12 +360,11 @@ public class PostDataController {
 
   /**
    * Endpoint to update multiple post metadata entries in a single batch operation. This method
-   * accepts a collection of ClientPostMeta objects, each representing the metadata for a specific
-   * post. The method iterates through the collection and updates the metadata for each post
-   * accordingly. This batch update helps to reduce the number of individual requests needed to
-   * update multiple posts.
+   * accepts a List of ClientPostMeta objects, each representing the metadata for a specific post.
+   * The method iterates through the List and updates the metadata for each post accordingly. This
+   * batch update helps to reduce the number of individual requests needed to update multiple posts.
    *
-   * @param postMetaColl a collection of ClientPostMeta objects containing post metadata to update
+   * @param postMetaColl a List of ClientPostMeta objects containing post metadata to update
    * @return Response indicating the result of the batch update operation
    */
   @POST
@@ -374,7 +372,7 @@ public class PostDataController {
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed(value = {"user"})
   @Path("meta/batch")
-  public Response postMetaBatchUpdate(Collection<ClientPostMeta> postMetaColl) {
+  public Response postMetaBatchUpdate(List<ClientPostMeta> postMetaColl) {
     logStepIn(postDataControllerLog, postMetaColl);
     logControllerPath(postDataControllerLog, context, request);
 
@@ -425,12 +423,12 @@ public class PostDataController {
   }
 
   /**
-   * Endpoint to update multiple posts in a single batch operation. This method accepts a collection
-   * of ClientPost objects, each representing a post to be updated. The method iterates through the
-   * collection and updates each post accordingly. This batch update helps to reduce the number of
+   * Endpoint to update multiple posts in a single batch operation. This method accepts a List of
+   * ClientPost objects, each representing a post to be updated. The method iterates through the
+   * List and updates each post accordingly. This batch update helps to reduce the number of
    * individual requests needed to update multiple posts.
    *
-   * @param clientPosts a collection of ClientPost objects containing post details to update
+   * @param clientPosts a List of ClientPost objects containing post details to update
    * @return Response indicating the result of the batch update operation
    */
   @POST
@@ -438,7 +436,7 @@ public class PostDataController {
   @RolesAllowed(value = {"user"})
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response postBatchUpdate(Collection<ClientPost> clientPosts) {
+  public Response postBatchUpdate(List<ClientPost> clientPosts) {
     logStepIn(postDataControllerLog, clientPosts);
     if (clientPosts.isEmpty()) {
       logStepOut(postDataControllerLog, "No items to process");

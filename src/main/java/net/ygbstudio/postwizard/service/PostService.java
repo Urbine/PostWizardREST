@@ -10,9 +10,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -54,10 +54,10 @@ public class PostService {
   /**
    * Retrieves all posts from the database and converts them into ClientPost objects.
    *
-   * @return a collection of ClientPost objects representing all posts
+   * @return a List of ClientPost objects representing all posts
    */
   @Transactional(value = TxType.REQUIRES_NEW)
-  public Collection<ClientPost> getClientPostAll() {
+  public List<ClientPost> getClientPostAll() {
     return dbPostDao.getAllPosts().stream()
         .filter(post -> Objects.nonNull(post.getID()))
         .map(post -> getClientPost(post.getID()))
@@ -65,8 +65,8 @@ public class PostService {
   }
 
   @Transactional(value = TxType.REQUIRES_NEW)
-  public Collection<ClientPost> getAllClientPostByType(PostType postType) {
-    Collection<WPost> postByType =
+  public List<ClientPost> getAllClientPostByType(PostType postType) {
+    List<WPost> postByType =
         postType != PostType.ALL
             ? dbPostDao.getAllByType(postType.getTypeName())
             : dbPostDao.getAllPosts();
@@ -118,7 +118,7 @@ public class PostService {
     inMemoryPost.setPostMimeType(clientPost.getMimeType());
     inMemoryPost.setPostParent(clientPost.getParent());
     inMemoryPost.setModifiedAtLocal(LocalDateTime.now());
-    inMemoryPost.setModifiedAtGMT(ZonedDateTime.now(ZoneId.of("Etc/GMT-0")).toLocalDateTime());
+    inMemoryPost.setModifiedAtGMT(ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime());
 
     if (!isValidPostType(inMemoryPost.getPostType()))
       if (inMemoryPost.getID() != null && !dbPostDao.postExists(inMemoryPost.getID())) return;

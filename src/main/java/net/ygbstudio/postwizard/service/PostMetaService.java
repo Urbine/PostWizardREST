@@ -12,7 +12,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.lang.reflect.Field;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -109,13 +109,13 @@ public class PostMetaService {
   }
 
   /**
-   * Retrieves metadata for all posts and converts them into a collection of ClientPostMeta objects.
-   * This method fetches all post IDs from the database and maps each ID to its corresponding
+   * Retrieves metadata for all posts and converts them into a List of ClientPostMeta objects. This
+   * method fetches all post IDs from the database and maps each ID to its corresponding
    * ClientPostMeta object using the getClientPostMeta method.
    *
-   * @return a collection of ClientPostMeta objects representing metadata for all posts
+   * @return a List of ClientPostMeta objects representing metadata for all posts
    */
-  public Collection<ClientPostMeta> getClientPostMetaAll() {
+  public List<ClientPostMeta> getClientPostMetaAll() {
     return dbPostMetaDao.getPostIDs().parallelStream()
         .map(post -> getClientPostMeta(post))
         .filter(post -> Objects.nonNull(post.getVideoURL()) || Objects.nonNull(post.getEmbedCode()))
