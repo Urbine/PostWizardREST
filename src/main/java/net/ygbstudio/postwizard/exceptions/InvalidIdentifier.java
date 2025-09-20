@@ -8,7 +8,7 @@ package net.ygbstudio.postwizard.exceptions;
  * <p>It extends {@link RuntimeException} to allow for unchecked exceptions and can be used in
  * various parts of the application to signal issues with record identifiers.
  *
- * <p>* @author Yoham Gabriel B @ YGB Studio
+ * @author Yoham Gabriel B @ YGB Studio
  */
 public class InvalidIdentifier extends RuntimeException {
 
