@@ -68,7 +68,7 @@ public class PostService {
   public List<ClientPost> getAllClientPostByType(PostType postType) {
     List<WPost> postByType =
         postType != PostType.ALL
-            ? dbPostDao.getAllByType(postType.getTypeName())
+            ? dbPostDao.getAllByType(postType.toString())
             : dbPostDao.getAllPosts();
     return postByType.stream()
         .filter(post -> Objects.nonNull(post.getID()))
