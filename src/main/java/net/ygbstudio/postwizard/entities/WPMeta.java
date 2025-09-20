@@ -26,6 +26,14 @@ import jakarta.persistence.Table;
 @NamedQuery(
     name = "WPMeta.FindByMetaKey",
     query = "SELECT post FROM WPMeta post WHERE post.metaFieldKey = :metaKey")
+@NamedQuery(
+    name = "WPMeta.FindKeyByPostID",
+    query =
+        "SELECT post FROM WPMeta post WHERE post.metaFieldKey = :metaKey AND post.postID = :postID")
+@NamedQuery(
+    name = "WPMeta.RandomPostIDsByMetaKey",
+    query =
+        "SELECT post.postID FROM WPMeta post WHERE post.metaFieldKey = :metaKey ORDER BY FUNCTION('RAND')")
 public class WPMeta {
 
   @Id
