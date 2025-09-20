@@ -76,6 +76,7 @@ public class WPost {
 
   /**
    * Constructor for WPost. Fields are mapped to the corresponding columns in the `wp_posts` table.
+   * Field names are self-explanatory.
    *
    * @param iD
    * @param postAuthor
