@@ -12,18 +12,22 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.dao.PostMetaReaderDAO;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
+import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.models.Ethnicity;
 import net.ygbstudio.postwizard.models.HairColor;
 import net.ygbstudio.postwizard.models.Orientation;
 import net.ygbstudio.postwizard.models.PostMetaKeys;
 import net.ygbstudio.postwizard.models.Production;
+import net.ygbstudio.postwizard.models.ToggleField;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
@@ -56,6 +60,7 @@ public class PostMetaService {
    * @param postID the ID of the post to check
    * @return true if the post has metadata fields, false otherwise
    */
+  @Transactional(value = TxType.REQUIRES_NEW)
   public boolean hasMetaFields(long postID) {
     return dbPostMetaDao.postExists(postID);
   }
@@ -68,8 +73,7 @@ public class PostMetaService {
    */
   public boolean isValidHairColor(@Nullable String hairColor) {
     return Objects.nonNull(hairColor)
-        ? isInEnum(HairColor.class, String::valueOf, hairColor::equalsIgnoreCase)
-        : false;
+        && isInEnum(HairColor.class, String::valueOf, hairColor::equalsIgnoreCase);
   }
 
   /**
@@ -80,8 +84,7 @@ public class PostMetaService {
    */
   public boolean isValidEthnicity(@Nullable String ethnicity) {
     return Objects.nonNull(ethnicity)
-        ? isInEnum(Ethnicity.class, String::valueOf, ethnicity::equalsIgnoreCase)
-        : false;
+        && isInEnum(Ethnicity.class, String::valueOf, ethnicity::equalsIgnoreCase);
   }
 
   /**
@@ -92,8 +95,18 @@ public class PostMetaService {
    */
   public boolean isValidOrientation(@Nullable String orientation) {
     return Objects.nonNull(orientation)
-        ? isInEnum(Orientation.class, String::valueOf, orientation::equalsIgnoreCase)
-        : false;
+        && isInEnum(Orientation.class, String::valueOf, orientation::equalsIgnoreCase);
+  }
+
+  /**
+   * Checks whether the provided toggle field is valid based on the ToggleField enumeration.
+   *
+   * @param toggleField
+   * @return true if valid, false otherwise
+   */
+  public boolean isValidToggleField(@Nullable String toggleField) {
+    return Objects.nonNull(toggleField)
+        && isInEnum(ToggleField.class, String::valueOf, toggleField::equalsIgnoreCase);
   }
 
   /**
@@ -104,8 +117,114 @@ public class PostMetaService {
    */
   public boolean isValidProduction(@Nullable String production) {
     return Objects.nonNull(production)
-        ? isInEnum(Production.class, String::valueOf, production::equalsIgnoreCase)
-        : false;
+        && isInEnum(Production.class, String::valueOf, production::equalsIgnoreCase);
+  }
+
+  /**
+   * Filters entries by meta key, filters them by a given predicate and transforms them using a
+   * given function applicable to the WPMeta object. The function returns a new list of the
+   * transformed objects.
+   *
+   * @param metaKey the meta key to filter the metadata entries by
+   * @param filterPredicate the predicate to apply to each WPMeta object
+   * @param transformer the function to apply to each WPMeta object
+   * @return List of Long containing the IDs of featured videos.
+   */
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public <R> Set<R> filterMetaKeyEntriesBy(
+      PostMetaKeys metaKey,
+      Predicate<? super WPMeta> filterPredicate,
+      Function<? super WPMeta, R> transformer) {
+
+    return dbPostMetaDao.getEntriesByMetaKey(metaKey.toString()).stream()
+        .filter(filterPredicate)
+        .map(transformer)
+        .collect(Collectors.toSet());
+  }
+
+  /*
+   * Get random post IDs from the database method.
+   *
+   * @param limitBy the number of random post IDs to retrieve.
+   * @return List of Long containing the IDs of random posts.
+   */
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public List<Long> getRandomPostIDsByMetaKey(
+      PostMetaKeys metaKey, long limitBy, Set<Long> existingIDs) {
+    return dbPostMetaDao.getRandomPostIDsByMetaKey(metaKey.toString(), limitBy, existingIDs);
+  }
+
+  /*
+   * Modifies the featured flag for a list of post IDs based on the toggle field provided.
+   *
+   * @param listOfPostIDs the list of post IDs to toggle
+   * @param toggle the toggle field that defines the operation to perform.
+   */
+  public List<Long> toggleFeaturedVideos(Set<Long> listOfPostIDs, ToggleField toggle) {
+    ToggleField firstToggle = toggle == ToggleField.OFF ? ToggleField.ON : ToggleField.OFF;
+    ToggleField secondToggle = firstToggle == ToggleField.ON ? ToggleField.OFF : ToggleField.ON;
+
+    List<Long> toggledFeaturedIDs = new ArrayList<>();
+    filterMetaKeyEntriesBy(
+            PostMetaKeys.FEATURED,
+            p -> p.getMetaFieldValue().equals(firstToggle.toString()),
+            WPMeta::getPostID)
+        .forEach(
+            postID -> {
+              if (listOfPostIDs.contains(postID))
+                dbPostMetaDao
+                    .getEntriesByPostID(postID)
+                    .forEach(
+                        key -> {
+                          dbPostMetaDao.updatePostMetaAuto(
+                              postID,
+                              PostMetaKeys.FEATURED.toString(),
+                              secondToggle.toString(),
+                              false);
+                          toggledFeaturedIDs.add(postID);
+                        });
+            });
+
+    return List.copyOf(toggledFeaturedIDs);
+  }
+
+  /*
+   * Removes the featured flag for all videos in the database.
+   *
+   * @return List of Long containing the IDs videos with the featured flag removed.
+   */
+  public List<Long> disableFeaturedVideos() {
+    List<Long> getAllPostIDs = dbPostMetaDao.getPostIDs();
+    return toggleFeaturedVideos(new HashSet<>(getAllPostIDs), ToggleField.OFF);
+  }
+
+  /*
+   * Enables the featured flag for all videos in the database.
+   *
+   * @return List of Long containing the IDs videos with the featured flag enabled.
+   */
+  public List<Long> featureVideos(List<Long> listOfPostIDs) {
+    return toggleFeaturedVideos(new HashSet<>(listOfPostIDs), ToggleField.ON);
+  }
+
+  /**
+   * Randomises the featured videos in the database.
+   *
+   * @param newFeaturedVids the number of videos to feature in this randomisation
+   * @return List of Long containing the IDs videos with the featured flag enabled.
+   */
+  public List<Long> randomiseFeaturedVideos(int newFeaturedVids) {
+    if (newFeaturedVids < 0)
+      throw new IllegalArgumentException("newFeaturedVids must be greater than 0");
+    if (newFeaturedVids == 0) return List.of();
+
+    List<Long> oldFeatured = disableFeaturedVideos();
+    Set<Long> exclude = oldFeatured.isEmpty() ? Collections.emptySet() : new HashSet<>(oldFeatured);
+
+    List<Long> randomPostIDs =
+        getRandomPostIDsByMetaKey(PostMetaKeys.FEATURED, newFeaturedVids, exclude);
+
+    return featureVideos(List.copyOf(randomPostIDs));
   }
 
   /**
@@ -115,9 +234,10 @@ public class PostMetaService {
    *
    * @return a List of ClientPostMeta objects representing metadata for all posts
    */
+  @Transactional(value = TxType.REQUIRES_NEW)
   public List<ClientPostMeta> getClientPostMetaAll() {
     return dbPostMetaDao.getPostIDs().parallelStream()
-        .map(post -> getClientPostMeta(post))
+        .map(this::getClientPostMeta)
         .filter(post -> Objects.nonNull(post.getVideoURL()) || Objects.nonNull(post.getEmbedCode()))
         .toList();
   }
@@ -212,7 +332,9 @@ public class PostMetaService {
                     dbPostMetaDao.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.HDVIDEO.toString(),
-                        clientPost.getVideoHD() ? "on" : "off",
+                        clientPost.getVideoHD()
+                            ? ToggleField.ON.toString()
+                            : ToggleField.OFF.toString(),
                         autoCreate);
                   break;
                 case THUMBNAIL:
@@ -303,7 +425,8 @@ public class PostMetaService {
                   break;
                 case HDVIDEO:
                   convertedObj.setVideoHD(
-                      Objects.requireNonNullElse(metaFieldValue, "").equals("on"));
+                      Objects.requireNonNullElse(metaFieldValue, "")
+                          .equals(ToggleField.ON.toString()));
                   break;
                 case THUMBNAIL:
                   convertedObj.setThumb(metaFieldValue);
