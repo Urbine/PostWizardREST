@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import net.ygbstudio.postwizard.entities.WPMeta;
@@ -55,6 +56,15 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
   }
 
   @Transactional(value = TxType.REQUIRED)
+  public Optional<WPMeta> findMetaKeyByPostID(String metaKey, long postID) {
+    return em.createNamedQuery("WPMeta.FindKeyByPostID", WPMeta.class)
+        .setParameter("metaKey", metaKey)
+        .setParameter("postID", postID)
+        .getResultStream()
+        .findFirst();
+  }
+
+  @Transactional(value = TxType.REQUIRED)
   @Override
   public List<WPMeta> getMetaValueMatches(String pattern) {
     Predicate<String> metaValFind = Pattern.compile(pattern).asPredicate();
@@ -84,6 +94,16 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
               existing.setMetaFieldValue(newValue);
               return existing;
             });
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  public List<Long> getRandomPostIDsByMetaKey(String metaKey, long limitBy, Set<Long> existingIDs) {
+    return em.createNamedQuery("WPMeta.RandomPostIDsByMetaKey", Long.class)
+        .setParameter("metaKey", metaKey)
+        .getResultStream()
+        .filter(postID -> !existingIDs.contains(postID))
+        .limit(limitBy)
+        .toList();
   }
 
   @Transactional(value = TxType.REQUIRED)
