@@ -3,13 +3,19 @@ package net.ygbstudio.postwizard.test;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import jakarta.inject.Inject;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
+import net.ygbstudio.postwizard.entities.WPMeta;
+import net.ygbstudio.postwizard.models.PostMetaKeys;
+import net.ygbstudio.postwizard.models.ToggleField;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -98,5 +104,71 @@ public class PostMetaServiceTest {
     List<String> possibleProduction = List.of("Professional", "Homemade", "Garage");
     assertThat(
         possibleProduction.stream().filter(postMetaService::isValidProduction).count(), is(2L));
+  }
+
+  @Test
+  public void testIsValidToggleField() {
+    List<String> possibleToggleFields = List.of("on", "off", "notAToggleField", "anyString");
+    assertThat(
+        possibleToggleFields.stream().filter(postMetaService::isValidToggleField).count(), is(2L));
+  }
+
+  @Test
+  public void testGetRandomPostIDs() {
+    Set<Long> featuredPostIDs =
+        new HashSet<>(
+            postMetaService.filterMetaKeyEntriesBy(
+                PostMetaKeys.FEATURED,
+                p -> p.getMetaFieldValue().equals(ToggleField.ON.toString()),
+                WPMeta::getPostID));
+    List<Long> randomPostIDs =
+        postMetaService.getRandomPostIDsByMetaKey(PostMetaKeys.FEATURED, 10, featuredPostIDs);
+    assertThat(randomPostIDs, not(empty()));
+    assertThat(randomPostIDs.size(), is(10));
+    randomPostIDs.forEach(postID -> assertThat(postID, not(in(featuredPostIDs))));
+  }
+
+  @Test
+  public void testFeaturedVideoMethods() {
+    if (!postMetaService
+        .filterMetaKeyEntriesBy(
+            PostMetaKeys.FEATURED,
+            p -> p.getMetaFieldValue().equals(ToggleField.ON.toString()),
+            WPMeta::getPostID)
+        .isEmpty()) {
+      List<Long> oldFeaturedIDs = postMetaService.disableFeaturedVideos();
+      assertThat(oldFeaturedIDs, not(empty()));
+      // Enable the videos again, so that the database is in a clean state for the next test.
+      List<Long> featuredVideos = postMetaService.featureVideos(oldFeaturedIDs);
+      assertThat(featuredVideos, not(empty()));
+
+      // Check that the number of featured videos is the same as the number of disabled featured
+      // videos.
+      assertThat(featuredVideos.size(), is(oldFeaturedIDs.size()));
+
+      // randomise featured videos
+      int numberOfPosts = 20;
+      List<Long> randomFeaturedVideos = postMetaService.randomiseFeaturedVideos(numberOfPosts);
+      assertThat(randomFeaturedVideos, not(empty()));
+
+      // Post IDs must be unique, at least different to the last randomisation batch.
+      randomFeaturedVideos.forEach(postID -> assertThat(postID, not(in(oldFeaturedIDs))));
+
+      // Check that the number of featured videos is the same as the number of
+      // random featured videos I asked for.
+      assertThat(randomFeaturedVideos.size(), is(numberOfPosts));
+
+      // When we disable the featured flag, the method has to return the modified entries,
+      // and it has to be the same to make sure the internals of the method are working as expected.
+      List<Long> randomOff =
+          postMetaService.toggleFeaturedVideos(
+              new HashSet<>(randomFeaturedVideos), ToggleField.OFF);
+      assertThat(randomOff.size(), is(randomFeaturedVideos.size()));
+      randomOff.forEach(postID -> assertThat(postID, is(in(randomFeaturedVideos))));
+
+      // Enable the old videos again, so that the database remains as it was before.
+      List<Long> resetFeatured = postMetaService.featureVideos(oldFeaturedIDs);
+      assertThat(resetFeatured.size(), is(oldFeaturedIDs.size()));
+    }
   }
 }
