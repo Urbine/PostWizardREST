@@ -22,6 +22,6 @@ public enum Ethnicity {
 
   @Override
   public String toString() {
-    return this.ethnicity;
+    return ethnicity;
   }
 }

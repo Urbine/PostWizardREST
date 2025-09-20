@@ -20,6 +20,6 @@ public enum HairColor {
 
   @Override
   public String toString() {
-    return this.color;
+    return color;
   }
 }

@@ -17,6 +17,6 @@ public enum Orientation {
 
   @Override
   public String toString() {
-    return this.orientation;
+    return orientation;
   }
 }

@@ -23,7 +23,8 @@ public enum PostType {
     this.typeName = typeName;
   }
 
-  public String getTypeName() {
+  @Override
+  public String toString() {
     return typeName;
   }
 }

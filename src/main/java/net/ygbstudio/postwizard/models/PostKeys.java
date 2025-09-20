@@ -24,6 +24,6 @@ public enum PostKeys {
 
   @Override
   public String toString() {
-    return this.value;
+    return value;
   }
 }

@@ -23,7 +23,8 @@ public enum PostMetaKeys {
   DURATION("duration"),
   YOAST_FOCUSKW("_yoast_wpseo_focuskw"),
   YOAST_METADESC("_yoast_wpseo_metadesc"),
-  OTHERS("otherKeys");
+  OTHERS("otherKeys"),
+  FEATURED("featured_video");
 
   private final String value;
 
@@ -33,6 +34,6 @@ public enum PostMetaKeys {
 
   @Override
   public String toString() {
-    return this.value;
+    return value;
   }
 }
