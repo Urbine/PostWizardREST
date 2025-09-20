@@ -2,6 +2,7 @@ package net.ygbstudio.postwizard.dao;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import net.ygbstudio.postwizard.entities.WPMeta;
 
 /**
@@ -41,6 +42,15 @@ public interface PostMetaReaderDAO {
    * @return a List of WPMeta entries that match the specified meta key
    */
   List<WPMeta> getEntriesByMetaKey(String key);
+
+  /**
+   * Retrieves a WPMeta object with the specified metakey and postID in the database.
+   *
+   * @param metaKey
+   * @param postID
+   * @return
+   */
+  Optional<WPMeta> findMetaKeyByPostID(String metaKey, long postID);
 
   /**
    * Retrieves all post metadata entries that match a specific pattern in their value.
@@ -100,4 +110,13 @@ public interface PostMetaReaderDAO {
    * @return true if the meta key exists for the specified post ID, false otherwise
    */
   boolean metaKeyExists(long postID, String metaKey);
+
+  /**
+   * Get random post IDs from the database with a native query. This method is used to obtain a
+   * random selection of post IDs that do not already exist in the existingIDs set.
+   *
+   * @param limitBy the number of random post IDs to retrieve.
+   * @return List of Long containing the IDs of random posts.
+   */
+  List<Long> getRandomPostIDsByMetaKey(String metaKey, long limitBy, Set<Long> existingIDs);
 }
