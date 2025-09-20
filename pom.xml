@@ -87,7 +87,7 @@
 			<artifactId>arquillian-bom</artifactId>
 			<version>1.10.0.Final</version>
 			<type>pom</type>
-			<scope>import</scope>
+			<scope>test</scope>
 		</dependency>
 		<!--
 		https://mvnrepository.com/artifact/io.openliberty.arquillian/arquillian-liberty-managed-jakarta-junit -->
