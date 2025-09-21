@@ -37,7 +37,9 @@ import org.jspecify.annotations.Nullable;
  * various enumerations representing valid metadata values.
  *
  * <p>The service interacts with the PostMetaReaderDAO to perform database operations related to
- * post metadata.
+ * post metadata. PostMetaService also defines additional transactional boundaries for some methods
+ * to ensure data consistency and integrity by isolating the transactional context of the database
+ * operations with every method call.
  *
  * @author Yoham Gabriel @ YGB Studio
  */
@@ -136,56 +138,40 @@ public class PostMetaService {
       Predicate<? super WPMeta> filterPredicate,
       Function<? super WPMeta, R> transformer) {
 
-    return dbPostMetaDao.getEntriesByMetaKey(metaKey.toString()).stream()
+    return dbPostMetaDao
+        .getEntriesByMetaKey(metaKey.toString())
         .filter(filterPredicate)
         .map(transformer)
-        .collect(Collectors.toSet());
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   /*
    * Get random post IDs from the database method.
    *
+   * @param metaKey the PostMetaKeys enum member to filter the metadata entries by
    * @param limitBy the number of random post IDs to retrieve.
+   * @param filterPredicate the predicate to apply to each WPMeta object
    * @return List of Long containing the IDs of random posts.
    */
   @Transactional(value = TxType.REQUIRES_NEW)
-  public List<Long> getRandomPostIDsByMetaKey(
-      PostMetaKeys metaKey, long limitBy, Set<Long> existingIDs) {
-    return dbPostMetaDao.getRandomPostIDsByMetaKey(metaKey.toString(), limitBy, existingIDs);
+  public Set<WPMeta> getRandomPostsByMetaKey(
+      PostMetaKeys metaKey, long limitBy, Predicate<? super WPMeta> filterPredicate) {
+    return dbPostMetaDao.getRandomPostsByMetaKey(metaKey.toString(), limitBy, filterPredicate);
   }
 
   /*
    * Modifies the featured flag for a list of post IDs based on the toggle field provided.
    *
-   * @param listOfPostIDs the list of post IDs to toggle
-   * @param toggle the toggle field that defines the operation to perform.
+   * @param setOfPostIDs the set of post IDs to modify (toggle)
+   * @param toggle the ToggleField enum member that defines the operation to perform.
    */
-  public List<Long> toggleFeaturedVideos(Set<Long> listOfPostIDs, ToggleField toggle) {
-    ToggleField firstToggle = toggle == ToggleField.OFF ? ToggleField.ON : ToggleField.OFF;
-    ToggleField secondToggle = firstToggle == ToggleField.ON ? ToggleField.OFF : ToggleField.ON;
+  public Set<Long> toggleFeaturedVideos(Set<Long> setOfPostIDs, ToggleField toggle) {
+    setOfPostIDs.forEach(
+        postID ->
+            dbPostMetaDao.updatePostMetaAuto(
+                postID, PostMetaKeys.FEATURED.toString(), toggle.toString(), false));
 
-    List<Long> toggledFeaturedIDs = new ArrayList<>();
-    filterMetaKeyEntriesBy(
-            PostMetaKeys.FEATURED,
-            p -> p.getMetaFieldValue().equals(firstToggle.toString()),
-            WPMeta::getPostID)
-        .forEach(
-            postID -> {
-              if (listOfPostIDs.contains(postID))
-                dbPostMetaDao
-                    .getEntriesByPostID(postID)
-                    .forEach(
-                        key -> {
-                          dbPostMetaDao.updatePostMetaAuto(
-                              postID,
-                              PostMetaKeys.FEATURED.toString(),
-                              secondToggle.toString(),
-                              false);
-                          toggledFeaturedIDs.add(postID);
-                        });
-            });
-
-    return List.copyOf(toggledFeaturedIDs);
+    return setOfPostIDs;
   }
 
   /*
@@ -193,38 +179,54 @@ public class PostMetaService {
    *
    * @return List of Long containing the IDs videos with the featured flag removed.
    */
-  public List<Long> disableFeaturedVideos() {
-    List<Long> getAllPostIDs = dbPostMetaDao.getPostIDs();
-    return toggleFeaturedVideos(new HashSet<>(getAllPostIDs), ToggleField.OFF);
+  public Set<Long> disableFeaturedVideos() {
+    Set<Long> getAllPostIDs =
+        filterMetaKeyEntriesBy(
+            PostMetaKeys.FEATURED,
+            post -> post.getMetaFieldValue().equals(ToggleField.ON.toString()),
+            WPMeta::getPostID);
+    return toggleFeaturedVideos(getAllPostIDs, ToggleField.OFF);
   }
 
   /*
    * Enables the featured flag for all videos in the database.
    *
+   * @param setOfPostIDs the set of post IDs to modify (feature)
    * @return List of Long containing the IDs videos with the featured flag enabled.
    */
-  public List<Long> featureVideos(List<Long> listOfPostIDs) {
-    return toggleFeaturedVideos(new HashSet<>(listOfPostIDs), ToggleField.ON);
+  public Set<Long> featureVideos(Set<Long> setOfPostIDs) {
+    return toggleFeaturedVideos(setOfPostIDs, ToggleField.ON);
   }
 
   /**
    * Randomises the featured videos in the database.
    *
-   * @param newFeaturedVids the number of videos to feature in this randomisation
-   * @return List of Long containing the IDs videos with the featured flag enabled.
+   * @param newFeaturedVids the number of videos to feature in this randomisation batch.
+   * @return Set of Long containing the IDs videos with the featured flag enabled.
    */
-  public List<Long> randomiseFeaturedVideos(int newFeaturedVids) {
+  public Set<Long> randomiseFeaturedVideos(int newFeaturedVids) {
     if (newFeaturedVids < 0)
       throw new IllegalArgumentException("newFeaturedVids must be greater than 0");
-    if (newFeaturedVids == 0) return List.of();
+    if (newFeaturedVids == 0) return Collections.emptySet();
 
-    List<Long> oldFeatured = disableFeaturedVideos();
-    Set<Long> exclude = oldFeatured.isEmpty() ? Collections.emptySet() : new HashSet<>(oldFeatured);
+    Set<Long> oldFeatured = disableFeaturedVideos();
 
-    List<Long> randomPostIDs =
-        getRandomPostIDsByMetaKey(PostMetaKeys.FEATURED, newFeaturedVids, exclude);
+    Predicate<? super WPMeta> excludePredicate =
+        oldFeatured.isEmpty()
+            ? post ->
+                post.getMetaFieldKey().equals(PostMetaKeys.FEATURED.toString())
+                    && post.getMetaFieldValue().equals(ToggleField.OFF.toString())
+            : post -> !oldFeatured.contains(post.getPostID());
 
-    return featureVideos(List.copyOf(randomPostIDs));
+    Set<Long> randomPostIDs =
+        getRandomPostsByMetaKey(PostMetaKeys.FEATURED, newFeaturedVids, excludePredicate).stream()
+            .map(WPMeta::getPostID)
+            .collect(Collectors.toUnmodifiableSet());
+
+    if (randomPostIDs.size() != newFeaturedVids)
+      throw new UnsupportedOperationException("Got more or less IDs than expected");
+
+    return featureVideos(randomPostIDs);
   }
 
   /**
