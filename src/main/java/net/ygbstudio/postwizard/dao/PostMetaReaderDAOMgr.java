@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.ygbstudio.postwizard.entities.WPMeta;
 
 /**
@@ -49,10 +51,10 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public List<WPMeta> getEntriesByMetaKey(String key) {
+  public Stream<WPMeta> getEntriesByMetaKey(String key) {
     return em.createNamedQuery("WPMeta.FindByMetaKey", WPMeta.class)
         .setParameter("metaKey", key)
-        .getResultList();
+        .getResultStream();
   }
 
   @Transactional(value = TxType.REQUIRED)
@@ -97,13 +99,14 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
   }
 
   @Transactional(value = TxType.REQUIRED)
-  public List<Long> getRandomPostIDsByMetaKey(String metaKey, long limitBy, Set<Long> existingIDs) {
-    return em.createNamedQuery("WPMeta.RandomPostIDsByMetaKey", Long.class)
+  public Set<WPMeta> getRandomPostsByMetaKey(
+      String metaKey, long limitBy, Predicate<? super WPMeta> filterPredicate) {
+    return em.createNamedQuery("WPMeta.RandomPostByMetaKey", WPMeta.class)
         .setParameter("metaKey", metaKey)
         .getResultStream()
-        .filter(postID -> !existingIDs.contains(postID))
+        .filter(filterPredicate)
         .limit(limitBy)
-        .toList();
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   @Transactional(value = TxType.REQUIRED)
