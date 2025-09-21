@@ -3,6 +3,8 @@ package net.ygbstudio.postwizard.dao;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.ygbstudio.postwizard.entities.WPMeta;
 
 /**
@@ -39,16 +41,16 @@ public interface PostMetaReaderDAO {
    * Retrieves all post metadata entries that match a specific meta key.
    *
    * @param key the meta key to filter the metadata entries
-   * @return a List of WPMeta entries that match the specified meta key
+   * @return a Stream of WPMeta entries that match the specified meta key
    */
-  List<WPMeta> getEntriesByMetaKey(String key);
+  Stream<WPMeta> getEntriesByMetaKey(String key);
 
   /**
    * Retrieves a WPMeta object with the specified metakey and postID in the database.
    *
-   * @param metaKey
-   * @param postID
-   * @return
+   * @param metaKey a meta key in the database
+   * @param postID a post ID in the database
+   * @return an Optional containing the WPMeta entry if found, or empty if not found
    */
   Optional<WPMeta> findMetaKeyByPostID(String metaKey, long postID);
 
@@ -113,10 +115,16 @@ public interface PostMetaReaderDAO {
 
   /**
    * Get random post IDs from the database with a native query. This method is used to obtain a
-   * random selection of post IDs that do not already exist in the existingIDs set.
+   * random selection of post IDs that match a specific meta key and limit the number of results
+   * based on the limitBy parameter. The filterPredicate parameter is used to filter any posts that
+   * match the predicate and that is useful, for example, to exclude posts that are already
+   * featured.
    *
-   * @param limitBy the number of random post IDs to retrieve.
-   * @return List of Long containing the IDs of random posts.
+   * @param metaKey the meta key to filter the metadata entries by
+   * @param limitBy the limit of posts to retrieve
+   * @param filterPredicate the predicate to apply to each WPMeta object
+   * @return a Set of WPMeta objects that match the meta key and filter predicate
    */
-  List<Long> getRandomPostIDsByMetaKey(String metaKey, long limitBy, Set<Long> existingIDs);
+  Set<WPMeta> getRandomPostsByMetaKey(
+      String metaKey, long limitBy, Predicate<? super WPMeta> filterPredicate);
 }
