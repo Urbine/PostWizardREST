@@ -27,6 +27,10 @@ import org.jspecify.annotations.Nullable;
  * Service class for managing WordPress posts. This class provides methods to check post existence,
  * update post details, and retrieve post information in a structured format.
  *
+ * <p>PostService also defines additional transactional boundaries for some methods to ensure data
+ * consistency and integrity by isolating the transactional context of the database operations with
+ * every method call.
+ *
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
