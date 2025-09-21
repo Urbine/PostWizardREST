@@ -23,8 +23,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +39,7 @@ import net.ygbstudio.postwizard.dto.ServerResponse;
 import net.ygbstudio.postwizard.models.PostType;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
+import net.ygbstudio.postwizard.tasks.RandomiseFeaturedTask;
 
 /**
  * RESTful web service for managing post metadata in the PostWizard application. This class provides
@@ -61,6 +64,8 @@ public class PostDataController {
   @Inject private PostMetaService postMetaService;
 
   @Inject private PostService postService;
+
+  @Inject private RandomiseFeaturedTask randomiseFeaturedTask;
 
   /**
    * Endpoint to retrieve post metadata by post ID. This method returns a JSON representation of the
@@ -476,6 +481,61 @@ public class PostDataController {
                     "Try again later",
                     internalServerError.getStatusCode()))
             .build();
+      }
+    }
+  }
+
+  /**
+   * Endpoint to randomise featured videos in a single batch operation. This method accepts a limit
+   * of posts to randomise. The limit is optional and defaults to 10 if not provided.
+   *
+   * @param limit the limit of posts to randomise
+   * @return a Response object containing the result of the randomisation operation and the list of
+   *     featured videos
+   */
+  @GET
+  @Path("randomfeatured")
+  @RolesAllowed(value = {"user"})
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response randomiseFeaturedVideos(@QueryParam("limit") @DefaultValue("10") int limit) {
+    if (limit < 0) {
+      Response.Status badRequest = Response.Status.BAD_REQUEST;
+      return Response.status(badRequest)
+          .entity(
+              new ErrorResponse(
+                  "Limit has to be greater than 0",
+                  "Malformed request",
+                  badRequest.getStatusCode()))
+          .build();
+    } else {
+      Response.Status internalServerError = Response.Status.INTERNAL_SERVER_ERROR;
+      ErrorResponse randomisationError =
+          new ErrorResponse(
+              "There was an error in the randomisation process",
+              "Try again",
+              internalServerError.getStatusCode());
+      try {
+        Set<Long> newFeaturedVideos = randomiseFeaturedTask.randomiseFeaturedVideosBean(limit);
+        if (newFeaturedVideos.isEmpty()) {
+          return Response.status(internalServerError).entity(randomisationError).build();
+        } else {
+          return Response.ok(
+                  new BatchJobResponse(
+                      "Your post randomisation request has succeeded",
+                      Response.Status.OK.getStatusCode(),
+                      new ArrayList<>(newFeaturedVideos)),
+                  MediaType.APPLICATION_JSON_TYPE)
+              .build();
+        }
+      } catch (Exception anyEx) {
+        postDataControllerLog.log(Level.SEVERE, "Exception caught: ", anyEx);
+        logStepOut(
+            postDataControllerLog,
+            anyEx,
+            anyEx.getMessage(),
+            anyEx.getCause(),
+            "Status " + internalServerError.getStatusCode());
+        return Response.status(internalServerError).entity(randomisationError).build();
       }
     }
   }
