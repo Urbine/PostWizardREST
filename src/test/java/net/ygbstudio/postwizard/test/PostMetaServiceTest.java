@@ -9,9 +9,10 @@ import static org.hamcrest.Matchers.not;
 
 import jakarta.inject.Inject;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.models.PostMetaKeys;
@@ -116,13 +117,25 @@ public class PostMetaServiceTest {
   @Test
   public void testGetRandomPostIDs() {
     Set<Long> featuredPostIDs =
-        new HashSet<>(
-            postMetaService.filterMetaKeyEntriesBy(
-                PostMetaKeys.FEATURED,
-                p -> p.getMetaFieldValue().equals(ToggleField.ON.toString()),
-                WPMeta::getPostID));
-    List<Long> randomPostIDs =
-        postMetaService.getRandomPostIDsByMetaKey(PostMetaKeys.FEATURED, 10, featuredPostIDs);
+        postMetaService.filterMetaKeyEntriesBy(
+            PostMetaKeys.FEATURED,
+            p -> p.getMetaFieldValue().equals(ToggleField.ON.toString()),
+            WPMeta::getPostID);
+
+    Predicate<? super WPMeta> excludePredicate =
+        featuredPostIDs.isEmpty()
+            ? post ->
+                post.getMetaFieldKey().equals(PostMetaKeys.FEATURED.toString())
+                    && post.getMetaFieldValue().equals(ToggleField.OFF.toString())
+            : post -> !featuredPostIDs.contains(post.getPostID());
+
+    Set<Long> randomPostIDs =
+        postMetaService
+            .getRandomPostsByMetaKey(PostMetaKeys.FEATURED, 10, excludePredicate)
+            .stream()
+            .map(WPMeta::getPostID)
+            .collect(Collectors.toUnmodifiableSet());
+
     assertThat(randomPostIDs, not(empty()));
     assertThat(randomPostIDs.size(), is(10));
     randomPostIDs.forEach(postID -> assertThat(postID, not(in(featuredPostIDs))));
@@ -136,10 +149,11 @@ public class PostMetaServiceTest {
             p -> p.getMetaFieldValue().equals(ToggleField.ON.toString()),
             WPMeta::getPostID)
         .isEmpty()) {
-      List<Long> oldFeaturedIDs = postMetaService.disableFeaturedVideos();
+      Set<Long> oldFeaturedIDs = postMetaService.disableFeaturedVideos();
       assertThat(oldFeaturedIDs, not(empty()));
+
       // Enable the videos again, so that the database is in a clean state for the next test.
-      List<Long> featuredVideos = postMetaService.featureVideos(oldFeaturedIDs);
+      Set<Long> featuredVideos = postMetaService.featureVideos(oldFeaturedIDs);
       assertThat(featuredVideos, not(empty()));
 
       // Check that the number of featured videos is the same as the number of disabled featured
@@ -148,7 +162,7 @@ public class PostMetaServiceTest {
 
       // randomise featured videos
       int numberOfPosts = 20;
-      List<Long> randomFeaturedVideos = postMetaService.randomiseFeaturedVideos(numberOfPosts);
+      Set<Long> randomFeaturedVideos = postMetaService.randomiseFeaturedVideos(numberOfPosts);
       assertThat(randomFeaturedVideos, not(empty()));
 
       // Post IDs must be unique, at least different to the last randomisation batch.
@@ -160,14 +174,13 @@ public class PostMetaServiceTest {
 
       // When we disable the featured flag, the method has to return the modified entries,
       // and it has to be the same to make sure the internals of the method are working as expected.
-      List<Long> randomOff =
-          postMetaService.toggleFeaturedVideos(
-              new HashSet<>(randomFeaturedVideos), ToggleField.OFF);
+      Set<Long> randomOff =
+          postMetaService.toggleFeaturedVideos(randomFeaturedVideos, ToggleField.OFF);
       assertThat(randomOff.size(), is(randomFeaturedVideos.size()));
       randomOff.forEach(postID -> assertThat(postID, is(in(randomFeaturedVideos))));
 
       // Enable the old videos again, so that the database remains as it was before.
-      List<Long> resetFeatured = postMetaService.featureVideos(oldFeaturedIDs);
+      Set<Long> resetFeatured = postMetaService.featureVideos(oldFeaturedIDs);
       assertThat(resetFeatured.size(), is(oldFeaturedIDs.size()));
     }
   }
