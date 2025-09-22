@@ -116,20 +116,23 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
       return;
     }
 
-    if (autoCreate && (!postExists(postID) || !metaKeyExists(postID, metaKey))) {
-      WPMeta newMetaPair = new WPMeta();
-      newMetaPair.setPostID(postID);
-      newMetaPair.setMetaFieldKey(metaKey);
-      newMetaPair.setMetaFieldValue(newValue);
-      persistNewPostMeta(newMetaPair);
+    if (!postExists(postID)) {
+      return;
     } else {
-      getEntriesByPostID(postID).stream()
-          .filter(p -> p.getMetaFieldKey().equals(metaKey))
-          .findFirst()
-          .ifPresent(
+      findMetaKeyByPostID(metaKey, postID)
+          .ifPresentOrElse(
               p -> {
                 WPMeta existing = em.find(WPMeta.class, p.getMetaID());
                 existing.setMetaFieldValue(newValue);
+              },
+              () -> {
+                if (autoCreate) {
+                  WPMeta newMetaPair = new WPMeta();
+                  newMetaPair.setPostID(postID);
+                  newMetaPair.setMetaFieldKey(metaKey);
+                  newMetaPair.setMetaFieldValue(newValue);
+                  persistNewPostMeta(newMetaPair);
+                }
               });
     }
   }
