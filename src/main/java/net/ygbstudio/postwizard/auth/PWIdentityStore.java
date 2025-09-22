@@ -77,7 +77,7 @@ public class PWIdentityStore implements IdentityStore {
               .map(e -> e.getValue().toString())
               .findFirst();
 
-      if (apiUser.isEmpty() || apiKey.isEmpty()) { 
+      if (apiUser.isEmpty() || apiKey.isEmpty()) {
         throw new InvalidAuthAttempt(
             "The provided username and API Key are not valid. Try again later");
       }
@@ -86,19 +86,20 @@ public class PWIdentityStore implements IdentityStore {
         return new CredentialValidationResult(apiUser.get(), Set.of("user", "caller"));
 
     } catch (Exception anyEx) {
-    	identityLogger.warning("Error validating credentials from application properties: " + anyEx.getMessage());
+      identityLogger.warning(
+          "Error validating credentials from application properties: " + anyEx.getMessage());
       try {
-    	  identityLogger.warning("Falling back to environment variables for authentication.");
-    	  String apiUser = System.getenv("PW_API_USER");
-    	  String apiKey = System.getenv("PW_API_KEY");
-    	  
-    	  if (((UsernamePasswordCredential) userNamePassword).compareTo(apiUser, apiKey))
-    	        return new CredentialValidationResult(apiUser, Set.of("user", "caller"));
+        identityLogger.warning("Falling back to environment variables for authentication.");
+        String apiUser = System.getenv("PW_API_USER");
+        String apiKey = System.getenv("PW_API_KEY");
+
+        if (((UsernamePasswordCredential) userNamePassword).compareTo(apiUser, apiKey))
+          return new CredentialValidationResult(apiUser, Set.of("user", "caller"));
       } catch (Exception envEx) {
-		  identityLogger.fine("Error getting env variables: " + envEx.getMessage());
-		  identityLogger.fine("Error validating credentials: " + anyEx.getMessage());
-	      return CredentialValidationResult.NOT_VALIDATED_RESULT;
-	  }
+        identityLogger.fine("Error getting env variables: " + envEx.getMessage());
+        identityLogger.fine("Error validating credentials: " + anyEx.getMessage());
+        return CredentialValidationResult.NOT_VALIDATED_RESULT;
+      }
     }
     identityLogger.fine("Returning Invalid Result");
     return CredentialValidationResult.INVALID_RESULT;
