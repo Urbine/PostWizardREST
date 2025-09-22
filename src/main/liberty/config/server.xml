@@ -48,7 +48,7 @@
     </library>
     
     <!-- These are dummy creadentials -->
-    <dataSource id="WordPressLocal" jndiName="jdbc/wm_test" type="javax.sql.DataSource">
+    <dataSource id="WordPressLocal" jndiName="jdbc/wm_test" type="javax.sql.DataSource" validationTimeout="30s" >
 	<jdbcDriver libraryRef="mariadbDriver"
                javax.sql.DataSource="org.mariadb.jdbc.MariaDbDataSource"/>
         <properties
@@ -58,7 +58,9 @@
         <connectionManager
             maxPoolSize="20"
             minPoolSize="5"
-            connectionTimeout="10s"/>
+            connectionTimeout="60s"
+	    purgePolicy="ValidateAllConnections"
+	    autoCloseConnections="false"/>
     </dataSource>
     
 </server>
