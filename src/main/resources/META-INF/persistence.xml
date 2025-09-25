@@ -1,42 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence
-	xmlns="https://jakarta.ee/xml/ns/persistence"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence 
+        xmlns="https://jakarta.ee/xml/ns/persistence"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
 	https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd" version="3.0">
 
-	<persistence-unit name="wpmeta" transaction-type="JTA">
+    <persistence-unit name="wpmeta" transaction-type="JTA">
 
-		<!-- Force Hibernate as provider -->
-		<!-- <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
+        <!-- Force Hibernate as provider if necessary -->
+        <!-- <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
 
-		<!-- Your JTA datasource -->
-		<jta-data-source>jdbc/wm_test</jta-data-source>
+        <!-- JTA datasource -->
+        <jta-data-source>jdbc/wm_test</jta-data-source>
+
+        <!-- Entity class -->
+        <class>net.ygbstudio.postwizard.entities.WPMeta</class>
 
 
-		<!-- Hibernate-specific properties -->
-		<properties>
-			<property name="hibernate.show_sql" value="true" />
-			<property name="hibernate.format_sql" value="true" />
-		</properties>
-	</persistence-unit>
-	
-	<persistence-unit name="wpost" transaction-type="JTA">
+        <!-- Hibernate-specific properties -->
+        <properties>
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.MariaDBDialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
 
-		<!-- Your JTA datasource -->
-		<jta-data-source>jdbc/wm_test</jta-data-source>
+    <persistence-unit name="wpost" transaction-type="JTA">
 
-		<!-- Your entity class -->
-		<class>net.ygbstudio.postdirector.entities.WPost</class>
+        <!-- JTA datasource -->
+        <jta-data-source>jdbc/wm_test</jta-data-source>
 
-		<!-- Hibernate-specific properties -->
-		<properties>
-			<property name="hibernate.dialect"
-				value="org.hibernate.dialect.MariaDBDialect" />
-			<property name="hibernate.show_sql" value="true" />
-			<property name="hibernate.format_sql" value="true" />
-			<property name="hibernate.temp.use_jdbc_metadata_defaults"
-				value="false" />
-		</properties>
-	</persistence-unit>
+        <!-- Entity class -->
+        <class>net.ygbstudio.postwizard.entities.WPost</class>
+
+        <!-- Hibernate-specific properties -->
+        <properties>
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.MariaDBDialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="wptermrelationships" transaction-type="JTA">
+
+        <!-- JTA datasource -->
+        <jta-data-source>jdbc/wm_test</jta-data-source>
+
+        <!-- Entity class -->
+        <class>net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships</class>
+
+        <!-- Hibernate-specific properties -->
+        <properties>
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.MariaDBDialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="wpterms" transaction-type="JTA">
+
+        <!-- JTA datasource -->
+        <jta-data-source>jdbc/wm_test</jta-data-source>
+
+        <!-- Your entity class -->
+        <class>net.ygbstudio.postwizard.entities.taxonomies.WPTerms</class>
+
+        <!-- Hibernate-specific properties -->
+        <properties>
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.MariaDBDialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="wptermrelationships" transaction-type="JTA">
+
+        <!-- JTA datasource -->
+        <jta-data-source>jdbc/wm_test</jta-data-source>
+
+        <!-- Entity class -->
+        <class>net.ygbstudio.postwizard.entities.taxonomies.WPTermMeta</class>
+
+        <!-- Hibernate-specific properties -->
+        <properties>
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.MariaDBDialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>
