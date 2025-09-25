@@ -63,8 +63,8 @@ public class PostService {
   @Transactional(value = TxType.REQUIRES_NEW)
   public List<ClientPost> getClientPostAll() {
     return dbPostDao.getAllPosts().stream()
-        .filter(post -> Objects.nonNull(post.getID()))
-        .map(post -> getClientPost(post.getID()))
+        .filter(post -> Objects.nonNull(post.getId()))
+        .map(post -> getClientPost(post.getId()))
         .toList();
   }
 
@@ -75,8 +75,8 @@ public class PostService {
             ? dbPostDao.getAllByType(postType.toString())
             : dbPostDao.getAllPosts();
     return postByType.stream()
-        .filter(post -> Objects.nonNull(post.getID()))
-        .map(post -> getClientPost(post.getID()))
+        .filter(post -> Objects.nonNull(post.getId()))
+        .map(post -> getClientPost(post.getId()))
         .toList();
   }
 
@@ -111,7 +111,7 @@ public class PostService {
 
     WPost inMemoryPost = new WPost();
 
-    inMemoryPost.setID(clientPost.getID());
+    inMemoryPost.setId(clientPost.getID());
     inMemoryPost.setPostAuthor(clientPost.getAuthor());
     inMemoryPost.setPostContent(clientPost.getContent());
     inMemoryPost.setPostTitle(clientPost.getTitle());
@@ -125,7 +125,7 @@ public class PostService {
     inMemoryPost.setModifiedAtGMT(ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime());
 
     if (!isValidPostType(inMemoryPost.getPostType()))
-      if (inMemoryPost.getID() != null && !dbPostDao.postExists(inMemoryPost.getID())) return;
+      if (inMemoryPost.getId() != null && !dbPostDao.postExists(inMemoryPost.getId())) return;
 
       // postType is set to "null" in order that updatePostEntry() can use
       // the value of the existing post so as to not overwrite it with an invalid value.
@@ -156,7 +156,7 @@ public class PostService {
         .getPostById(postID)
         .ifPresent(
             p -> {
-              Long id = p.getID();
+              Long id = p.getId();
               if (id == null || id <= 0) return;
               convertedObj.setID(id);
               convertedObj.setAuthor(p.getPostAuthor());
