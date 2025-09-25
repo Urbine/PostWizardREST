@@ -23,7 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * This class is a scheduled task that randomises the featured videos in the database. It is also
- * used as a wrapper for the randomiseFeaturedVideos method in the PostMetaService since it
+ * used as a wrapper for the randomiseFeaturedVideos method in the PostMetaService since
  * RandomiseFeaturedTask uses concurrency features that are controlled by the EJB container, such as
  * write locks.
  *
@@ -78,7 +78,7 @@ public class RandomiseFeaturedTask {
        These catch blocks are more of a placeholder for any exception that may be thrown
        by the PostMetaService or the database driver, specially exceptions that have to do with
        connection to the database, connection pool exhaustion or timeouts that usually happen in
-       the Data Access layer. This catch block is broad on purpose, loggers are in place.
+       the Data Access layer. These catch blocks are broad on purpose, loggers are in place in both.
       */
       randomiseFeaturedTaskLog.log(
           Level.SEVERE, "randomiseAtMidnight scheduled task failed", anyEx);
