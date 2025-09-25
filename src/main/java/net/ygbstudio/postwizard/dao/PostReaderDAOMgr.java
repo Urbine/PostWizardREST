@@ -9,7 +9,7 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -68,17 +68,17 @@ public class PostReaderDAOMgr implements PostReaderDAO {
   @Override
   public void updatePostEntry(WPost postItem, boolean autoCreate) {
 
-    if (postItem.getID() == null) return;
+    if (postItem.getId() == null) return;
 
-    boolean postExists = postExists(postItem.getID());
+    boolean postExists = postExists(postItem.getId());
     if (autoCreate && !postExists) {
       if (isValidPost(postItem)) {
         postItem.setCreatedAtLocal(LocalDateTime.now());
-        postItem.setCreatedAtGMT(ZonedDateTime.now(ZoneId.of("Etc/GMT-0")).toLocalDateTime());
+        postItem.setCreatedAtGMT(ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime());
         em.persist(postItem);
       }
     } else if (postExists) {
-      WPost targetPost = getPostById(postItem.getID()).orElseThrow();
+      WPost targetPost = getPostById(postItem.getId()).orElseThrow();
       targetPost.setPostAuthor(
           Objects.requireNonNullElse(postItem.getPostAuthor(), targetPost.getPostAuthor()));
       targetPost.setPostContent(
