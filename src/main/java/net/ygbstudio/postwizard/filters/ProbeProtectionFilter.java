@@ -28,7 +28,7 @@ public class ProbeProtectionFilter implements Filter {
   // patterns for probes / known bad filenames or extensions
   private static final Pattern PROBE_PATTERN =
       Pattern.compile(
-          "(?:\\.(?:php|phtml|php5|phpinfo|git|xml)$)|(?:\\bphpinfo\\b)|(?:\\.env$)|(?:wp-admin)|(?:wp-login\\.php)|(?:/vendor/)|(?:/composer\\.json$)",
+          "\\.(?:php|phtml|php5|phpinfo|git|xml)$|\\bphpinfo\\b|\\.env$|wp-admin|wp-login\\.php|/vendor/|/composer\\.json$",
           Pattern.CASE_INSENSITIVE);
 
   @Override
