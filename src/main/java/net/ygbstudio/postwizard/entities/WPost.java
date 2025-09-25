@@ -1,16 +1,18 @@
 package net.ygbstudio.postwizard.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.Set;
+import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 
 /**
  * Represents a WordPress post entity.
@@ -24,14 +26,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Entity
 @Table(name = "`wp_posts`")
 @NamedQuery(name = "WPost.FindAll", query = "SELECT p FROM WPost p")
-@NamedQuery(name = "WPost.FindByID", query = "SELECT p from WPost p WHERE p.ID = :postID")
+@NamedQuery(name = "WPost.FindByID", query = "SELECT p from WPost p WHERE p.id = :postID")
 @NamedQuery(name = "WPost.FindByType", query = "SELECT p FROM WPost p WHERE p.postType = :postType")
 public class WPost {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID")
-  private Long ID;
+  private Long id;
 
   @Column(name = "post_author")
   private Long postAuthor;
@@ -72,27 +74,11 @@ public class WPost {
   @Column(name = "post_mime_type")
   private String postMimeType;
 
+  @OneToMany(mappedBy = "postObject", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<WPTermRelationships> termRelationships;
+
   public WPost() {}
 
-  /**
-   * Constructor for WPost. Fields are mapped to the corresponding columns in the `wp_posts` table.
-   * Field names are self-explanatory.
-   *
-   * @param iD
-   * @param postAuthor
-   * @param createdAtGMT
-   * @param createdAtLocal
-   * @param modifiedAtGMT
-   * @param modifiedAtLocal
-   * @param postContent
-   * @param postTitle
-   * @param postSlug
-   * @param postStatus
-   * @param postType
-   * @param postParent
-   * @param guid
-   * @param postMimeType
-   */
   public WPost(
       Long iD,
       Long postAuthor,
@@ -107,9 +93,10 @@ public class WPost {
       String postType,
       Long postParent,
       String guid,
-      String postMimeType) {
+      String postMimeType,
+      Set<WPTermRelationships> termRelationships) {
     super();
-    ID = iD;
+    id = iD;
     this.postAuthor = postAuthor;
     this.createdAtGMT = createdAtGMT;
     this.createdAtLocal = createdAtLocal;
@@ -123,14 +110,15 @@ public class WPost {
     this.postParent = postParent;
     this.guid = guid;
     this.postMimeType = postMimeType;
+    this.termRelationships = termRelationships;
   }
 
-  public Long getID() {
-    return ID;
+  public Long getId() {
+    return id;
   }
 
-  public void setID(Long iD) {
-    ID = iD;
+  public void setId(Long iD) {
+    id = iD;
   }
 
   public Long getPostAuthor() {
@@ -237,12 +225,20 @@ public class WPost {
     this.postMimeType = postMimeType;
   }
 
+  public Set<WPTermRelationships> getTermRelationships() {
+    return termRelationships;
+  }
+
+  public void setTermRelationships(Set<WPTermRelationships> termRelationships) {
+    this.termRelationships = termRelationships;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
     WPost other = (WPost) obj;
-    return Objects.equals(getID(), other.getID())
+    return Objects.equals(getId(), other.getId())
         && Objects.equals(getPostAuthor(), other.getPostAuthor())
         && Objects.equals(getPostContent(), other.getPostContent())
         && Objects.equals(getPostTitle(), other.getPostTitle())
@@ -255,13 +251,14 @@ public class WPost {
         && Objects.equals(getModifiedAtLocal(), other.getModifiedAtLocal())
         && Objects.equals(getPostParent(), other.getPostParent())
         && Objects.equals(getGuid(), other.getGuid())
-        && Objects.equals(getPostMimeType(), other.getPostMimeType());
+        && Objects.equals(getPostMimeType(), other.getPostMimeType())
+        && Objects.equals(termRelationships, other.getTermRelationships());
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(
-        ID,
+        id,
         postAuthor,
         postContent,
         postTitle,
@@ -274,11 +271,42 @@ public class WPost {
         modifiedAtLocal,
         postParent,
         guid,
-        postMimeType);
+        postMimeType,
+        termRelationships);
   }
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
+    return "WPost [id="
+        + id
+        + ", postAuthor="
+        + postAuthor
+        + ", createdAtGMT="
+        + createdAtGMT
+        + ", createdAtLocal="
+        + createdAtLocal
+        + ", modifiedAtGMT="
+        + modifiedAtGMT
+        + ", modifiedAtLocal="
+        + modifiedAtLocal
+        + ", postContent="
+        + postContent
+        + ", postTitle="
+        + postTitle
+        + ", postSlug="
+        + postSlug
+        + ", postStatus="
+        + postStatus
+        + ", postType="
+        + postType
+        + ", postParent="
+        + postParent
+        + ", guid="
+        + guid
+        + ", postMimeType="
+        + postMimeType
+        + ", wpTermRelationShips="
+        + termRelationships.toString()
+        + "]";
   }
 }
