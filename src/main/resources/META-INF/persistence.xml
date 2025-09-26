@@ -77,7 +77,7 @@
         </properties>
     </persistence-unit>
 
-    <persistence-unit name="wptermrelationships" transaction-type="JTA">
+    <persistence-unit name="wptermmeta" transaction-type="JTA">
 
         <!-- JTA datasource -->
         <jta-data-source>jdbc/wm_test</jta-data-source>
