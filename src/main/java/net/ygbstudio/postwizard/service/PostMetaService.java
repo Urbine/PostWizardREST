@@ -187,7 +187,7 @@ public class PostMetaService {
         filterMetaKeyEntriesBy(
             PostMetaKeys.FEATURED,
             post -> post.getMetaFieldValue().equals(ToggleField.ON.toString()),
-            WPMeta::getPostID);
+            post -> post.getPost().getId());
     return toggleFeaturedVideos(getAllPostIDs, ToggleField.OFF);
   }
 
@@ -219,11 +219,11 @@ public class PostMetaService {
             ? post ->
                 post.getMetaFieldKey().equals(PostMetaKeys.FEATURED.toString())
                     && post.getMetaFieldValue().equals(ToggleField.OFF.toString())
-            : post -> !oldFeatured.contains(post.getPostID());
+            : post -> !oldFeatured.contains(post.getPost().getId());
 
     Set<Long> randomPostIDs =
         getRandomPostsByMetaKey(PostMetaKeys.FEATURED, newFeaturedVids, excludePredicate).stream()
-            .map(WPMeta::getPostID)
+            .map(post -> post.getPost().getId())
             .collect(Collectors.toUnmodifiableSet());
 
     if (randomPostIDs.size() != newFeaturedVids)
@@ -397,7 +397,7 @@ public class PostMetaService {
               String metaFieldKey = p.getMetaFieldKey();
               String metaFieldValue = p.getMetaFieldValue();
 
-              if (convertedObj.getID() == 0) convertedObj.setID(p.getPostID());
+              if (convertedObj.getID() == 0) convertedObj.setID(p.getPost().getId());
 
               switch (enumFromValue(PostMetaKeys.class, metaFieldKey, true)
                   .orElse(PostMetaKeys.OTHERS)) {
