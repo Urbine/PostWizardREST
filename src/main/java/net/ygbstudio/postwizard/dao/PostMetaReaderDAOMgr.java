@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.ygbstudio.postwizard.entities.WPMeta;
+import net.ygbstudio.postwizard.entities.WPost;
 
 /**
  * Data Access Object (DAO) implementation for reading WordPress post metadata. This class provides
@@ -127,8 +128,9 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
               },
               () -> {
                 if (autoCreate) {
+                  WPost wpPost = em.find(WPost.class, postID);
                   WPMeta newMetaPair = new WPMeta();
-                  newMetaPair.setPostID(postID);
+                  newMetaPair.setPost(wpPost);
                   newMetaPair.setMetaFieldKey(metaKey);
                   newMetaPair.setMetaFieldValue(newValue);
                   persistNewPostMeta(newMetaPair);
@@ -150,7 +152,7 @@ public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public void persistNewPostMeta(WPMeta metaPair) {
-    if (metaPair.getPostID() == null
+    if (metaPair.getPost() == null
         || metaPair.getMetaFieldKey() == null
         || metaPair.getMetaFieldValue() == null) {
       return;
