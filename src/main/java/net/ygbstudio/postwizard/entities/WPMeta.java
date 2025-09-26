@@ -5,8 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import java.util.Objects;
 
 /**
  * Represents metadata associated with a WordPress post.
@@ -18,22 +21,24 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "`wp_postmeta`")
-@NamedQuery(name = "WPMeta.FindAll", query = "SELECT post FROM WPMeta post")
-@NamedQuery(name = "WPMeta.FindAllPostIDs", query = "SELECT post.postID FROM WPMeta post")
+@NamedQuery(name = "WPMeta.FindAll", query = "SELECT postMeta FROM WPMeta postMeta")
+@NamedQuery(
+    name = "WPMeta.FindAllPostIDs",
+    query = "SELECT postMeta.wpPost.id FROM WPMeta postMeta")
 @NamedQuery(
     name = "WPMeta.FindPostByID",
-    query = "SELECT post FROM WPMeta post WHERE post.postID = :postID")
+    query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postID")
 @NamedQuery(
     name = "WPMeta.FindByMetaKey",
-    query = "SELECT post FROM WPMeta post WHERE post.metaFieldKey = :metaKey")
+    query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey")
 @NamedQuery(
     name = "WPMeta.FindKeyByPostID",
     query =
-        "SELECT post FROM WPMeta post WHERE post.metaFieldKey = :metaKey AND post.postID = :postID")
+        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey AND postMeta.wpPost.id = :postID")
 @NamedQuery(
     name = "WPMeta.RandomPostByMetaKey",
     query =
-        "SELECT post FROM WPMeta post WHERE post.metaFieldKey = :metaKey ORDER BY FUNCTION('RAND')")
+        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey ORDER BY FUNCTION('RAND')")
 public class WPMeta {
 
   @Id
@@ -41,9 +46,9 @@ public class WPMeta {
   @Column(name = "meta_id")
   private Long metaID;
 
-  /** The post ID this metadata is associated with. Not the primary key in the database. */
-  @Column(name = "post_id", nullable = false)
-  private Long postID;
+  @ManyToOne
+  @JoinColumn(name = "post_id")
+  private WPost wpPost;
 
   @Column(name = "meta_key")
   private String metaFieldKey;
@@ -57,14 +62,14 @@ public class WPMeta {
    * Constructs a WPMeta instance with the specified parameters.
    *
    * @param metaID the unique identifier for the metadata entry
-   * @param postID the ID of the post this metadata is associated with
+   * @param wpPost the ID of the post this metadata is associated with
    * @param metaFieldKey the key/name of the metadata field
    * @param metaFieldValue the value associated with the metadata field
    */
-  public WPMeta(Long metaID, Long postID, String metaFieldKey, String metaFieldValue) {
+  public WPMeta(Long metaID, WPost wpPost, String metaFieldKey, String metaFieldValue) {
     super();
     this.metaID = metaID;
-    this.postID = postID;
+    this.wpPost = wpPost;
     this.metaFieldKey = metaFieldKey;
     this.metaFieldValue = metaFieldValue;
   }
@@ -77,12 +82,12 @@ public class WPMeta {
     this.metaID = metaID;
   }
 
-  public Long getPostID() {
-    return postID;
+  public WPost getPost() {
+    return wpPost;
   }
 
-  public void setPostID(Long postID) {
-    this.postID = postID;
+  public void setPost(WPost wpPost) {
+    this.wpPost = wpPost;
   }
 
   public String getMetaFieldKey() {
@@ -102,11 +107,26 @@ public class WPMeta {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    WPMeta wpMeta = (WPMeta) o;
+    return Objects.equals(getMetaID(), wpMeta.getMetaID())
+        && Objects.equals(wpPost, wpMeta.wpPost)
+        && Objects.equals(getMetaFieldKey(), wpMeta.getMetaFieldKey())
+        && Objects.equals(getMetaFieldValue(), wpMeta.getMetaFieldValue());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getMetaID(), wpPost, getMetaFieldKey(), getMetaFieldValue());
+  }
+
+  @Override
   public String toString() {
     return "WPMeta [metaID="
         + metaID
-        + ", postID="
-        + postID
+        + ", postItem="
+        + wpPost
         + ", metaFieldKey="
         + metaFieldKey
         + ", metaFieldValue="

@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 
 /**
@@ -76,6 +77,9 @@ public class WPost {
 
   @OneToMany(mappedBy = "postObject", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<WPTermRelationships> termRelationships;
+
+  @OneToMany(mappedBy = "wpPost", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<WPMeta> postMetadataSet;
 
   public WPost() {}
 
@@ -233,6 +237,14 @@ public class WPost {
     this.termRelationships = termRelationships;
   }
 
+  public Set<WPMeta> getPostMetadataSet() {
+    return postMetadataSet;
+  }
+
+  public void setPostMetadataSet(Set<WPMeta> postMetadataSet) {
+    this.postMetadataSet = postMetadataSet;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
@@ -252,7 +264,8 @@ public class WPost {
         && Objects.equals(getPostParent(), other.getPostParent())
         && Objects.equals(getGuid(), other.getGuid())
         && Objects.equals(getPostMimeType(), other.getPostMimeType())
-        && Objects.equals(termRelationships, other.getTermRelationships());
+        && termRelationships.containsAll(other.getTermRelationships())
+        && postMetadataSet.containsAll(other.getPostMetadataSet());
   }
 
   @Override
@@ -307,6 +320,8 @@ public class WPost {
         + postMimeType
         + ", wpTermRelationShips="
         + termRelationships.toString()
+        + ", postMetadataSet="
+        + postMetadataSet.stream().map(WPMeta::getMetaFieldKey).collect(Collectors.joining(","))
         + "]";
   }
 }
