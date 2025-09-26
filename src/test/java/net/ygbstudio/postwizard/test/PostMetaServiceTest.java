@@ -120,20 +120,20 @@ public class PostMetaServiceTest {
         postMetaService.filterMetaKeyEntriesBy(
             PostMetaKeys.FEATURED,
             p -> p.getMetaFieldValue().equals(ToggleField.ON.toString()),
-            WPMeta::getPostID);
+            post -> post.getPost().getId());
 
     Predicate<? super WPMeta> excludePredicate =
         featuredPostIDs.isEmpty()
             ? post ->
                 post.getMetaFieldKey().equals(PostMetaKeys.FEATURED.toString())
                     && post.getMetaFieldValue().equals(ToggleField.OFF.toString())
-            : post -> !featuredPostIDs.contains(post.getPostID());
+            : post -> !featuredPostIDs.contains(post.getPost());
 
     Set<Long> randomPostIDs =
         postMetaService
             .getRandomPostsByMetaKey(PostMetaKeys.FEATURED, 10, excludePredicate)
             .stream()
-            .map(WPMeta::getPostID)
+            .map(post -> post.getPost().getId())
             .collect(Collectors.toUnmodifiableSet());
 
     assertThat(randomPostIDs, not(empty()));
@@ -147,7 +147,7 @@ public class PostMetaServiceTest {
         .filterMetaKeyEntriesBy(
             PostMetaKeys.FEATURED,
             p -> p.getMetaFieldValue().equals(ToggleField.ON.toString()),
-            WPMeta::getPostID)
+            post -> post.getPost().getId())
         .isEmpty()) {
       Set<Long> oldFeaturedIDs = postMetaService.disableFeaturedVideos();
       assertThat(oldFeaturedIDs, not(empty()));
