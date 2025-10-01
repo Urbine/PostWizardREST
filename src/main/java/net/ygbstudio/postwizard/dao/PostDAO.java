@@ -14,8 +14,13 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.entities.WPost;
+import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
+import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 
 /**
  * Data Access Object (DAO) implementation for reading WordPress posts. This class provides methods
@@ -24,7 +29,7 @@ import net.ygbstudio.postwizard.entities.WPost;
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
-public class PostReaderDAOMgr implements PostReaderDAO {
+public class PostDAO implements PostManager {
 
   @PersistenceContext(unitName = "wpost")
   private EntityManager em;
@@ -50,6 +55,26 @@ public class PostReaderDAOMgr implements PostReaderDAO {
         .setParameter("postID", postID)
         .getResultStream()
         .findFirst();
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
+  public Set<WPTermRelationships> getTermRelationshipsByPostID(Long postId) {
+    return em.find(WPost.class, postId).getTermRelationships();
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
+  public Set<WPTerms> getPostTermsById(Long postId) {
+    return em.find(WPost.class, postId).getTermRelationships().stream()
+        .map(rel -> rel.getTermTaxonomy().getTerm())
+        .collect(Collectors.toSet());
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
+  public Set<WPMeta> getPostMetaByPostID(Long postId) {
+    return em.find(WPost.class, postId).getPostMetadataSet();
   }
 
   @Override
@@ -104,5 +129,17 @@ public class PostReaderDAOMgr implements PostReaderDAO {
 
       if (!em.contains(targetPost)) em.merge(targetPost);
     }
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
+  public boolean deletePost(long postID) {
+    boolean deleted = false;
+    Optional<WPost> post = getPostById(postID);
+    if (post.isPresent()) {
+      em.remove(post.get());
+      deleted = true;
+    }
+    return deleted;
   }
 }

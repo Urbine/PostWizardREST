@@ -2,7 +2,11 @@ package net.ygbstudio.postwizard.dao;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.entities.WPost;
+import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
+import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress posts. This interface defines methods to
@@ -10,7 +14,7 @@ import net.ygbstudio.postwizard.entities.WPost;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
-public interface PostReaderDAO {
+public interface PostManager {
 
   /**
    * Retrieves all posts.
@@ -59,4 +63,36 @@ public interface PostReaderDAO {
    * @param postItem the WPost item to update
    */
   void updatePostEntry(WPost postItem, boolean autoCreate);
+
+  /**
+   * Retrieves the term relationships for a specific post by its ID.
+   *
+   * @param postId the ID of the post to retrieve term relationships for
+   * @return a Set of WPTermRelationships entries matching the specified post ID
+   */
+  Set<WPTermRelationships> getTermRelationshipsByPostID(Long postId);
+
+  /**
+   * Retrieves the metadata for a specific post by its ID.
+   *
+   * @param postId the ID of the post to retrieve metadata for
+   * @return a Set of WPMeta entries matching the specified post ID
+   */
+  Set<WPMeta> getPostMetaByPostID(Long postId);
+
+  /**
+   * Retrieves the terms for a specific post by its ID.
+   *
+   * @param postId the ID of the post to retrieve terms for
+   * @return a Set of WPTerms entries matching the specified post ID
+   */
+  Set<WPTerms> getPostTermsById(Long postId);
+
+  /**
+   * Deletes a post entry with the specified ID.
+   *
+   * @param postID the ID of the post to delete
+   * @return true if the post was deleted, false otherwise
+   */
+  boolean deletePost(long postID);
 }
