@@ -3,6 +3,7 @@ package net.ygbstudio.postwizard.entities.taxonomies;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Class {@code WPTermRelationshipsID} represents a composite of the primary keys of the
@@ -46,5 +47,13 @@ public class WPTermRelationshipsID {
   @Override
   public int hashCode() {
     return Objects.hash(getObjectID(), getTermTaxonomyID());
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", WPTermRelationshipsID.class.getSimpleName() + "[", "]")
+        .add("objectID=" + objectID)
+        .add("termTaxonomyID=" + termTaxonomyID)
+        .toString();
   }
 }
