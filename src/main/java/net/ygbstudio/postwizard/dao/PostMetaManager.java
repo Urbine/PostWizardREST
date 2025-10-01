@@ -13,7 +13,7 @@ import net.ygbstudio.postwizard.entities.WPMeta;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
-public interface PostMetaReaderDAO {
+public interface PostMetaManager {
 
   /**
    * Retrieves all post metadata entries.

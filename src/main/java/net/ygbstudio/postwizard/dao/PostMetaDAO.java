@@ -22,7 +22,7 @@ import net.ygbstudio.postwizard.entities.WPost;
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
-public class PostMetaReaderDAOMgr implements PostMetaReaderDAO {
+public class PostMetaDAO implements PostMetaManager {
 
   @PersistenceContext(unitName = "wpmeta")
   private EntityManager em;
