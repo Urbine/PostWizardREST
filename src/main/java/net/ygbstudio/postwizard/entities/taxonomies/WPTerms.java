@@ -6,7 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Objects;
 import java.util.Set;
@@ -24,6 +26,14 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "`wp_terms`")
+@NamedQuery(name = "WPTerms.FindAll", query = "SELECT t FROM WPTerms t")
+@NamedQuery(name = "WPTerms.ExistsByID", query = "SELECT t FROM WPTerms t WHERE t.id = :termId")
+@NamedQuery(
+    name = "WPTerms.ExistsBySlug",
+    query = "SELECT t FROM WPTerms t WHERE t.slug = :termSlug")
+@NamedQuery(
+    name = "WPTerms.ExistsByName",
+    query = "SELECT t FROM WPTerms t WHERE t.name = :termName")
 public class WPTerms {
   @Id
   @Column(name = "term_id")
@@ -33,8 +43,8 @@ public class WPTerms {
   @OneToMany(mappedBy = "termItem", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<WPTermMeta> termMeta;
 
-  @OneToMany(mappedBy = "wpTerm", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<WPTermRelationships> wpTermRelationships;
+  @OneToOne(mappedBy = "term", cascade = CascadeType.ALL, orphanRemoval = true)
+  private WPTermTaxonomy taxonomy;
 
   @Column(name = "name")
   private String name;
@@ -44,23 +54,6 @@ public class WPTerms {
 
   @Column(name = "term_group")
   private long termGroup;
-
-  public WPTerms() {}
-
-  public WPTerms(
-      Long id,
-      Set<WPTermMeta> termMeta,
-      Set<WPTermRelationships> wpTermRelationships,
-      String name,
-      long termGroup,
-      String slug) {
-    this.id = id;
-    this.termMeta = termMeta;
-    this.wpTermRelationships = wpTermRelationships;
-    this.name = name;
-    this.termGroup = termGroup;
-    this.slug = slug;
-  }
 
   public Long getId() {
     return id;
@@ -78,12 +71,12 @@ public class WPTerms {
     this.termMeta = termMeta;
   }
 
-  public Set<WPTermRelationships> getWpTermRelationships() {
-    return wpTermRelationships;
+  public WPTermTaxonomy getTaxonomy() {
+    return taxonomy;
   }
 
-  public void setWpTermRelationships(Set<WPTermRelationships> wpTermRelationships) {
-    this.wpTermRelationships = wpTermRelationships;
+  public void setTaxonomy(WPTermTaxonomy taxonomy) {
+    this.taxonomy = taxonomy;
   }
 
   public String getName() {
@@ -135,11 +128,9 @@ public class WPTerms {
         .add(
             "termsMeta="
                 + termMeta.stream().map(Objects::toString).collect(Collectors.joining(",")))
-        .add(
-            "wpTermRelationships="
-                + wpTermRelationships.stream()
-                    .map(Objects::toString)
-                    .collect(Collectors.joining(",")))
+        .add("wpTaxonomy=" + taxonomy.getTaxonomy())
+        .add("wpTaxonomyDescription" + taxonomy.getDescription())
+        .add("wpTaxonomyCount" + taxonomy.getCount())
         .toString();
   }
 }
