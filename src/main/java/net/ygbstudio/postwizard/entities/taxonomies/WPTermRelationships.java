@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.StringJoiner;
 import net.ygbstudio.postwizard.entities.WPost;
@@ -28,26 +29,16 @@ public class WPTermRelationships {
 
   @ManyToOne(optional = false)
   @MapsId(value = "objectID")
-  @JoinColumn(name = "object_id")
+  @JoinColumn(name = "object_id", nullable = false)
   private WPost postObject;
+
+  @OneToOne(optional = false)
+  @MapsId(value = "termTaxonomyID")
+  @JoinColumn(name = "term_taxonomy_id", nullable = false)
+  private WPTermTaxonomy termTaxonomy;
 
   @Column(name = "term_order")
   private int termOrder;
-
-  @ManyToOne(optional = false)
-  @MapsId(value = "termTaxonomyID")
-  @JoinColumn(name = "term_taxonomy_id")
-  private WPTerms wpTerm;
-
-  public WPTermRelationships() {}
-
-  public WPTermRelationships(
-      WPTermRelationshipsID id, WPost postObject, int termOrder, WPTerms wpTerm) {
-    this.id = id;
-    this.postObject = postObject;
-    this.termOrder = termOrder;
-    this.wpTerm = wpTerm;
-  }
 
   public WPTermRelationshipsID getId() {
     return id;
@@ -73,12 +64,12 @@ public class WPTermRelationships {
     this.termOrder = termOrder;
   }
 
-  public WPTerms getWpTerm() {
-    return wpTerm;
+  public WPTermTaxonomy getTermTaxonomy() {
+    return termTaxonomy;
   }
 
-  public void setWpTerm(WPTerms wpTerm) {
-    this.wpTerm = wpTerm;
+  public void setTermTaxonomy(WPTermTaxonomy termTaxonomy) {
+    this.termTaxonomy = termTaxonomy;
   }
 
   @Override
@@ -88,9 +79,9 @@ public class WPTermRelationships {
         .add("termTaxonomyId=" + id.getTermTaxonomyID())
         .add("postObject=" + postObject.getId())
         .add("termOrder=" + termOrder)
-        .add("WPTerm=" + wpTerm.getName())
-        .add("WPTermId=" + wpTerm.getId())
-        .add("WPTermSlug=" + wpTerm.getSlug())
+        .add("WPTermTaxonomy=" + termTaxonomy.getTaxonomy())
+        .add("WPTermTaxonomyCount=" + termTaxonomy.getCount())
+        .add("WPTermSlug=" + termTaxonomy.getDescription())
         .toString();
   }
 }
