@@ -17,10 +17,11 @@ import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.ygbstudio.postwizard.dao.PostReaderDAO;
+import net.ygbstudio.postwizard.dao.PostManager;
 import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.entities.WPost;
 import net.ygbstudio.postwizard.models.PostType;
+import net.ygbstudio.postwizard.models.Taxonomy;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -42,7 +43,7 @@ public class PostService {
   private static final FileHandler logFileHandler = loggingInit(postServiceLog, Level.ALL, true);
 
   /** Data Access Object (DAO) for reading and manipulating posts table. */
-  @Inject private PostReaderDAO dbPostDao;
+  @Inject private PostManager dbPostManager;
 
   /**
    * Checks whether a post exists in the server database.
@@ -52,7 +53,7 @@ public class PostService {
    */
   @Transactional(value = TxType.REQUIRES_NEW)
   public boolean postExists(long postID) {
-    return dbPostDao.postExists(postID);
+    return dbPostManager.postExists(postID);
   }
 
   /**
@@ -62,7 +63,7 @@ public class PostService {
    */
   @Transactional(value = TxType.REQUIRES_NEW)
   public List<ClientPost> getClientPostAll() {
-    return dbPostDao.getAllPosts().stream()
+    return dbPostManager.getAllPosts().stream()
         .filter(post -> Objects.nonNull(post.getId()))
         .map(post -> getClientPost(post.getId()))
         .toList();
@@ -72,8 +73,8 @@ public class PostService {
   public List<ClientPost> getAllClientPostByType(PostType postType) {
     List<WPost> postByType =
         postType != PostType.ALL
-            ? dbPostDao.getAllByType(postType.toString())
-            : dbPostDao.getAllPosts();
+            ? dbPostManager.getAllByType(postType.toString())
+            : dbPostManager.getAllPosts();
     return postByType.stream()
         .filter(post -> Objects.nonNull(post.getId()))
         .map(post -> getClientPost(post.getId()))
@@ -89,6 +90,17 @@ public class PostService {
   public boolean isValidPostType(@Nullable String postType) {
     return Objects.nonNull(postType)
         && isInEnum(PostType.class, String::valueOf, postType::equalsIgnoreCase);
+  }
+
+  /**
+   * Validates if the provided taxonomy is a valid Taxonomy enumeration value.
+   *
+   * @param taxonomy the taxonomy to validate
+   * @return true if the taxonomy is valid, false otherwise
+   */
+  public boolean isValidTaxonomy(@Nullable String taxonomy) {
+    return Objects.nonNull(taxonomy)
+        && isInEnum(Taxonomy.class, String::valueOf, taxonomy::equalsIgnoreCase);
   }
 
   /**
@@ -125,13 +137,13 @@ public class PostService {
     inMemoryPost.setModifiedAtGMT(ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime());
 
     if (!isValidPostType(inMemoryPost.getPostType()))
-      if (inMemoryPost.getId() != null && !dbPostDao.postExists(inMemoryPost.getId())) return;
+      if (inMemoryPost.getId() != null && !dbPostManager.postExists(inMemoryPost.getId())) return;
 
       // postType is set to "null" in order that updatePostEntry() can use
       // the value of the existing post so as to not overwrite it with an invalid value.
       else inMemoryPost.setPostType(null);
 
-    dbPostDao.updatePostEntry(inMemoryPost, false);
+    dbPostManager.updatePostEntry(inMemoryPost, false);
   }
 
   /**
@@ -152,7 +164,7 @@ public class PostService {
     logStepIn(postServiceLog, postID);
     ClientPost convertedObj = new ClientPost();
 
-    dbPostDao
+    dbPostManager
         .getPostById(postID)
         .ifPresent(
             p -> {

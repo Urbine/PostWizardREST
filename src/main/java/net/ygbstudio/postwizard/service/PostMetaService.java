@@ -22,7 +22,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import net.ygbstudio.postwizard.dao.PostMetaReaderDAO;
+import net.ygbstudio.postwizard.dao.PostMetaManager;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.models.Ethnicity;
@@ -39,9 +39,9 @@ import org.jspecify.annotations.Nullable;
  * methods to validate, update, and retrieve post metadata based on the ClientPostMeta DTO and
  * various enumerations representing valid metadata values.
  *
- * <p>The service interacts with the PostMetaReaderDAO to perform database operations related to
- * post metadata. PostMetaService also defines additional transactional boundaries for some methods
- * to ensure data consistency and integrity by isolating the transactional context of the database
+ * <p>The service interacts with the PostMetaManager to perform database operations related to post
+ * metadata. PostMetaService also defines additional transactional boundaries for some methods to
+ * ensure data consistency and integrity by isolating the transactional context of the database
  * operations with every method call.
  *
  * @author Yoham Gabriel @ YGB Studio
@@ -57,7 +57,7 @@ public class PostMetaService {
       loggingInit(postMetaServiceLog, Level.ALL, true);
 
   /** Data Access Object (DAO) for reading and manipulating the post metadata table. */
-  @Inject private PostMetaReaderDAO dbPostMetaDao;
+  @Inject private PostMetaManager dbPostMetaManager;
 
   /**
    * Checks if the post has any metadata fields.
@@ -67,7 +67,7 @@ public class PostMetaService {
    */
   @Transactional(value = TxType.REQUIRES_NEW)
   public boolean hasMetaFields(long postID) {
-    return dbPostMetaDao.postExists(postID);
+    return dbPostMetaManager.postExists(postID);
   }
 
   /**
@@ -141,7 +141,7 @@ public class PostMetaService {
       Predicate<? super WPMeta> filterPredicate,
       Function<? super WPMeta, R> transformer) {
 
-    return dbPostMetaDao
+    return dbPostMetaManager
         .getEntriesByMetaKey(metaKey.toString())
         .filter(filterPredicate)
         .map(transformer)
@@ -159,7 +159,7 @@ public class PostMetaService {
   @Transactional(value = TxType.REQUIRES_NEW)
   public Set<WPMeta> getRandomPostsByMetaKey(
       PostMetaKeys metaKey, long limitBy, Predicate<? super WPMeta> filterPredicate) {
-    return dbPostMetaDao.getRandomPostsByMetaKey(metaKey.toString(), limitBy, filterPredicate);
+    return dbPostMetaManager.getRandomPostsByMetaKey(metaKey.toString(), limitBy, filterPredicate);
   }
 
   /*
@@ -171,7 +171,7 @@ public class PostMetaService {
   public Set<Long> toggleFeaturedVideos(Set<Long> setOfPostIDs, ToggleField toggle) {
     setOfPostIDs.forEach(
         postID ->
-            dbPostMetaDao.updatePostMetaAuto(
+            dbPostMetaManager.updatePostMetaAuto(
                 postID, PostMetaKeys.FEATURED.toString(), toggle.toString(), false));
 
     return setOfPostIDs;
@@ -241,7 +241,7 @@ public class PostMetaService {
    */
   @Transactional(value = TxType.REQUIRES_NEW)
   public List<ClientPostMeta> getClientPostMetaAll() {
-    return dbPostMetaDao.getPostIDs().parallelStream()
+    return dbPostMetaManager.getPostIDs().parallelStream()
         .map(this::getClientPostMeta)
         .filter(post -> Objects.nonNull(post.getVideoURL()) || Objects.nonNull(post.getEmbedCode()))
         .toList();
@@ -274,7 +274,7 @@ public class PostMetaService {
                   break;
                 case HOURS:
                   if (clientPost.getHours() != 0)
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.HOURS.toString(),
                         Long.toString(clientPost.getHours()),
@@ -282,7 +282,7 @@ public class PostMetaService {
                   break;
                 case MINUTES:
                   if (clientPost.getMinutes() != 0)
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.MINUTES.toString(),
                         Long.toString(clientPost.getMinutes()),
@@ -290,7 +290,7 @@ public class PostMetaService {
                   break;
                 case SECONDS:
                   if (clientPost.getSeconds() != 0)
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.SECONDS.toString(),
                         Long.toString(clientPost.getSeconds()),
@@ -299,25 +299,25 @@ public class PostMetaService {
                 case EMBED:
                   String embedCode = clientPost.getEmbedCode();
                   if (Objects.nonNull(embedCode) && !embedCode.isBlank())
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId, PostMetaKeys.EMBED.toString(), embedCode, autoCreate);
                   break;
                 case PRODUCTION:
                   String clientProduction = clientPost.getVideoProduction();
                   if (isValidProduction(clientProduction))
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId, PostMetaKeys.PRODUCTION.toString(), clientProduction, autoCreate);
                   break;
                 case ORIENTATION:
                   String clientOrientation = clientPost.getVideoOrientation();
                   if (isValidOrientation(clientOrientation))
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId, PostMetaKeys.ORIENTATION.toString(), clientOrientation, autoCreate);
                   break;
                 case ETHNICITY:
                   String clientEthnicity = clientPost.getEthnicity();
                   if (isValidEthnicity(clientEthnicity))
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.ETHNICITY.toString(),
                         StringUtils.capitalize(clientEthnicity),
@@ -326,7 +326,7 @@ public class PostMetaService {
                 case HAIRCOLOR:
                   String clientHairColor = clientPost.getHairColor();
                   if (isValidHairColor(clientHairColor))
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.HAIRCOLOR.toString(),
                         StringUtils.capitalize(clientHairColor),
@@ -334,7 +334,7 @@ public class PostMetaService {
                   break;
                 case HDVIDEO:
                   if (clientPost.getVideoHD() != null)
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId,
                         PostMetaKeys.HDVIDEO.toString(),
                         clientPost.getVideoHD()
@@ -345,25 +345,25 @@ public class PostMetaService {
                 case THUMBNAIL:
                   String thumbURI = clientPost.getThumbURI();
                   if (Objects.nonNull(thumbURI) && !thumbURI.isBlank())
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId, PostMetaKeys.THUMBNAIL.toString(), thumbURI, autoCreate);
                   break;
                 case VIDEOURL:
                   String videoURL = clientPost.getVideoURL();
                   if (Objects.nonNull(videoURL) && !videoURL.isBlank())
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId, PostMetaKeys.VIDEOURL.toString(), videoURL, autoCreate);
                   break;
                 case YOAST_FOCUSKW:
                   String focusKW = clientPost.getYoastFocusKW();
                   if (Objects.nonNull(focusKW) && !focusKW.isBlank())
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId, PostMetaKeys.YOAST_FOCUSKW.toString(), focusKW, autoCreate);
                   break;
                 case YOAST_METADESC:
                   String metaDesc = clientPost.getYoastMetaDesc();
                   if (Objects.nonNull(metaDesc) && !metaDesc.isBlank())
-                    dbPostMetaDao.updatePostMetaAuto(
+                    dbPostMetaManager.updatePostMetaAuto(
                         postId, PostMetaKeys.YOAST_METADESC.toString(), metaDesc, autoCreate);
                   break;
                 default:
@@ -390,7 +390,7 @@ public class PostMetaService {
     logStepIn(postMetaServiceLog, postID);
     ClientPostMeta convertedObj = new ClientPostMeta();
 
-    dbPostMetaDao
+    dbPostMetaManager
         .getEntriesByPostID(postID)
         .forEach(
             p -> {
