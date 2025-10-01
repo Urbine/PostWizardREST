@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -22,30 +23,25 @@ import java.util.StringJoiner;
  */
 @Entity
 @Table(name = "`wp_termmeta`")
+@NamedQuery(
+    name = "WPTermMeta.FindTermMetaByID",
+    query = "SELECT t FROM WPTermMeta t WHERE t.termItem.id = :termId")
 public class WPTermMeta {
   @Id
   @Column(name = "meta_id", nullable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long metaId;
 
-  @Column(name = "meta_key")
+  @Column(name = "meta_key", nullable = false)
   private String metaKey;
 
-  @Column(name = "meta_value")
+  // This column can be empty, but not null
+  @Column(name = "meta_value", nullable = false)
   private String metaValue;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "term_id")
   private WPTerms termItem;
-
-  private WPTermMeta() {}
-
-  public WPTermMeta(Long metaId, String metaKey, String metaValue, WPTerms termItem) {
-    this.metaId = metaId;
-    this.metaKey = metaKey;
-    this.metaValue = metaValue;
-    this.termItem = termItem;
-  }
 
   public Long getMetaId() {
     return metaId;
