@@ -81,42 +81,6 @@ public class WPost {
   @OneToMany(mappedBy = "wpPost", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<WPMeta> postMetadataSet;
 
-  public WPost() {}
-
-  public WPost(
-      Long iD,
-      Long postAuthor,
-      LocalDateTime createdAtGMT,
-      LocalDateTime createdAtLocal,
-      LocalDateTime modifiedAtGMT,
-      LocalDateTime modifiedAtLocal,
-      String postContent,
-      String postTitle,
-      String postSlug,
-      String postStatus,
-      String postType,
-      Long postParent,
-      String guid,
-      String postMimeType,
-      Set<WPTermRelationships> termRelationships) {
-    super();
-    id = iD;
-    this.postAuthor = postAuthor;
-    this.createdAtGMT = createdAtGMT;
-    this.createdAtLocal = createdAtLocal;
-    this.modifiedAtGMT = modifiedAtGMT;
-    this.modifiedAtLocal = modifiedAtLocal;
-    this.postContent = postContent;
-    this.postTitle = postTitle;
-    this.postSlug = postSlug;
-    this.postStatus = postStatus;
-    this.postType = postType;
-    this.postParent = postParent;
-    this.guid = guid;
-    this.postMimeType = postMimeType;
-    this.termRelationships = termRelationships;
-  }
-
   public Long getId() {
     return id;
   }

@@ -56,24 +56,6 @@ public class WPMeta {
   @Column(name = "meta_value", columnDefinition = "LONGTEXT")
   private String metaFieldValue;
 
-  public WPMeta() {}
-
-  /**
-   * Constructs a WPMeta instance with the specified parameters.
-   *
-   * @param metaID the unique identifier for the metadata entry
-   * @param wpPost the ID of the post this metadata is associated with
-   * @param metaFieldKey the key/name of the metadata field
-   * @param metaFieldValue the value associated with the metadata field
-   */
-  public WPMeta(Long metaID, WPost wpPost, String metaFieldKey, String metaFieldValue) {
-    super();
-    this.metaID = metaID;
-    this.wpPost = wpPost;
-    this.metaFieldKey = metaFieldKey;
-    this.metaFieldValue = metaFieldValue;
-  }
-
   public Long getMetaID() {
     return metaID;
   }
