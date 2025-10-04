@@ -34,16 +34,19 @@ import java.util.stream.Collectors;
 @NamedQuery(
     name = "WPTerms.ExistsByName",
     query = "SELECT t FROM WPTerms t WHERE t.name = :termName")
+@NamedQuery(
+    name = "WPTerms.ExistsByNameAndSlug",
+    query = "SELECT t FROM WPTerms t WHERE t.name = :termName AND t.slug = :termSlug")
 public class WPTerms {
   @Id
-  @Column(name = "term_id")
+  @Column(name = "term_id", nullable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @OneToMany(mappedBy = "termItem", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<WPTermMeta> termMeta;
 
-  @OneToOne(mappedBy = "term", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(mappedBy = "term")
   private WPTermTaxonomy taxonomy;
 
   @Column(name = "name")
@@ -128,9 +131,11 @@ public class WPTerms {
         .add(
             "termsMeta="
                 + termMeta.stream().map(Objects::toString).collect(Collectors.joining(",")))
-        .add("wpTaxonomy=" + taxonomy.getTaxonomy())
-        .add("wpTaxonomyDescription" + taxonomy.getDescription())
-        .add("wpTaxonomyCount" + taxonomy.getCount())
+        .add("wpTaxonomy=" + Objects.requireNonNullElse(taxonomy.getTaxonomy(), "Not Set"))
+        .add(
+            "wpTaxonomyDescription"
+                + Objects.requireNonNullElse(taxonomy.getDescription(), "Not Set"))
+        .add("wpTaxonomyCount" + Objects.requireNonNullElse(taxonomy.getCount(), "Not available"))
         .toString();
   }
 }

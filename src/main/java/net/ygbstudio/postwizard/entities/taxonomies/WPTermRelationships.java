@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.StringJoiner;
@@ -23,6 +24,13 @@ import net.ygbstudio.postwizard.entities.WPost;
  */
 @Entity
 @Table(name = "`wp_term_relationships`")
+@NamedQuery(
+    name = "WPTermRelationships.FindExisting",
+    query =
+        "SELECT rel FROM WPTermRelationships rel WHERE rel.id.objectID = :objectID AND rel.id.termTaxonomyID = :termTaxonomyID")
+@NamedQuery(
+    name = "WPTermRelationships.DeleteByTermTaxonomyID",
+    query = "DELETE FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
 public class WPTermRelationships {
 
   @EmbeddedId private WPTermRelationshipsID id;
@@ -81,7 +89,9 @@ public class WPTermRelationships {
         .add("termOrder=" + termOrder)
         .add("WPTermTaxonomy=" + termTaxonomy.getTaxonomy())
         .add("WPTermTaxonomyCount=" + termTaxonomy.getCount())
-        .add("WPTermSlug=" + termTaxonomy.getDescription())
+        .add("WPTermSlug=" + termTaxonomy.getTerm().getSlug())
+        .add("WPTermName=" + termTaxonomy.getTerm().getName())
+        .add("WPTermId=" + termTaxonomy.getTerm().getId())
         .toString();
   }
 }

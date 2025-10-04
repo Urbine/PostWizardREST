@@ -1,5 +1,6 @@
 package net.ygbstudio.postwizard.entities.taxonomies;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,7 +40,7 @@ public class WPTermTaxonomy {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long termTaxonomyId;
 
-  @OneToOne(optional = false)
+  @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "term_id")
   private WPTerms term;
 
