@@ -57,6 +57,12 @@
          <version>0.12.6</version>
          <scope>runtime</scope>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.jspecify/jspecify -->
+      <dependency>
+         <groupId>org.jspecify</groupId>
+         <artifactId>jspecify</artifactId>
+         <version>1.0.0</version>
+      </dependency>
       <!-- Test dependencies -->
       <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
       <dependency>
@@ -65,13 +71,12 @@
          <version>3.0</version>
          <scope>test</scope>
       </dependency>
-      <!--
-		https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+      <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
       <dependency>
-         <groupId>org.junit.jupiter</groupId>
-         <artifactId>junit-jupiter-api</artifactId>
-         <version>6.0.0-M2</version>
-         <scope>test</scope>
+     	<groupId>org.junit.jupiter</groupId>
+     	<artifactId>junit-jupiter-api</artifactId>
+      	<version>6.0.0</version>
+      	<scope>test</scope>
       </dependency>
       <!-- https://mvnrepository.com/artifact/org.jboss.arquillian/arquillian-bom -->
       <dependency>
@@ -81,6 +86,12 @@
          <type>pom</type>
          <scope>test</scope>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.jboss.shrinkwrap.resolver/shrinkwrap-resolver-impl-maven -->
+      <dependency>
+	 <groupId>org.jboss.shrinkwrap.resolver</groupId>
+	 <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+	 <version>3.3.4</version>
+      </dependency>
       <!-- https://mvnrepository.com/artifact/io.openliberty.arquillian/arquillian-liberty-managed-jakarta-junit -->
       <dependency>
          <groupId>io.openliberty.arquillian</groupId>
@@ -89,12 +100,24 @@
          <type>pom</type>
          <scope>test</scope>
       </dependency>
-      <!-- https://mvnrepository.com/artifact/org.jspecify/jspecify -->
+      <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client -->
       <dependency>
-         <groupId>org.jspecify</groupId>
-         <artifactId>jspecify</artifactId>
-         <version>1.0.0</version>
+	 <groupId>org.glassfish.jersey.core</groupId>
+	 <artifactId>jersey-client</artifactId>
+	 <version>4.0.0-M4</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.glassfish/jakarta.json -->
+      <dependency>
+	<groupId>org.glassfish</groupId>
+	<artifactId>jakarta.json</artifactId>
+	<version>2.0.1</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-processing -->
+      <dependency>
+	<groupId>org.glassfish.jersey.media</groupId>
+	<artifactId>jersey-media-json-processing</artifactId>
+	<version>4.0.0-M4</version>
+     </dependency>
    </dependencies>
    <build>
       <finalName>PostWizardREST</finalName>
