@@ -115,7 +115,7 @@ public final class Logging implements Util {
    * determines the calling class and method name.
    *
    * @param classLogger The logger to use for logging.
-   * @param inputParams The output parameters of the method being logged.
+   * @param outputParams The output parameters of the method being logged.
    */
   public static void logStepOut(@NonNull Logger classLogger, @NonNull Object... outputParams) {
     String[] stackInfo = getCallingMethod(true);
