@@ -22,14 +22,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class PostReaderDaoMgrTest {
+public class PostDaoTest {
 
-  private static final String TESTWAR = "arquillian-pw-tests.war";
+  private static final String TEST_WAR = "arquillian-pw-tests-posts-dao.war";
 
-  @Deployment(testable = true)
+  @Deployment
   public static WebArchive createDeployment() {
     WebArchive archive =
-        ShrinkWrap.create(WebArchive.class, TESTWAR)
+        ShrinkWrap.create(WebArchive.class, TEST_WAR)
             .addPackages(true, "net.ygbstudio.postwizard")
             .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
