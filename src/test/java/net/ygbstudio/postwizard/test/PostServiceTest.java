@@ -23,12 +23,12 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class PostServiceTest {
 
-  public static final String TESTWAR = "arquillian-pw-tests.war";
+  public static final String TEST_WAR = "arquillian-pw-tests-post-service.war";
 
-  @Deployment(testable = true)
+  @Deployment
   public static WebArchive createDeployment() {
     WebArchive archive =
-        ShrinkWrap.create(WebArchive.class, TESTWAR)
+        ShrinkWrap.create(WebArchive.class, TEST_WAR)
             .addPackages(true, "net.ygbstudio.postwizard")
             .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
