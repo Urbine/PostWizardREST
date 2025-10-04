@@ -4,13 +4,19 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 
 /**
- * Represents a post in the Post Director application.
+ * Represents a post in the Post Director application. This is an experimental merge of {@link
+ * PostMeta} and {@link net.ygbstudio.postwizard.entities.WPMeta} fields, however, alternatives are
+ * being implemented like database join associations that collect a group of attributes based on a
+ * single post.
  *
  * <p>This class extends {@link PostMeta} and includes additional fields specific to a WordPress
  * post, such as author, content, title, slug, status, and type.
  *
+ * <p>*** Marked for removal ***
+ *
  * @author Yoham Gabriel @ YGB Studio
  */
+@Deprecated(forRemoval = true)
 @JsonbPropertyOrder(
     value = {
       "ID",

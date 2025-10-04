@@ -10,7 +10,10 @@ package net.ygbstudio.postwizard.models;
  */
 public enum TermMeta {
   MODEL_IMG_ID("pornstars-image-id"),
-  ACTORS_VIEW_COUNT("actors_views_count");
+  ACTORS_VIEW_COUNT("actors_views_count"),
+  CATEGORY_IMAGE_ID("category-image-id"),
+  CATEGORY_PREMIUM_ID("category-premium-id"),
+  CATEGORY_RECOMMEND_ID("category-recommend-id");
 
   private final String value;
 
