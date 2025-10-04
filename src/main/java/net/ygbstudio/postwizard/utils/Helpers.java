@@ -143,9 +143,14 @@ public final class Helpers implements Util {
   }
 
   /**
-   * Retrieves an enum constant from a string value, with an option to ignore case sensitivity. This
-   * method uses a regex pattern to match the string representation of the enum constants.
+   * Retrieves an enum constant from a string value, with an option to match irrespectively of case.
+   * This method uses a regex pattern to match the string representation of enum constants.
    *
+   * <p>It can be used as validator for enums in a similar way as {@link Helpers#isInEnum}, however,
+   * this helper not only checks for existence but also returns the enum constant and provides more
+   * handling opportunities available for Optional values.
+   *
+   * @see Helpers#isInEnum
    * @param <T> The type of the enum.
    * @param enumType The class of the enum to search.
    * @param strEnumKey The string value to match against the enum constants.
