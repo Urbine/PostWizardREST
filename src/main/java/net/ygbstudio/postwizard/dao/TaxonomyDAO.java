@@ -49,7 +49,7 @@ public class TaxonomyDAO implements TaxonomyManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public WPTermTaxonomy addTaxonomy(
+  public WPTermTaxonomy addTermTaxonomy(
       @NonNull WPTerms term,
       @NonNull String taxonomy,
       @NonNull String description,
@@ -59,13 +59,27 @@ public class TaxonomyDAO implements TaxonomyManager {
     if (checkTermTaxonomy.isPresent()) return checkTermTaxonomy.get();
 
     WPTermTaxonomy newTaxonomy = new WPTermTaxonomy();
-    newTaxonomy.setTerm(term);
     newTaxonomy.setTaxonomy(taxonomy);
     newTaxonomy.setDescription(description);
     newTaxonomy.setParent(parent);
     newTaxonomy.setCount(count);
+    newTaxonomy.setTerm(term);
     em.persist(newTaxonomy);
+    em.flush();
 
     return newTaxonomy;
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
+  public boolean removeTermTaxonomy(@NonNull WPTermTaxonomy termTaxonomy) {
+    Optional<WPTermTaxonomy> checkTermTaxonomy =
+        termTaxonomyIdExists(termTaxonomy.getTermTaxonomyId()).findFirst();
+    if (checkTermTaxonomy.isPresent()) {
+      em.remove(checkTermTaxonomy.get());
+      return true;
+    } else {
+      return false;
+    }
   }
 }

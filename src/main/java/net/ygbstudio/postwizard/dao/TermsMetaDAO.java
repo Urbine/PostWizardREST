@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermMeta;
+import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import org.jspecify.annotations.NonNull;
 
 /**
@@ -22,10 +23,12 @@ public class TermsMetaDAO implements TermsMetaManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public WPTermMeta addTermMeta(@NonNull String metaKey, @NonNull String metaValue) {
+  public WPTermMeta addTermMeta(
+      @NonNull String metaKey, @NonNull String metaValue, @NonNull WPTerms termItem) {
     WPTermMeta newTermMeta = new WPTermMeta();
     newTermMeta.setMetaKey(metaKey);
     newTermMeta.setMetaValue(metaValue);
+    newTermMeta.setTermItem(termItem);
     em.persist(newTermMeta);
     return newTermMeta;
   }
