@@ -21,7 +21,7 @@ public interface TaxonomyManager {
   Stream<WPTermTaxonomy> termTaxonomyIdExists(long taxonomyID);
 
   /**
-   * Checks if a taxonomy exists in the server database.
+   * Checks if a specific term taxonomy exists in the server database.
    *
    * @param term the term for which existence is checked
    * @return a stream of taxonomies that match the given term
@@ -29,12 +29,12 @@ public interface TaxonomyManager {
   Stream<WPTermTaxonomy> taxonomyTermExists(@NonNull WPTerms term);
 
   /**
-   * Checks if a taxonomy exists in the server database.
+   * Checks if a taxonomy type exists in the server database.
    *
    * @param taxonomy the taxonomy for which existence is checked
    * @return a stream of taxonomies that match the given taxonomy
    */
-  Stream<WPTermTaxonomy> taxonomyExists(String taxonomy);
+  Stream<WPTermTaxonomy> taxonomyExists(@NonNull String taxonomy);
 
   /**
    * Adds a new taxonomy to the server database. In case a term exists for a taxonomy, that taxonomy
@@ -47,10 +47,18 @@ public interface TaxonomyManager {
    * @param count the count of the taxonomy to be added
    * @return the added taxonomy
    */
-  WPTermTaxonomy addTaxonomy(
+  WPTermTaxonomy addTermTaxonomy(
       @NonNull WPTerms term,
       @NonNull String taxonomy,
       @NonNull String description,
       int parent,
       long count);
+
+  /**
+   * Removes a taxonomy from the server database.
+   *
+   * @param termTaxonomy the taxonomy to be removed
+   * @return true if the taxonomy was removed successfully, false otherwise
+   */
+  boolean removeTermTaxonomy(@NonNull WPTermTaxonomy termTaxonomy);
 }

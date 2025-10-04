@@ -1,5 +1,6 @@
 package net.ygbstudio.postwizard.dao;
 
+import java.util.stream.Stream;
 import net.ygbstudio.postwizard.entities.WPost;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermTaxonomy;
@@ -12,6 +13,16 @@ import org.jspecify.annotations.NonNull;
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface TermRelationshipsManager {
+
+  /**
+   * Finds an existing relationship between a post and a term taxonomy.
+   *
+   * @param postItem post object
+   * @param taxonomy term taxonomy object
+   * @return stream of term relationship objects
+   */
+  Stream<WPTermRelationships> findExistingRelationship(
+      @NonNull WPost postItem, @NonNull WPTermTaxonomy taxonomy);
 
   /**
    * Connects a post and a term taxonomy in a term relationship.
@@ -32,4 +43,12 @@ public interface TermRelationshipsManager {
    * @return true if the term relationship was deleted, false otherwise
    */
   boolean deleteTermRelationship(@NonNull WPost postItem, @NonNull WPTermTaxonomy taxonomy);
+
+  /**
+   * Cleans up the term relationships associated with a term taxonomy.
+   *
+   * @param termTaxonomyId term taxonomy ID
+   * @return true if the term relationships were cleaned up, false otherwise
+   */
+  boolean cleanTaxonomyRelationships(long termTaxonomyId);
 }
