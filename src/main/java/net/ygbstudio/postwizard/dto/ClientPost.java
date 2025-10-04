@@ -5,8 +5,6 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import jakarta.json.bind.annotation.JsonbVisibility;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -19,6 +17,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * net.ygbstudio.postwizard.models} while also avoiding the need to expose the database structure
  * directly to the client.
  *
+ * @see net.ygbstudio.postwizard.entities.WPost
+ * @see net.ygbstudio.postwizard.models.PostType
+ * @see net.ygbstudio.postwizard.models.PostKeys
  * @author Yoham Gabriel @ YGB Studio
  */
 @JsonbPropertyOrder(
@@ -95,60 +96,6 @@ public class ClientPost implements BatchDeliverable {
   @JsonbNillable
   @JsonbProperty("modifiedAtGMT")
   private LocalDateTime postModifiedGMT;
-
-  public ClientPost() {
-    super();
-  }
-
-  /**
-   * Constructor for ClientPost.
-   *
-   * <p>Just like {@link ClientPostMeta}, the fields are expected to be optional and can be null.
-   * postID can also be null when creating a new post, as it will be provided by the client in the
-   * request path or in the corresponding payload.
-   *
-   * <p>postDateGMT is set to the current date and time if postDate is provided, while post_modified
-   * and post_modified_gmt are set to the current date and time by default in their respective
-   * zones.
-   *
-   * @param iD The unique identifier of the post.
-   * @param postAuthor The ID of the author of the post.
-   * @param postContent The content of the post.
-   * @param postTitle The title of the post.
-   * @param postName The slug (URL-friendly name) of the post.
-   * @param postStatus The status of the post (e.g., published, draft).
-   * @param postType The type of the post (e.g., post, page).
-   * @param postMimeType The MIME type of the post.
-   * @param postParent The ID of the parent post, if applicable.
-   * @param guid The globally unique identifier for the post.
-   */
-  public ClientPost(
-      Long iD,
-      Long postAuthor,
-      String postContent,
-      String postTitle,
-      String postName,
-      String postStatus,
-      String postType,
-      String postMimeType,
-      Long postParent,
-      String guid) {
-    super();
-    ID = iD;
-    this.postAuthor = postAuthor;
-    this.postContent = postContent;
-    this.postTitle = postTitle;
-    this.postName = postName;
-    this.postStatus = postStatus;
-    this.postType = postType;
-    this.postMimeType = postMimeType;
-    this.postParent = postParent;
-    this.guid = guid;
-    this.postDate = LocalDateTime.now();
-    this.postDateGMT = ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime();
-    this.postModified = LocalDateTime.now();
-    this.postModifiedGMT = ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime();
-  }
 
   public Long getID() {
     return ID;

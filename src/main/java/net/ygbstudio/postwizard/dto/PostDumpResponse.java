@@ -4,7 +4,6 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jspecify.annotations.NullMarked;
@@ -39,6 +38,9 @@ public class PostDumpResponse {
   @JsonbProperty("totalProcessed")
   private long totalProcessed;
 
+  /** No argument constructor for JSON deserialization in test cases. */
+  public PostDumpResponse() {}
+
   /**
    * Constructor for PostDumpResponse.
    *
@@ -52,7 +54,7 @@ public class PostDumpResponse {
     this.status = status;
     this.timestamp = Instant.now();
     this.siteItems = List.copyOf(siteItems);
-    this.totalProcessed = Objects.nonNull(siteItems) ? siteItems.size() : 0;
+    this.totalProcessed = siteItems.size();
   }
 
   public String getMessage() {

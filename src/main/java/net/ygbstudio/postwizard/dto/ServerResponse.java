@@ -1,8 +1,7 @@
 package net.ygbstudio.postwizard.dto;
 
 import java.time.Instant;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.StringJoiner;
 
 /**
  * ServerResponse is a DTO class that represents a response from the server. It contains fields for
@@ -17,6 +16,9 @@ public class ServerResponse {
   private String message;
   private int status;
   private Instant timestamp;
+
+  /** No argument constructor for JSON deserialization in test cases. */
+  public ServerResponse() {}
 
   /**
    * Constructor for ServerResponse.
@@ -57,6 +59,10 @@ public class ServerResponse {
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
+    return new StringJoiner(", ", ServerResponse.class.getSimpleName() + "[", "]")
+        .add("message='" + message + "'")
+        .add("status=" + status)
+        .add("timestamp=" + timestamp)
+        .toString();
   }
 }

@@ -1,8 +1,7 @@
 package net.ygbstudio.postwizard.dto;
 
 import java.time.Instant;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.StringJoiner;
 
 /**
  * ErrorResponse is a DTO class that represents an error response from the REST API. It contains
@@ -19,6 +18,9 @@ public class ErrorResponse {
   private String message;
   private int status;
   private Instant timestamp;
+
+  /** No argument constructor for JSON deserialization in test cases. */
+  public ErrorResponse() {}
 
   /**
    * Constructor for ErrorResponse.
@@ -69,6 +71,11 @@ public class ErrorResponse {
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE, true);
+    return new StringJoiner(", ", ErrorResponse.class.getSimpleName() + "{", "}")
+        .add("error: \"" + error + "\"")
+        .add("message:\"" + message + "\"")
+        .add("status:" + status)
+        .add("timestamp:" + timestamp)
+        .toString();
   }
 }

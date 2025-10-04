@@ -17,6 +17,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * net.ygbstudio.postwizard.models} while also avoiding the need to expose the database structure
  * directly to the client.
  *
+ * @see net.ygbstudio.postwizard.models.PostMeta
+ * @see net.ygbstudio.postwizard.entities.WPMeta
  * @author Yoham Gabriel @ YGB Studio
  */
 @JsonbPropertyOrder(

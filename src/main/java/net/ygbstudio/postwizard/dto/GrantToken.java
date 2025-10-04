@@ -25,12 +25,14 @@ public class GrantToken {
   @JsonbProperty("expiration")
   private Instant expirationDate;
 
+  /** No argument constructor for JSON deserialization in test cases. */
+  public GrantToken() {}
+
   /**
    * Constructor for GrantToken.
    *
    * @param accessToken The access token string.
    * @param type The type of the token (e.g., Bearer).
-   * @param expirationDate The expiration date of the token.
    */
   public GrantToken(String accessToken, String type) {
     super();
