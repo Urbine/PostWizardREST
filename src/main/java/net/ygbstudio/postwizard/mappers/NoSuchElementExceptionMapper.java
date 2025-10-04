@@ -2,6 +2,7 @@ package net.ygbstudio.postwizard.mappers;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import java.util.NoSuchElementException;
 import net.ygbstudio.postwizard.dto.ErrorResponse;
 
@@ -15,6 +16,7 @@ import net.ygbstudio.postwizard.dto.ErrorResponse;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
+@Provider
 public class NoSuchElementExceptionMapper implements ExceptionMapper<NoSuchElementException> {
 
   @Override
