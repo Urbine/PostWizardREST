@@ -7,6 +7,7 @@ import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.entities.WPost;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress posts. This interface defines methods to
@@ -29,7 +30,7 @@ public interface PostManager {
    * @param postType the type of posts to retrieve
    * @return a List of WPost entries matching the specified type
    */
-  List<WPost> getAllByType(String postType);
+  List<WPost> getAllByType(@NonNull String postType);
 
   /**
    * Retrieves a specific post by its ID.
@@ -53,7 +54,7 @@ public interface PostManager {
    * @param postItem the WPost item to validate
    * @return true if the post item is valid, false otherwise
    */
-  boolean isValidPost(WPost postItem);
+  boolean isValidPost(@NonNull WPost postItem);
 
   /**
    * Updates a post entry with the provided WPost item. If the postID is less than or equal to 0, no
@@ -62,7 +63,7 @@ public interface PostManager {
    *
    * @param postItem the WPost item to update
    */
-  void updatePostEntry(WPost postItem, boolean autoCreate);
+  void updatePostEntry(@NonNull WPost postItem, boolean autoCreate);
 
   /**
    * Retrieves the term relationships for a specific post by its ID.
@@ -70,7 +71,7 @@ public interface PostManager {
    * @param postId the ID of the post to retrieve term relationships for
    * @return a Set of WPTermRelationships entries matching the specified post ID
    */
-  Set<WPTermRelationships> getTermRelationshipsByPostID(Long postId);
+  Set<WPTermRelationships> getTermRelationshipsByPostID(@NonNull Long postId);
 
   /**
    * Retrieves the metadata for a specific post by its ID.
@@ -78,7 +79,7 @@ public interface PostManager {
    * @param postId the ID of the post to retrieve metadata for
    * @return a Set of WPMeta entries matching the specified post ID
    */
-  Set<WPMeta> getPostMetaByPostID(Long postId);
+  Set<WPMeta> getPostMetaByPostID(@NonNull Long postId);
 
   /**
    * Retrieves the terms for a specific post by its ID.
@@ -86,7 +87,7 @@ public interface PostManager {
    * @param postId the ID of the post to retrieve terms for
    * @return a Set of WPTerms entries matching the specified post ID
    */
-  Set<WPTerms> getPostTermsById(Long postId);
+  Set<WPTerms> getPostTermsById(@NonNull Long postId);
 
   /**
    * Deletes a post entry with the specified ID.

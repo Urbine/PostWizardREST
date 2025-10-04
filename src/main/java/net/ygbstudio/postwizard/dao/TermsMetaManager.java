@@ -1,6 +1,7 @@
 package net.ygbstudio.postwizard.dao;
 
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermMeta;
+import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import org.jspecify.annotations.NonNull;
 
 /**
@@ -19,5 +20,6 @@ public interface TermsMetaManager {
    * @param metaValue the meta value of the term meta to be added
    * @return the added term meta
    */
-  WPTermMeta addTermMeta(@NonNull String metaKey, @NonNull String metaValue);
+  WPTermMeta addTermMeta(
+      @NonNull String metaKey, @NonNull String metaValue, @NonNull WPTerms termItem);
 }

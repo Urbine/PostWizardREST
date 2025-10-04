@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.ygbstudio.postwizard.entities.WPMeta;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress post metadata. This interface defines
@@ -43,7 +45,7 @@ public interface PostMetaManager {
    * @param key the meta key to filter the metadata entries
    * @return a Stream of WPMeta entries that match the specified meta key
    */
-  Stream<WPMeta> getEntriesByMetaKey(String key);
+  Stream<WPMeta> getEntriesByMetaKey(@NonNull String key);
 
   /**
    * Retrieves a WPMeta object with the specified metakey and postID in the database.
@@ -52,7 +54,7 @@ public interface PostMetaManager {
    * @param postID a post ID in the database
    * @return an Optional containing the WPMeta entry if found, or empty if not found
    */
-  Optional<WPMeta> findMetaKeyByPostID(String metaKey, long postID);
+  Optional<WPMeta> findMetaKeyByPostID(@NonNull String metaKey, long postID);
 
   /**
    * Retrieves all post metadata entries that match a specific pattern in their value.
@@ -60,7 +62,7 @@ public interface PostMetaManager {
    * @param pattern the regex String pattern to match against the metadata values
    * @return a List of WPMeta entries whose values match the specified pattern
    */
-  List<WPMeta> getMetaValueMatches(String pattern);
+  List<WPMeta> getMetaValueMatches(@NonNull String pattern);
 
   /**
    * Retrieves a specific post metadata entry by its ID.
@@ -77,16 +79,18 @@ public interface PostMetaManager {
    * @param metaKey the meta key to filter the metadata entry
    * @return an Optional containing the WPMeta entry if found, or empty if not found
    */
-  Optional<WPMeta> updatePostMetaValue(long postID, String metaKey, String value);
+  Optional<WPMeta> updatePostMetaValue(long postID, @NonNull String metaKey, @NonNull String value);
 
   /**
    * Updates or creates a post metadata entry with the specified post ID, meta key, and value.
    *
    * @param postID the ID of the post
    * @param metaKey the meta key to update or create
-   * @param value the new value for the metadata entry
+   * @param value the new value for the metadata entry, if a {@code null} value is provided, the
+   *     entry will be left empty in the database, not {@code null}
    */
-  void updatePostMetaAuto(long postID, String metaKey, String value, boolean autoCreate);
+  void updatePostMetaAuto(
+      long postID, @NonNull String metaKey, @Nullable String value, boolean autoCreate);
 
   /**
    * Inserts a new post metadata entry into the database. This method is used to add new metadata
@@ -94,7 +98,7 @@ public interface PostMetaManager {
    *
    * @param meta the WPMeta object containing the metadata to insert
    */
-  void persistNewPostMeta(WPMeta meta);
+  void persistNewPostMeta(@NonNull WPMeta meta);
 
   /**
    * Checks if a post with the specified ID exists in the database.
@@ -111,7 +115,7 @@ public interface PostMetaManager {
    * @param metaKey the meta key to check for existence
    * @return true if the meta key exists for the specified post ID, false otherwise
    */
-  boolean metaKeyExists(long postID, String metaKey);
+  boolean metaKeyExists(long postID, @NonNull String metaKey);
 
   /**
    * Get random post IDs from the database with a native query. This method is used to obtain a
@@ -126,5 +130,5 @@ public interface PostMetaManager {
    * @return a Set of WPMeta objects that match the meta key and filter predicate
    */
   Set<WPMeta> getRandomPostsByMetaKey(
-      String metaKey, long limitBy, Predicate<? super WPMeta> filterPredicate);
+      @NonNull String metaKey, long limitBy, @NonNull Predicate<? super WPMeta> filterPredicate);
 }

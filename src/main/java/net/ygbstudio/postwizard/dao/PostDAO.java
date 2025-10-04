@@ -21,6 +21,7 @@ import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.entities.WPost;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Data Access Object (DAO) implementation for reading WordPress posts. This class provides methods
@@ -42,7 +43,7 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public List<WPost> getAllByType(String postType) {
+  public List<WPost> getAllByType(@NonNull String postType) {
     return em.createNamedQuery("WPost.FindByType", WPost.class)
         .setParameter("postType", postType)
         .getResultList();
@@ -59,13 +60,13 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Set<WPTermRelationships> getTermRelationshipsByPostID(Long postId) {
+  public Set<WPTermRelationships> getTermRelationshipsByPostID(@NonNull Long postId) {
     return em.find(WPost.class, postId).getTermRelationships();
   }
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Set<WPTerms> getPostTermsById(Long postId) {
+  public Set<WPTerms> getPostTermsById(@NonNull Long postId) {
     return em.find(WPost.class, postId).getTermRelationships().stream()
         .map(rel -> rel.getTermTaxonomy().getTerm())
         .collect(Collectors.toSet());
@@ -73,12 +74,12 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Set<WPMeta> getPostMetaByPostID(Long postId) {
+  public Set<WPMeta> getPostMetaByPostID(@NonNull Long postId) {
     return em.find(WPost.class, postId).getPostMetadataSet();
   }
 
   @Override
-  public boolean isValidPost(WPost postItem) {
+  public boolean isValidPost(@NonNull WPost postItem) {
     long elemCount = Stream.of(postItem).filter(Objects::nonNull).count();
     return elemCount == getTransformClassFields(WPost.class, Field::getName).count();
   }
@@ -91,7 +92,7 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public void updatePostEntry(WPost postItem, boolean autoCreate) {
+  public void updatePostEntry(@NonNull WPost postItem, boolean autoCreate) {
 
     if (postItem.getId() == null) return;
 
