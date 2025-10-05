@@ -10,6 +10,10 @@ import org.jspecify.annotations.NonNull;
  * Data Access Object (DAO) interface for reading WordPress term relationships. This interface
  * defines methods to retrieve and manipulate term relationships in a WordPress-like environment.
  *
+ * @see TermRelationshipsDAO
+ * @see WPTermRelationships
+ * @see WPTermTaxonomy
+ * @see WPost
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface TermRelationshipsManager {

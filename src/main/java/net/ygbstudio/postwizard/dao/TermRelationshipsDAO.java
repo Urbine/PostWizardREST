@@ -14,8 +14,9 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTermTaxonomy;
 import org.jspecify.annotations.NonNull;
 
 /**
- * Data Access Object (DAO) implementation for reading WordPress term relationships. This class
- * provides methods to retrieve and manipulate term relationships in a WordPress-like environment.
+ * Data Access Object (DAO) implementation of interface {@link TermRelationshipsManager} for reading
+ * WordPress term relationships. This class implements methods to retrieve and handle term
+ * relationships in a WordPress-like environment.
  *
  * @author Yoham Gabriel @ YGB Studio
  */

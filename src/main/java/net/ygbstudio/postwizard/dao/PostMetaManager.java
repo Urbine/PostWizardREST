@@ -11,8 +11,10 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress post metadata. This interface defines
- * methods to retrieve and manipulate post metadata in a WordPress-like environment.
+ * methods to retrieve and handle post metadata in a WordPress-like environment.
  *
+ * @see PostMetaDAO
+ * @see WPMeta
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface PostMetaManager {

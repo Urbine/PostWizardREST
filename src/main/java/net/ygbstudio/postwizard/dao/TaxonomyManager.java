@@ -7,8 +7,11 @@ import org.jspecify.annotations.NonNull;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress taxonomy data. This interface defines
- * methods to retrieve and manipulate taxonomies in a WordPress-like environment.
+ * methods to retrieve and handle taxonomies in a WordPress-like environment.
  *
+ * @see TaxonomyDAO
+ * @see WPTermTaxonomy
+ * @see WPTerms
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface TaxonomyManager {

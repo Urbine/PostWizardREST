@@ -6,8 +6,11 @@ import org.jspecify.annotations.NonNull;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress term metadata. This interface defines
- * methods to retrieve and manipulate term meta in a WordPress-like environment.
+ * methods to retrieve and handle term meta in a WordPress-like environment.
  *
+ * @see TermsMetaDAO
+ * @see WPTermMeta
+ * @see WPTerms
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface TermsMetaManager {

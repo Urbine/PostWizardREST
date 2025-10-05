@@ -24,8 +24,9 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import org.jspecify.annotations.NonNull;
 
 /**
- * Data Access Object (DAO) implementation for reading WordPress posts. This class provides methods
- * to retrieve and manipulate posts in a WordPress-like environment.
+ * Data Access Object (DAO) implementation of interface {@link PostManager} for reading WordPress
+ * posts. This class implements the methods to retrieve and handle posts in a WordPress-like
+ * environment.
  *
  * @author Yoham Gabriel @ YGB Studio
  */
@@ -51,9 +52,9 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Optional<WPost> getPostById(long postID) {
+  public Optional<WPost> getPostById(long postId) {
     return em.createNamedQuery("WPost.FindByID", WPost.class)
-        .setParameter("postID", postID)
+        .setParameter("postId", postId)
         .getResultStream()
         .findFirst();
   }
@@ -86,8 +87,8 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public boolean postExists(long postID) {
-    return getPostById(postID).isPresent();
+  public boolean postExists(long postId) {
+    return getPostById(postId).isPresent();
   }
 
   @Transactional(value = TxType.REQUIRED)
@@ -134,9 +135,9 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public boolean deletePost(long postID) {
+  public boolean deletePost(long postId) {
     boolean deleted = false;
-    Optional<WPost> post = getPostById(postID);
+    Optional<WPost> post = getPostById(postId);
     if (post.isPresent()) {
       em.remove(post.get());
       deleted = true;

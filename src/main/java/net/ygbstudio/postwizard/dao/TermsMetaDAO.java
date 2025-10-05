@@ -10,8 +10,9 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import org.jspecify.annotations.NonNull;
 
 /**
- * Data Access Object (DAO) implementation for reading WordPress term metadata. This class provides
- * methods to retrieve and manipulate term meta in a WordPress-like environment.
+ * Data Access Object (DAO) implementation of interface {@link TermsMetaManager} for reading
+ * WordPress term metadata. This class implements methods to retrieve and handle term meta in a
+ * WordPress-like environment.
  *
  * @author Yoham Gabriel @ YGB Studio
  */

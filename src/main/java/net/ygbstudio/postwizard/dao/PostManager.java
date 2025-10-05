@@ -11,8 +11,10 @@ import org.jspecify.annotations.NonNull;
 
 /**
  * Data Access Object (DAO) interface for reading WordPress posts. This interface defines methods to
- * retrieve and manipulate posts in a WordPress-like environment.
+ * retrieve and handle posts in a WordPress-like environment.
  *
+ * @see PostDAO
+ * @see WPost
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface PostManager {
@@ -35,18 +37,18 @@ public interface PostManager {
   /**
    * Retrieves a specific post by its ID.
    *
-   * @param postID the ID of the post to retrieve
+   * @param postId the ID of the post to retrieve
    * @return an Optional containing the WPost entry if found, or empty if not found
    */
-  Optional<WPost> getPostById(long postID);
+  Optional<WPost> getPostById(long postId);
 
   /**
    * Checks if a post exists by its ID.
    *
-   * @param postID the ID of the post to check
+   * @param postId the ID of the post to check
    * @return true if the post exists, false otherwise
    */
-  boolean postExists(long postID);
+  boolean postExists(long postId);
 
   /**
    * Validates a WPost item to ensure it has all the required fields.
@@ -92,8 +94,8 @@ public interface PostManager {
   /**
    * Deletes a post entry with the specified ID.
    *
-   * @param postID the ID of the post to delete
+   * @param postId the ID of the post to delete
    * @return true if the post was deleted, false otherwise
    */
-  boolean deletePost(long postID);
+  boolean deletePost(long postId);
 }
