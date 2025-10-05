@@ -1,27 +1,28 @@
 package net.ygbstudio.postwizard.models;
 
 /**
- * Enum class representing a series of enthnicities for content classification purposes.
+ * Enum class representing a series of ethnicities for content classification purposes.
  *
+ * @see net.ygbstudio.postwizard.service.PostMetaService
  * @author Yoham Gabriel B @ YGB Studio
  */
 public enum Ethnicity {
-  Mixed("Mixed"),
-  MiddleEastern("Middle Eastern"),
-  Ebony("Ebony"),
-  Asian("Asian"),
-  Latino("Latino"),
-  White("White"),
-  Indian("Indian");
+  MIXED("Mixed"),
+  MIDDLE_EASTERN("Middle Eastern"),
+  EBONY("Ebony"),
+  ASIAN("Asian"),
+  LATINO("Latino"),
+  WHITE("White"),
+  INDIAN("Indian");
 
-  private final String ethnicity;
+  private final String value;
 
-  Ethnicity(String ethnicity) {
-    this.ethnicity = ethnicity;
+  Ethnicity(String value) {
+    this.value = value;
   }
 
   @Override
   public String toString() {
-    return ethnicity;
+    return value;
   }
 }
