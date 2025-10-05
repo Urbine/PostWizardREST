@@ -277,6 +277,30 @@ public class TaxonomyService {
   }
 
   /**
+   * Adds a new term relationship between a post and a term taxonomy. This is a helper method for
+   * the {@link TaxonomyService#createTermRelationship} strategy.
+   *
+   * @param newTermTaxonomy the client-side schema DTO term taxonomy to add the relationship for
+   * @param sessionPost the post to add the relationship for
+   * @return the client-side schema DTO term taxonomy if the relationship is added successfully,
+   *     {@code Optional.empty()} otherwise
+   */
+  @Transactional(TxType.REQUIRES_NEW)
+  private Optional<ClientTaxonomy> addNewTermRelationship(
+      @NonNull Optional<ClientTaxonomy> newTermTaxonomy, @NonNull Optional<WPost> sessionPost) {
+    if (newTermTaxonomy.isPresent()) {
+      Optional<WPTermTaxonomy> entityTaxonomy =
+          taxonomyDAO.termTaxonomyIdExists(newTermTaxonomy.get().getTermTaxonomyId()).findFirst();
+      if (sessionPost.isPresent() && entityTaxonomy.isPresent()) {
+        WPTermRelationships newRel =
+            termRelationshipsDAO.addTermRelationship(sessionPost.get(), entityTaxonomy.get(), 0);
+        return convertToClientTaxonomy(Optional.of(newRel.getTermTaxonomy()));
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
    * Creates a term relationship between a post and a term after checking if the terms already
    * exists and if a new relationship can be created with the information provided.
    *
@@ -304,43 +328,19 @@ public class TaxonomyService {
       switch (enumFromValue(Taxonomy.class, taxonomyName, true).orElse(Taxonomy.OTHERS)) {
         case TAG:
           Optional<ClientTaxonomy> newTag = addPostTag(newName, newSlug);
-          if (newTag.isPresent()) {
-            Optional<WPTermTaxonomy> entityTaxonomy =
-                taxonomyDAO.termTaxonomyIdExists(newTag.get().getTermTaxonomyId()).findFirst();
-            WPTermRelationships newRel =
-                termRelationshipsDAO.addTermRelationship(
-                    sessionPost.get(), entityTaxonomy.get(), 0);
-            return convertToClientTaxonomy(Optional.ofNullable(newRel.getTermTaxonomy()));
-          }
-          break;
+          return addNewTermRelationship(newTag, sessionPost);
         case MODELS:
           Optional<ClientTaxonomy> newModel = addModel(StringUtils.capitalize(newName), newSlug);
-          if (newModel.isPresent()) {
-            Optional<WPTermTaxonomy> entityTaxonomy =
-                taxonomyDAO.termTaxonomyIdExists(newModel.get().getTermTaxonomyId()).findFirst();
-            WPTermRelationships newRel =
-                termRelationshipsDAO.addTermRelationship(
-                    sessionPost.get(), entityTaxonomy.get(), 0);
-            return convertToClientTaxonomy(Optional.ofNullable(newRel.getTermTaxonomy()));
-          }
-          break;
+          return addNewTermRelationship(newModel, sessionPost);
         case CATEGORY:
           Optional<ClientTaxonomy> newCategory =
               addCategory(
                   newName,
                   newSlug,
                   Objects.requireNonNullElse(providedTerm.getTaxonomy().getDescription(), ""));
-          if (newCategory.isPresent()) {
-            Optional<WPTermTaxonomy> entityTaxonomy =
-                taxonomyDAO.termTaxonomyIdExists(newCategory.get().getTermTaxonomyId()).findFirst();
-            WPTermRelationships newRel =
-                termRelationshipsDAO.addTermRelationship(
-                    sessionPost.get(), entityTaxonomy.get(), 0);
-            return convertToClientTaxonomy(Optional.ofNullable(newRel.getTermTaxonomy()));
-          }
-          break;
+          return addNewTermRelationship(newCategory, sessionPost);
         default:
-          return Optional.empty();
+          break;
       }
     }
     return existingRelationship;
@@ -380,6 +380,13 @@ public class TaxonomyService {
         .isPresent();
   }
 
+  /**
+   * Removes a term taxonomy from the database.
+   *
+   * @param clientTerm the client-side schema DTO term to remove the taxonomy from
+   * @return the client-side schema DTO term if the taxonomy was removed, {@code Optional.empty()}
+   *     otherwise
+   */
   @Transactional(TxType.REQUIRES_NEW)
   public Optional<ClientTerm> removeTermTaxonomy(ClientTerm clientTerm) {
     WPTerms targetTerm;
