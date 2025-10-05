@@ -13,11 +13,23 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Represents metadata associated with a WordPress term.
+ * Represents metadata associated with a WordPress term. Term metadata fields depend on the term it
+ * is associated with and that such term exists with a valid term ID in the database.
+ *
+ * <p>The DAO interface {@link net.ygbstudio.postwizard.dao.TermsMetaManager} only defines a method
+ * to add term metadata. That is because, in the lifecycle of a term, metadata is added when the
+ * latter is created and removed once it is deleted. Term metadata is not present in all terms, and
+ * it works as a key-value pair that tells certain themes or plugins to change how the elements are
+ * classified or even displayed.
+ *
+ * <p>Term metadata are added through the DAO implementation {@link
+ * net.ygbstudio.postwizard.dao.TermsMetaDAO}.
  *
  * <p>This entity maps to the {@code wp_termmeta} table and allows reading and updating key-value
  * metadata pairs for terms.
  *
+ * @see WPTerms
+ * @see WPTermTaxonomy
  * @see <a href="https://developer.wordpress.org/reference/classes/wp_termmeta/">WP_Term_Meta</a>
  * @author Yoham Gabriel @ YGB Studio
  */

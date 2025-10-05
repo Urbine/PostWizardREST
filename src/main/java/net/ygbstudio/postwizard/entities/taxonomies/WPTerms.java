@@ -16,11 +16,18 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
- * Represents a WordPress term entity.
+ * Represents a WordPress term entity. Terms in PostWizard are treated as children of taxonomies,
+ * and they can't exist without a parent as explained in {@link WPTermTaxonomy}.
  *
- * <p>This class maps to the `wp_terms` table and provides fields for various attributes of a term,
- * such as name, slug, and term group.
+ * <p>DAO interfaces in PostWizard like {@link net.ygbstudio.postwizard.dao.TermsManager} do not
+ * define methods to create or delete terms, and doing so is not recommended.
  *
+ * <p>Terms are created and deleted through the DAO implementation for {@link WPTermTaxonomy} at
+ * {@link net.ygbstudio.postwizard.dao.TaxonomyDAO}.
+ *
+ * @see WPTermTaxonomy
+ *     <p>This class maps to the {@code wp_terms} table and provides fields for various attributes
+ *     of a term, such as name, slug, and term group.
  * @see <a href="https://developer.wordpress.org/reference/classes/wp_term/">WP_Term</a>
  * @author Yoham Gabriel @ YGB Studio
  */

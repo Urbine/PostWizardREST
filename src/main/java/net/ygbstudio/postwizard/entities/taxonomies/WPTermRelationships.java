@@ -13,9 +13,21 @@ import java.util.StringJoiner;
 import net.ygbstudio.postwizard.entities.WPost;
 
 /**
- * Represents a WordPress term relationship entity.
+ * Represents a WordPress term relationship entity. Term relationships are created separately from
+ * the term taxonomy, term, and term metadata lifecycle, which means that a term can exist without
+ * any relationships, but a relationship cannot exist without a term taxonomy.
  *
- * <p>This class maps to the `wp_term_relationships` table and provides fields for various
+ * <p>As of now, term deletions do not cascade to their relationships, so they have to be deleted
+ * manually as a cleanup process. Deletions involve a large number of posts that might be associated
+ * with a term taxonomy, so it is recommended to delete the term taxonomy first and then delete the
+ * term relationships.
+ *
+ * <p>The dedicated DAO interface provides a method for this called {@link
+ * net.ygbstudio.postwizard.dao.TermRelationshipsManager#cleanTaxonomyRelationships(long)} and the
+ * service layer uses it in conjunction with other methods in {@link
+ * net.ygbstudio.postwizard.dao.TaxonomyDAO} to delete a term taxonomy cleanly.
+ *
+ * <p>This class maps to the {@code wp_term_relationships} table and provides fields for various
  * attributes of a term relationship, such as object ID, term taxonomy ID, and term order.
  *
  * @see <a

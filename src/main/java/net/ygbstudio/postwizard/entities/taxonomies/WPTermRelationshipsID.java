@@ -6,8 +6,9 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Class {@code WPTermRelationshipsID} represents a composite of the primary keys of the
- * `wp_term_relationships` table.
+ * Class {@code WPTermRelationshipsID} represents a composite of the primary keys of the {@code
+ * wp_term_relationships} table. It is used as the embedded primary key of the {@link
+ * WPTermRelationships} entity.
  *
  * @author Yoham Gabriel @ YGB Studio
  */

@@ -14,11 +14,17 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Represents a WordPress term taxonomy entity.
+ * Represents a WordPress term taxonomy entity. Taxonomies in PostWizard are treated as absolute
+ * parents of terms and their associated data. In order to create a new term, you must first create
+ * a new taxonomy and then associate the new term with it, so that metadata can be added to the term
+ * and post relationships can be established.
  *
- * <p>This class maps to the `wp_term_taxonomy` table and provides fields for various attributes of
- * a term taxonomy, such as term ID, taxonomy, description, parent, and count.
+ * <p>This class maps to the {@code wp_term_taxonomy} table and provides fields for various
+ * attributes of a term taxonomy, such as term ID, taxonomy, description, parent, and count.
  *
+ * @see WPTerms
+ * @see WPTermMeta
+ * @see WPTermRelationships
  * @see <a
  *     href="https://developer.wordpress.org/reference/classes/wp_term_taxonomy/">WP_Term_Taxonomy</a>
  * @author Yoham Gabriel @ YGB Studio

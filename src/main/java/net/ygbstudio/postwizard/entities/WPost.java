@@ -16,11 +16,19 @@ import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 
 /**
- * Represents a WordPress post entity.
+ * Represents a WordPress post entity. Posts are the primary entities in PostWizard and are used to
+ * store content, such as pages, posts, and custom post types. They are also associated with terms
+ * through term relationships, which are not part of the lifecycle of term taxonomies.
  *
- * <p>This class maps to the `wp_posts` table and provides fields for various attributes of a post,
- * such as author, content, title, slug, status, and type.
+ * <p>As of now, post deletions cascade to their relationships and metadata, but leave term
+ * taxonomies untouched since a term can be related to multiple posts. This means that posts are
+ * parent entities of {@link WPTermRelationships} and {@link WPMeta} entities.
  *
+ * <p>This class maps to the {@code wp_posts} table and provides fields for various attributes of a
+ * post, such as author, content, title, slug, status, and type.
+ *
+ * @see WPTermRelationships
+ * @see WPMeta
  * @see <a href="https://developer.wordpress.org/reference/classes/wp_post/">WP_Post</a>
  * @author Yoham Gabriel @ YGB Studio
  */

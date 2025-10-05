@@ -12,7 +12,14 @@ import jakarta.persistence.Table;
 import java.util.Objects;
 
 /**
- * Represents metadata associated with a WordPress post.
+ * Represents metadata associated with a WordPress post. {@link WPMeta} entities are children of
+ * {@link WPost} entities.
+ *
+ * <p>Post metadata fields, in the same way as {@link
+ * net.ygbstudio.postwizard.entities.taxonomies.WPTermMeta} entities, are used by themes or plugins
+ * to store additional information about posts that allow for customizing the behavior of posts and
+ * extending their capabilities in ways that affect classification, look and feel, and other
+ * features.
  *
  * <p>This entity maps to the {@code wp_postmeta} table and allows reading and updating key-value
  * metadata pairs for posts.
