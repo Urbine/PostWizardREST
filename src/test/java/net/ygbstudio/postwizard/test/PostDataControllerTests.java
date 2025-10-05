@@ -4,6 +4,7 @@ import static net.ygbstudio.postwizard.utils.Helpers.getPropertiesFromResources;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
@@ -16,6 +17,7 @@ import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.Properties;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -64,10 +66,14 @@ public class PostDataControllerTests {
 
   @NonNull
   private String getBearerToken() {
-    Properties loginProps = getPropertiesFromResources("ApplicationProperties.properties");
+    Optional<Properties> loginProps =
+        getPropertiesFromResources("ApplicationProperties.properties");
+    assertThat(loginProps.isPresent(), is(true));
     String login = baseURL + API_VERSION + "/auth/login";
     String loginStr =
-        loginProps.getProperty("api.username") + ":" + loginProps.getProperty("api.key");
+        loginProps.get().getProperty("api.username")
+            + ":"
+            + loginProps.get().getProperty("api.key");
     String authHeader = "Basic " + Base64.getEncoder().encodeToString(loginStr.getBytes());
     WebTarget target = client.target(login);
     Response response = target.request().header("Authorization", authHeader).get();

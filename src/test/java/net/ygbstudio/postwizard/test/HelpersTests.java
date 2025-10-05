@@ -1,11 +1,13 @@
 package net.ygbstudio.postwizard.test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.utils.Helpers;
@@ -21,8 +23,9 @@ public class HelpersTests {
 
   @Test
   void getPropertiesFromResources() {
-    Properties localProps = Helpers.getPropertiesFromResources("ApplicationProperties.properties");
-    assertThat(localProps, notNullValue());
+    Optional<Properties> localProps =
+        Helpers.getPropertiesFromResources("ApplicationProperties.properties");
+    assertThat(localProps.isPresent(), is(true));
   }
 
   @Test
