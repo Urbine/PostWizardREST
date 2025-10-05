@@ -10,13 +10,16 @@ import jakarta.security.enterprise.credential.UsernamePasswordCredential;
 import jakarta.security.enterprise.identitystore.CredentialValidationResult;
 import jakarta.security.enterprise.identitystore.IdentityStore;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ygbstudio.postwizard.exceptions.InvalidAuthAttempt;
+import org.jspecify.annotations.Nullable;
 
 /**
  * IdentityStore implementation for validating user credentials against authentication context
@@ -31,22 +34,31 @@ public class PWIdentityStore implements IdentityStore {
   private static final Logger identityLogger = Logger.getLogger(PWIdentityStore.class.getName());
 
   @SuppressWarnings("unused")
+  @Nullable
   private static final FileHandler logFileHandler = loggingInit(identityLogger, Level.FINE, true);
 
   @PostConstruct
   public void init() {
     identityLogger.fine("CDI -> IdentityStore Loaded");
+    if (logFileHandler == null) {
+      identityLogger.severe(
+          "Failed to initialize log file handler -> Make sure the server user has write permissions to the log directory");
+      identityLogger.setLevel(Level.ALL);
+    }
   }
 
   /**
-   * Retrieves authentication context properties from the resources file.
+   * Helper method that retrieves authentication context properties from the resources file.
    *
-   * @return a collection of key-value pairs representing the authentication context properties.
-   * @throws RuntimeException if an error occurs while reading the properties.
+   * @return a collection of key-value pairs representing the authentication context properties or
+   *     an empty set if the properties file is not found.
    */
-  public Collection<Map.Entry<Object, Object>> getAuthContextProperties() throws RuntimeException {
-
-    return getPropertiesFromResources("ApplicationProperties.properties").entrySet();
+  private Collection<Map.Entry<Object, Object>> getAuthContextProperties() {
+    Optional<Properties> optionalProperties =
+        getPropertiesFromResources("ApplicationProperties.properties");
+    return optionalProperties
+        .<Collection<Map.Entry<Object, Object>>>map(Properties::entrySet)
+        .orElse(Collections.emptySet());
   }
 
   /**

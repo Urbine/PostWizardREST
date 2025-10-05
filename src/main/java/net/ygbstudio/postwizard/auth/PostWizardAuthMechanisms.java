@@ -1,5 +1,8 @@
 package net.ygbstudio.postwizard.auth;
 
+import static net.ygbstudio.postwizard.utils.Debugging.getCallingMethod;
+import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
+import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 import static net.ygbstudio.postwizard.utils.Security.generateHS256Key;
 
@@ -24,6 +27,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +37,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
- * Custom authentication mechanism for the postwizard application. This class handles both Basic and
+ * Custom authentication mechanism for the PostWizard application. This class handles both Basic and
  * JWT authentication methods.
  *
  * @author Yoham Gabriel @ YGB Studio
@@ -47,10 +53,11 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
       Logger.getLogger(PostWizardAuthMechanisms.class.getName());
 
   @SuppressWarnings("unused")
+  @Nullable
   private static final FileHandler logFileHandler =
       loggingInit(authMechanismsLogging, Level.ALL, true);
 
-  public static final SecretKey secretKey = initialiseSecretKey();
+  @Nullable public static final SecretKey secretKey = initialiseSecretKey();
 
   @Inject private IdentityStoreHandler identityStoreHandler;
 
@@ -59,22 +66,36 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
   @PostConstruct
   public void init() {
     authMechanismsLogging.fine("CDI -> postwizardAuthMechanisms Loaded");
+    if (logFileHandler == null) {
+      authMechanismsLogging.severe(
+          "Failed to initialize log file handler -> Make sure the server user has write permissions to the log directory");
+      authMechanismsLogging.setLevel(Level.ALL);
+    } else if (secretKey == null) {
+      authMechanismsLogging.severe(
+          "Failed to initialize secret key -> Please provide a valid Secret key in the environment variable JWT_KEY and restart the application");
+      authMechanismsLogging.setLevel(Level.ALL);
+    }
   }
 
   @Override
   public AuthenticationStatus validateRequest(
-      HttpServletRequest request, HttpServletResponse response, HttpMessageContext context)
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull HttpMessageContext context)
       throws AuthenticationException {
     String userIP = request.getRemoteAddr();
     String currentURI = request.getRequestURI();
     String authHeaders = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-    authMechanismsLogging.entering(
+    logStepIn(
+        authMechanismsLogging,
         "**** Hit auth mechanism at method with IP " + userIP + " ****",
         currentURI,
-        new Object[] {authHeaders, context});
+        authHeaders,
+        context);
 
     if (currentURI.contains("/auth/login")) {
+
       if (authHeaders != null && authHeaders.startsWith("Basic ")) {
         return handleBasicAuth(authHeaders, context);
       }
@@ -87,7 +108,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
     }
 
     authMechanismsLogging.warning(
-        "No valid authentication headers found in request: " + currentURI);
+        () -> "No valid authentication headers found in request: " + currentURI);
     return context.responseUnauthorized();
   }
 
@@ -98,10 +119,16 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
    * @param context The HttpMessageContext for the current request.
    * @return The AuthenticationStatus indicating the result of the authentication.
    */
-  private AuthenticationStatus handleBasicAuth(String authHeaders, HttpMessageContext context) {
+  private AuthenticationStatus handleBasicAuth(
+      @NonNull String authHeaders, @NonNull HttpMessageContext context) {
 
-    authMechanismsLogging.entering(
-        "**** Hit Basic Auth mechanism at method ****", authHeaders, new Object[] {context});
+    logStepIn(
+        authMechanismsLogging,
+        "**** Hit Basic Auth mechanism at method "
+            + Arrays.toString(getCallingMethod(false))
+            + "****",
+        authHeaders,
+        context);
 
     String base64EncryptedCreds = authHeaders.substring("Basic ".length());
     String base64UnencryptCreds =
@@ -122,7 +149,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
     }
 
     authMechanismsLogging.warning(
-        "Invalid Basic Authentication credentials provided: " + authValues[0]);
+        () -> "Invalid Basic Authentication credentials provided: " + authValues[0]);
     return context.responseUnauthorized();
   }
 
@@ -130,14 +157,19 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
    * Handles JWT Authentication by validating the provided JWT token. This method extracts the JWT
    * from the 'Authorization' header, parses it, and retrieves the user and roles from the claims.
    *
-   * @param authHeaders
-   * @param context
+   * @param authHeaders authorization header containing the JWT token.
+   * @param context HttpMessageContext for the current request.
    * @return The AuthenticationStatus indicating the result of the authentication.
    */
   private AuthenticationStatus handleJwtAuth(String authHeaders, HttpMessageContext context) {
 
-    authMechanismsLogging.entering(
-        " ****Hit JWT Auth mechanism at method" + "****", authHeaders, new Object[] {context});
+    logStepIn(
+        authMechanismsLogging,
+        "**** Hit JWT Auth mechanism at method "
+            + Arrays.toString(getCallingMethod(false))
+            + "****",
+        authHeaders,
+        context);
 
     String jwt = authHeaders.substring("Bearer ".length());
 
@@ -154,8 +186,12 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
       return context.notifyContainerAboutLogin(user, roles);
 
     } catch (JwtException jwtEx) {
-      Throwable e = jwtEx;
-      authMechanismsLogging.throwing(this.getClass().getName(), "handleJwtAuth", e);
+      logStepOut(
+          authMechanismsLogging,
+          "handleJwtAuth",
+          jwtEx.getMessage(),
+          jwtEx.getCause(),
+          jwtEx.getStackTrace());
       return context.responseUnauthorized();
     }
   }
@@ -165,6 +201,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
    *
    * @return SecretKey (HMAC SHA-256) for JWT signing.
    */
+  @Nullable
   private static SecretKey initialiseSecretKey() {
     String secretKey = System.getenv("JWT_KEY");
     if (secretKey != null) {
