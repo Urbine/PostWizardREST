@@ -41,13 +41,13 @@ public final class Helpers implements Util {
   }
 
   /**
-   * Loads properties from a specified property file located in the resources directory.
+   * Loads properties from a specified property file located in the resources' directory.
    *
    * @param propertyFileName The name of the property file to load.
    * @return A {@link Properties} object containing the loaded properties.
    * @throws RuntimeException if an error occurs while reading the property file.
    */
-  public static Properties getPropertiesFromResources(String propertyFileName) {
+  public static Optional<Properties> getPropertiesFromResources(String propertyFileName) {
     Properties properties = new Properties();
     Logger propertiesLogger = Logger.getLogger("Helpers: getPropertiesFromResources");
 
@@ -60,11 +60,18 @@ public final class Helpers implements Util {
       propertiesLogger.info("Properties file loaded successfully...");
       properties.load(in);
     } catch (IOException ioex) {
-      propertiesLogger.warning("Error while loading property file. " + ioex.getMessage());
-      throw new RuntimeException("Error loading properties file: " + propertyFileName, ioex);
+      propertiesLogger.warning(
+          () ->
+              "Error while loading property file. "
+                  + ioex.getMessage()
+                  + " "
+                  + ioex.getCause()
+                  + " "
+                  + Arrays.toString(ioex.getStackTrace()));
+      return Optional.empty();
     }
 
-    return properties;
+    return Optional.of(properties);
   }
 
   /**
