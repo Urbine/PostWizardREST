@@ -35,7 +35,7 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 @Entity
 @Table(name = "`wp_posts`")
 @NamedQuery(name = "WPost.FindAll", query = "SELECT p FROM WPost p")
-@NamedQuery(name = "WPost.FindByID", query = "SELECT p from WPost p WHERE p.id = :postID")
+@NamedQuery(name = "WPost.FindByID", query = "SELECT p from WPost p WHERE p.id = :postId")
 @NamedQuery(name = "WPost.FindByType", query = "SELECT p FROM WPost p WHERE p.postType = :postType")
 public class WPost {
 

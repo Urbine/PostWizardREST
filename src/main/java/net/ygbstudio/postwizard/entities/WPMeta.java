@@ -34,14 +34,14 @@ import java.util.Objects;
     query = "SELECT postMeta.wpPost.id FROM WPMeta postMeta")
 @NamedQuery(
     name = "WPMeta.FindPostByID",
-    query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postID")
+    query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postId")
 @NamedQuery(
     name = "WPMeta.FindByMetaKey",
     query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey")
 @NamedQuery(
     name = "WPMeta.FindKeyByPostID",
     query =
-        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey AND postMeta.wpPost.id = :postID")
+        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey AND postMeta.wpPost.id = :postId")
 @NamedQuery(
     name = "WPMeta.RandomPostByMetaKey",
     query =
