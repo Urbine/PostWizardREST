@@ -41,7 +41,7 @@ public class PostMetaDAO implements PostMetaManager {
   @Override
   public List<WPMeta> getEntriesByPostID(long id) {
     return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
-        .setParameter("postID", id)
+        .setParameter("postId", id)
         .getResultList();
   }
 
@@ -63,10 +63,10 @@ public class PostMetaDAO implements PostMetaManager {
   }
 
   @Transactional(value = TxType.REQUIRED)
-  public Optional<WPMeta> findMetaKeyByPostID(@NonNull String metaKey, long postID) {
+  public Optional<WPMeta> findMetaKeyByPostID(@NonNull String metaKey, long postId) {
     return em.createNamedQuery("WPMeta.FindKeyByPostID", WPMeta.class)
         .setParameter("metaKey", metaKey)
-        .setParameter("postID", postID)
+        .setParameter("postId", postId)
         .getResultStream()
         .findFirst();
   }
@@ -91,9 +91,9 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public Optional<WPMeta> updatePostMetaValue(
-      long postID, @NonNull String metaKey, @NonNull String newValue) {
+      long postId, @NonNull String metaKey, @NonNull String newValue) {
     return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
-        .setParameter("postID", postID)
+        .setParameter("postId", postId)
         .getResultStream()
         .filter(p -> p.getMetaFieldKey().equals(metaKey))
         .findFirst()
@@ -118,12 +118,12 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public void updatePostMetaAuto(
-      long postID, @NonNull String metaKey, @Nullable String newValue, boolean autoCreate) {
-    if (postID <= 0 || !postExists(postID)) {
+      long postId, @NonNull String metaKey, @Nullable String newValue, boolean autoCreate) {
+    if (postId <= 0 || !postExists(postId)) {
       return;
     }
 
-    findMetaKeyByPostID(metaKey, postID)
+    findMetaKeyByPostID(metaKey, postId)
         .ifPresentOrElse(
             p -> {
               WPMeta existing = em.find(WPMeta.class, p.getMetaID());
@@ -131,7 +131,7 @@ public class PostMetaDAO implements PostMetaManager {
             },
             () -> {
               if (autoCreate) {
-                WPost wpPost = em.find(WPost.class, postID);
+                WPost wpPost = em.find(WPost.class, postId);
                 WPMeta newMetaPair = new WPMeta();
                 newMetaPair.setPost(wpPost);
                 newMetaPair.setMetaFieldKey(metaKey);
@@ -143,9 +143,9 @@ public class PostMetaDAO implements PostMetaManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public boolean postExists(long postID) {
+  public boolean postExists(long postId) {
     return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
-        .setParameter("postID", postID)
+        .setParameter("postId", postId)
         .getResultStream()
         .findFirst()
         .isPresent();
@@ -164,7 +164,7 @@ public class PostMetaDAO implements PostMetaManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public boolean metaKeyExists(long postID, @NonNull String metaKey) {
+  public boolean metaKeyExists(long postId, @NonNull String metaKey) {
     return em.createNamedQuery("WPMeta.FindByMetaKey", WPMeta.class)
         .setParameter("metaKey", metaKey)
         .getResultStream()

@@ -139,7 +139,11 @@ public class PostDAO implements PostManager {
     boolean deleted = false;
     Optional<WPost> post = getPostById(postId);
     if (post.isPresent()) {
-      em.remove(post.get());
+      WPost toBeDeleted = em.merge(post.get());
+      toBeDeleted
+          .getTermRelationships()
+          .forEach(rel -> rel.getTermTaxonomy().setCount(rel.getTermTaxonomy().getCount() - 1));
+      em.remove(toBeDeleted);
       deleted = true;
     }
     return deleted;
