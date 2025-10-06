@@ -16,8 +16,6 @@ A high-performance, secure RESTful API for WordPress content management, built w
 
 This API extends WordPress's capabilities while maintaining compatibility with your existing content structure, making it an excellent choice for developers looking to build high-performance applications on top of WordPress.
 
----
-
 ## ✨ Features
 
 ### Core Features
@@ -150,7 +148,7 @@ export PWLOG_LEVEL="DEBUG"
    mvn liberty:configure-arquillian
    
    # Test and Build the project
-   mvn clean package
+   mvn package
    ```
 
 4. **Deploy**
@@ -228,7 +226,7 @@ Content-Type: application/json
   "content": "Updated post content..."
 }
 ```
-
+---
 - `POST /v1/posts/meta/{postId}` - Update post metadata
 
 ```http
@@ -242,7 +240,7 @@ Content-Type: application/json
   "yoastMetaDesc": "This is a meta description compatible with the Yoast SEO plugin"
 }
 ```
-
+---
 - `POST /v1/posts/batch` - Batch update multiple posts
 
 ```http
@@ -261,7 +259,7 @@ Content-Type: application/json
   }
 ]
 ```
-
+---
 - `POST /v1/posts/meta/batch` - Batch update post metadata
 
 ```http
@@ -280,7 +278,7 @@ Content-Type: application/json
   }
 ]
 ```
-
+---
 - `GET /v1/posts/dump?type={postType}` - Get posts by type
 
 ```http
@@ -288,7 +286,7 @@ GET /v1/posts/dump?type=post
 GET /v1/posts/dump?type=attachment
 GET /v1/posts/dump?type=all
 ```
-
+---
 - `POST /v1/posts/featured/randomize?limit={limit}` - Randomize featured videos
 
 ```http
