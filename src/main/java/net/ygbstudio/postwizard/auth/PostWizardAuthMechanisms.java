@@ -67,13 +67,14 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
   public void init() {
     authMechanismsLogging.fine("CDI -> postwizardAuthMechanisms Loaded");
     if (logFileHandler == null) {
+      authMechanismsLogging.setLevel(Level.ALL);
       authMechanismsLogging.severe(
           "Failed to initialize log file handler -> Make sure the server user has write permissions to the log directory");
-      authMechanismsLogging.setLevel(Level.ALL);
+
     } else if (secretKey == null) {
+      authMechanismsLogging.setLevel(Level.ALL);
       authMechanismsLogging.severe(
           "Failed to initialize secret key -> Please provide a valid Secret key in the environment variable JWT_KEY and restart the application");
-      authMechanismsLogging.setLevel(Level.ALL);
     }
   }
 

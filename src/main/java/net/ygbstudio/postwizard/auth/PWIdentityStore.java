@@ -41,9 +41,9 @@ public class PWIdentityStore implements IdentityStore {
   public void init() {
     identityLogger.fine("CDI -> IdentityStore Loaded");
     if (logFileHandler == null) {
+      identityLogger.setLevel(Level.ALL);
       identityLogger.severe(
           "Failed to initialize log file handler -> Make sure the server user has write permissions to the log directory");
-      identityLogger.setLevel(Level.ALL);
     }
   }
 
