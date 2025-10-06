@@ -6,14 +6,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -39,13 +40,13 @@ public final class Logging implements Util {
    * @param loggingLevel The logging level for the FileHandler.
    * @param append Whether to append to the existing log file or overwrite it.
    * @return A FileHandler configured with the specified parameters.
-   * @throws SecurityException if a security manager exists and it denies access to the file.
+   * @throws SecurityException if a security manager exists, and it denies access to the file.
    * @throws IOException if an I/O error occurs while creating the FileHandler.
    */
   public static FileHandler logFileHandlerFactory(
       String fileName, Level loggingLevel, boolean append) throws SecurityException, IOException {
 
-    String platformSeparator = System.getProperty("file.separator");
+    String platformSeparator = FileSystems.getDefault().getSeparator();
     Path logsPath = Paths.get(".", "PWLogs");
     File logDir = new File(logsPath.toString());
     if (!logDir.exists()) logDir.mkdir();
@@ -77,8 +78,14 @@ public final class Logging implements Util {
       return classFileHandler;
     } catch (SecurityException | IOException e) {
       Exception ex = Exceptions.unchecked(e);
+      Logger.getGlobal().setLevel(Level.ALL);
       Logger.getLogger(Logging.class.getName())
-          .severe("Error initializing logging FileHandler. " + ex.getMessage());
+          .severe(
+              () ->
+                  "Error initializing logging FileHandler. "
+                      + ex.getMessage()
+                      + " "
+                      + Arrays.toString(ex.getStackTrace()));
     }
     return null;
   }
@@ -91,7 +98,7 @@ public final class Logging implements Util {
    * @return The logging level set by the environment variable, defaulting to INFO if not set or if
    *     the value is not recognized.
    */
-  public static @NonNull Level pickEnvLoggingLevel() {
+  public static Level pickEnvLoggingLevel() {
     String globalLogLevel = System.getenv("PWLOG_LEVEL");
     return Objects.requireNonNullElse(globalLogLevel, "").equalsIgnoreCase("DEBUG")
         ? Level.ALL
@@ -105,7 +112,7 @@ public final class Logging implements Util {
    * @param classLogger The logger to use for logging.
    * @param inputParams The input parameters of the method being logged.
    */
-  public static void logStepIn(@NonNull Logger classLogger, @NonNull Object... inputParams) {
+  public static void logStepIn(Logger classLogger, Object... inputParams) {
     String[] stackInfo = getCallingMethod(true);
     classLogger.entering(stackInfo[0], stackInfo[1], inputParams);
   }
@@ -117,7 +124,7 @@ public final class Logging implements Util {
    * @param classLogger The logger to use for logging.
    * @param outputParams The output parameters of the method being logged.
    */
-  public static void logStepOut(@NonNull Logger classLogger, @NonNull Object... outputParams) {
+  public static void logStepOut(Logger classLogger, Object... outputParams) {
     String[] stackInfo = getCallingMethod(true);
     classLogger.exiting(stackInfo[0], stackInfo[1], outputParams);
   }

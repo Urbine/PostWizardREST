@@ -90,22 +90,24 @@ public final class Helpers implements Util {
   public static void writePropertyFile(
       String propertyFileName, List<String> properties, List<String> values, String fileComment)
       throws IOException, URISyntaxException {
-    Properties propsFromResources = getPropertiesFromResources(propertyFileName);
+    Optional<Properties> propsFromResources = getPropertiesFromResources(propertyFileName);
     URI resourceURI = Helpers.class.getResource("/" + propertyFileName).toURI();
     File propsFile = new File(resourceURI);
     if (propsFile.exists()) {
       try (FileInputStream in = new FileInputStream(propsFile.toString())) {
-        propsFromResources.load(in);
+        if (propsFromResources.isPresent()) propsFromResources.get().load(in);
       }
     }
 
     List<Entry<String, String>> propertiesEntries = zip(properties, values).toList();
 
-    propertiesEntries.forEach(
-        entry -> propsFromResources.setProperty(entry.getKey(), entry.getValue()));
+    if (propsFromResources.isPresent()) {
+      propertiesEntries.forEach(
+          entry -> propsFromResources.get().setProperty(entry.getKey(), entry.getValue()));
 
-    try (FileOutputStream out = new FileOutputStream(propsFile)) {
-      propsFromResources.store(out, fileComment);
+      try (FileOutputStream out = new FileOutputStream(propsFile)) {
+        propsFromResources.get().store(out, fileComment);
+      }
     }
   }
 
@@ -119,8 +121,8 @@ public final class Helpers implements Util {
    * <p>if the lists are of different lengths, the resulting stream will only contain entries up to
    * the length of the shorter list.
    *
-   * @param <K>
-   * @param <V>
+   * @param <K> type parameter for the key element
+   * @param <V> type parameter for the value element
    * @param elementOne A list of elements to be used as keys in the map entries.
    * @param elementTwo A list of elements to be used as values in the map entries.
    * @return A stream of map entries where each entry pairs an element from the first list with an
