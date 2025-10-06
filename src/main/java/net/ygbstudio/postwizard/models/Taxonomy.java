@@ -7,6 +7,7 @@ package net.ygbstudio.postwizard.models;
  * <p>PostWizard enforces the use of these taxonomies in a way that theme compatibility is preserved
  * throughout the application.
  *
+ * @see net.ygbstudio.postwizard.service.TaxonomyService
  * @see TermMeta
  * @author Yoham Gabriel B @ YGB Studio
  */

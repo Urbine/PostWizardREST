@@ -4,6 +4,7 @@ package net.ygbstudio.postwizard.models;
  * Enum representing the keys used in WordPress posts. This enum provides a way to manage and
  * retrieve post keys in a type-safe manner.
  *
+ * @see net.ygbstudio.postwizard.service.PostService
  * @author Yoham Gabriel @ YGB Studio
  */
 public enum PostKeys {
