@@ -32,6 +32,8 @@ import org.jspecify.annotations.Nullable;
  * consistency and integrity by isolating the transactional context of the database operations with
  * every method call.
  *
+ * @see PostManager
+ * @see net.ygbstudio.postwizard.rest.PostDataController
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
@@ -48,8 +50,8 @@ public class PostService {
   /**
    * Checks whether a post exists in the server database.
    *
-   * @param postID
-   * @return
+   * @param postID the ID of the post to check
+   * @return true if the post exists, false otherwise
    */
   @Transactional(value = TxType.REQUIRES_NEW)
   public boolean postExists(long postID) {

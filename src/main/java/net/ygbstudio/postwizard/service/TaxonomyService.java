@@ -30,6 +30,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Service class for managing taxonomies in the PostWizard application. This class provides methods
+ * to validate, update, and retrieve taxonomies based on the ClientTaxonomy DTO and various
+ * enumerations representing valid taxonomy values.
+ *
+ * <p>The service interacts with the TaxonomyManager to perform database operations related to
+ * taxonomies. TaxonomyService also defines additional transactional boundaries for some methods to
+ * ensure data consistency and integrity by isolating the transactional context of the database
+ * operations with every method call.
+ *
+ * @see TaxonomyManager
+ * @see TermsManager
+ * @see TermsMetaManager
+ * @see TermRelationshipsManager
+ * @see PostManager
+ * @see net.ygbstudio.postwizard.rest.PostDataController
+ * @author Yoham Gabriel @ YGB Studio
+ */
 @ApplicationScoped
 public class TaxonomyService {
   private static final Logger taxonomyLogger = Logger.getLogger(TaxonomyService.class.getName());

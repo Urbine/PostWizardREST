@@ -35,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Service class for managing post metadata in the postwizard application. This class provides
+ * Service class for managing post metadata in the PostWizard application. This class provides
  * methods to validate, update, and retrieve post metadata based on the ClientPostMeta DTO and
  * various enumerations representing valid metadata values.
  *
@@ -44,6 +44,8 @@ import org.jspecify.annotations.Nullable;
  * ensure data consistency and integrity by isolating the transactional context of the database
  * operations with every method call.
  *
+ * @see PostMetaManager
+ * @see net.ygbstudio.postwizard.rest.PostDataController
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
