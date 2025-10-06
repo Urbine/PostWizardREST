@@ -11,6 +11,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -135,8 +136,9 @@ public class PostDataController {
     try {
       List<ClientPostMeta> allMeta = postMetaService.getClientPostMetaAll();
       postDataControllerLog.info(
-          "Returned %d posts on %s - Requested by %s"
-              .formatted(allMeta.size(), LocalDateTime.now(), request.getRemoteAddr()));
+          () ->
+              "Returned %d posts on %s - Requested by %s"
+                  .formatted(allMeta.size(), LocalDateTime.now(), request.getRemoteAddr()));
       logStepOut(postDataControllerLog, allMeta);
       return Response.ok(
               new PostDumpResponse(
@@ -184,8 +186,9 @@ public class PostDataController {
             postService.getAllClientPostByType(
                 enumFromValue(PostType.class, postType, true).orElseThrow());
         postDataControllerLog.info(
-            "Returned %d posts on %s - Requested by %s"
-                .formatted(allPosts.size(), LocalDateTime.now(), request.getRemoteAddr()));
+            () ->
+                "Returned %d posts on %s - Requested by %s"
+                    .formatted(allPosts.size(), LocalDateTime.now(), request.getRemoteAddr()));
         return Response.ok(
                 new PostDumpResponse(
                     "Dump request processed successfully",
@@ -257,8 +260,9 @@ public class PostDataController {
     ClientPost postResult = postService.getClientPost(postId);
     logStepOut(postDataControllerLog, postResult);
     postDataControllerLog.fine(
-        "Post metadata retrieved successfully post id %d : Response.Status.OK - Requested by %s"
-            .formatted(postId, request.getRemoteAddr()));
+        () ->
+            "Post metadata retrieved successfully post id %d : Response.Status.OK - Requested by %s"
+                .formatted(postId, request.getRemoteAddr()));
     return Response.ok(postResult, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
@@ -690,7 +694,7 @@ public class PostDataController {
         .build();
   }
 
-  @POST
+  @DELETE
   @Path("taxonomies/remove")
   @RolesAllowed(value = {"user"})
   @Consumes(MediaType.APPLICATION_JSON)
