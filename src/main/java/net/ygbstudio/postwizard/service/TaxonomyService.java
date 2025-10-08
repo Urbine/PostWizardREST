@@ -73,6 +73,7 @@ public class TaxonomyService {
    * @return the client-side DTO {@code ClientTerm} if the conversion is successful, {@code
    *     Optional.empty()} otherwise
    */
+  @Transactional(TxType.REQUIRES_NEW)
   public Optional<ClientTerm> convertToClientTerm(@NonNull Optional<WPTerms> term) {
     if (term.isPresent()) {
       ClientTerm clientTerm = new ClientTerm();
@@ -88,7 +89,11 @@ public class TaxonomyService {
                 Objects.requireNonNullElse(term.get().getTaxonomy().getTermTaxonomyId(), 0L));
         clientTerm.getTaxonomy().setTaxonomyName(term.get().getTaxonomy().getTaxonomy());
         clientTerm.getTaxonomy().setDescription(term.get().getTaxonomy().getDescription());
-        clientTerm.getTaxonomy().setCount(term.get().getTaxonomy().getCount());
+        clientTerm
+            .getTaxonomy()
+            .setCount(
+                termRelationshipsDAO.countTaxonomyRelationships(
+                    clientTerm.getTaxonomy().getTermTaxonomyId()));
         clientTerm.getTaxonomy().setParent(term.get().getTaxonomy().getParent());
       }
       return Optional.of(clientTerm);
@@ -156,6 +161,21 @@ public class TaxonomyService {
   public Optional<ClientTerm> termSlugExists(@NonNull String termSlug) {
     Optional<WPTerms> isATermSlug = termsDAO.termSlugExists(termSlug).findFirst();
     return convertToClientTerm(isATermSlug);
+  }
+
+  /**
+   * Retrieves a term by its name or slug and converts it into a client-side DTO {@code ClientTerm}.
+   *
+   * @param clientTerm the client-side schema DTO term to retrieve
+   * @return the client-side DTO {@code ClientTerm} if the term exists, {@code Optional.empty()}
+   *     otherwise
+   */
+  @Transactional(TxType.REQUIRES_NEW)
+  public Optional<WPTerms> eitherTermNameOrSlugExists(@NonNull ClientTerm clientTerm) {
+    return termsDAO
+        .termNameExists(clientTerm.getName())
+        .findFirst()
+        .or(() -> termsDAO.termSlugExists(clientTerm.getSlug()).findFirst());
   }
 
   /**
@@ -244,6 +264,38 @@ public class TaxonomyService {
         TermMeta.CATEGORY_RECOMMEND_ID.toString(), "", newCategoryTaxonomy.getTerm());
 
     return convertToClientTaxonomy(Optional.of(newCategoryTaxonomy));
+  }
+
+  /**
+   * Adds a new term to the database and returns the client-side DTO {@code ClientTaxonomy}.
+   *
+   * @param providedTerm the client-side schema DTO term to add
+   * @return the client-side DTO {@code ClientTaxonomy} if the term is added successfully, {@code
+   *     Optional.empty()} otherwise
+   */
+  public Optional<ClientTaxonomy> addTerm(ClientTerm providedTerm) {
+    String taxonomyName = providedTerm.getTaxonomy().getTaxonomyName();
+    String newName = providedTerm.getName();
+    String newSlug = providedTerm.getSlug();
+    if (newName == null) return Optional.empty();
+
+    Optional<WPTerms> eitherTermNameOrSlugExists = eitherTermNameOrSlugExists(providedTerm);
+    String idealSlug = Pattern.compile("\\W").matcher(newName.toLowerCase()).replaceAll("-");
+
+    if (eitherTermNameOrSlugExists.isEmpty()) {
+      if (newSlug == null || !newSlug.equals(idealSlug)) newSlug = idealSlug;
+      return switch (enumFromValue(Taxonomy.class, taxonomyName, true).orElse(Taxonomy.OTHERS)) {
+        case TAG -> addPostTag(newName, newSlug);
+        case MODELS -> addModel(StringUtils.capitalize(newName), newSlug);
+        case CATEGORY ->
+            addCategory(
+                newName,
+                newSlug,
+                Objects.requireNonNullElse(providedTerm.getTaxonomy().getDescription(), ""));
+        default -> Optional.empty();
+      };
+    }
+    return convertToClientTaxonomy(Optional.of(eitherTermNameOrSlugExists.get().getTaxonomy()));
   }
 
   /**
@@ -337,29 +389,9 @@ public class TaxonomyService {
         identifyExistingTermRelationships(providedTerm, sessionPost.get());
 
     if (existingRelationship.isEmpty()) {
-      String taxonomyName = providedTerm.getTaxonomy().getTaxonomyName();
-      String newName = providedTerm.getName();
-      String newSlug = providedTerm.getSlug();
-      if (newName == null) return Optional.empty();
-      if (newSlug == null)
-        newSlug = Pattern.compile("\\W").matcher(newName.toLowerCase()).replaceAll("-");
-      switch (enumFromValue(Taxonomy.class, taxonomyName, true).orElse(Taxonomy.OTHERS)) {
-        case TAG:
-          Optional<ClientTaxonomy> newTag = addPostTag(newName, newSlug);
-          return addNewTermRelationship(newTag, sessionPost);
-        case MODELS:
-          Optional<ClientTaxonomy> newModel = addModel(StringUtils.capitalize(newName), newSlug);
-          return addNewTermRelationship(newModel, sessionPost);
-        case CATEGORY:
-          Optional<ClientTaxonomy> newCategory =
-              addCategory(
-                  newName,
-                  newSlug,
-                  Objects.requireNonNullElse(providedTerm.getTaxonomy().getDescription(), ""));
-          return addNewTermRelationship(newCategory, sessionPost);
-        default:
-          break;
-      }
+      Optional<ClientTaxonomy> newClientTaxonomy = addTerm(providedTerm);
+      if (newClientTaxonomy.isPresent())
+        return addNewTermRelationship(newClientTaxonomy, sessionPost);
     }
     return existingRelationship;
   }
@@ -385,11 +417,7 @@ public class TaxonomyService {
         termsDAO.termNameAndSlugExists(clientTermName, clientTermSlug).findFirst();
 
     if (existingTermNameAndSlug.isEmpty()) {
-      finalTerm =
-          termsDAO
-              .termNameExists(clientTermName)
-              .findFirst()
-              .or(() -> termsDAO.termSlugExists(clientTermSlug).findFirst());
+      finalTerm = eitherTermNameOrSlugExists(clientTerm);
     } else finalTerm = existingTermNameAndSlug;
 
     return finalTerm
