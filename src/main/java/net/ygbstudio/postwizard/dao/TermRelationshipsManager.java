@@ -55,4 +55,12 @@ public interface TermRelationshipsManager {
    * @return true if the term relationships were cleaned up, false otherwise
    */
   boolean cleanTaxonomyRelationships(long termTaxonomyId);
+
+  /**
+   * Counts the number of term relationships associated with a term taxonomy.
+   *
+   * @param termTaxonomyId term taxonomy ID
+   * @return number of term relationships associated with the term taxonomy
+   */
+  long countTaxonomyRelationships(long termTaxonomyId);
 }

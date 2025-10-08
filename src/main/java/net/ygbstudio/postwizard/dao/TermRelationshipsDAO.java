@@ -52,12 +52,20 @@ public class TermRelationshipsDAO implements TermRelationshipsManager {
 
     // Everytime a relationship is created,
     // the database count of the taxonomy should be updated.
-    taxonomy.setCount(taxonomy.getCount() + 1);
+    taxonomy.setCount(countTaxonomyRelationships(taxonomy.getTermTaxonomyId()) + 1);
 
     em.merge(taxonomy);
     em.persist(termRelationships);
 
     return termRelationships;
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
+  public long countTaxonomyRelationships(long termTaxonomyId) {
+    return em.createNamedQuery("WPTermRelationships.CountByTermTaxonomyID", Long.class)
+        .setParameter("termTaxonomyID", termTaxonomyId)
+        .getSingleResult();
   }
 
   @Transactional(value = TxType.REQUIRED)
@@ -70,10 +78,9 @@ public class TermRelationshipsDAO implements TermRelationshipsManager {
         .ifPresentOrElse(
             termRelationships -> {
               WPTermRelationships termRelationship = em.merge(termRelationships);
-              termRelationship
-                  .getTermTaxonomy()
-                  .setCount(termRelationship.getTermTaxonomy().getCount() - 1);
+              WPTermTaxonomy termTaxonomy = em.merge(termRelationship.getTermTaxonomy());
               em.remove(termRelationship);
+              termTaxonomy.setCount(countTaxonomyRelationships(termTaxonomy.getTermTaxonomyId()));
             },
             () -> result.set(false));
 
