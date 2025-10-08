@@ -206,7 +206,7 @@ Authorization: Bearer your.jwt.token.here
 
 ##### Query Parameters
 
-- `postId`: Numeric ID of the post to retrieve or update
+- `id`: Numeric ID of the post to retrieve or update
 - `postType`: Type of posts to retrieve (e.g., "post", "attachment", "photos", "all")
 - `limit`: Maximum number of videos to select (default: 10)
 - `link`: (Optional, boolean) Set to `true` to automatically link the term to the post
@@ -300,7 +300,7 @@ The application provides comprehensive support for managing post taxonomies (cat
 ##### Link/Unlink Terms to Posts
 
 ```http
-POST /v1/posts/taxonomies?postId={postId}&link={link}&unlink={unlink}
+POST /v1/taxonomies/check?id={id}&link={link}&unlink={unlink}
 Content-Type: application/json
 ```
 ```json
@@ -314,10 +314,26 @@ Content-Type: application/json
 }
 ```
 
+##### Add Terms
+
+```http
+POST /v1/taxonomies/add
+Content-Type: application/json
+```
+```json
+{
+  "name": "Java 21",
+  "slug": "java-21",
+  "taxonomy": {
+    "taxonomy_name": "post_tag"
+  }
+}
+```
+
 ##### Remove Terms
 
 ```http
-DELETE /v1/posts/taxonomies/remove
+DELETE /v1/taxonomies/remove
 Content-Type: application/json
 ```
 ```json
