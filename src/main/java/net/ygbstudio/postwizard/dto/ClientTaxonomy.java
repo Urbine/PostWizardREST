@@ -3,6 +3,7 @@ package net.ygbstudio.postwizard.dto;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
+import jakarta.json.bind.annotation.JsonbTransient;
 import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -14,8 +15,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @see net.ygbstudio.postwizard.entities.taxonomies.WPTermTaxonomy
  * @author Yoham Gabriel @ YGB Studio
  */
-@JsonbPropertyOrder({"termTaxonomyId", "term", "taxonomy", "description", "parent", "count"})
-public class ClientTaxonomy implements EmbeddedResult {
+@JsonbPropertyOrder({"termTaxonomyId", "term", "taxonomy", "description", "count"})
+public class ClientTaxonomy implements JsonSerializable {
 
   @JsonbNillable
   @JsonbProperty("term_taxonomy_id")
@@ -29,9 +30,7 @@ public class ClientTaxonomy implements EmbeddedResult {
   @JsonbProperty("taxonomy_description")
   private String description;
 
-  @JsonbNillable
-  @JsonbProperty("taxonomy_parent")
-  private int parent;
+  @JsonbTransient private int parent;
 
   @JsonbNillable
   @JsonbProperty("taxonomy_count")

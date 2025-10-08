@@ -3,6 +3,7 @@ package net.ygbstudio.postwizard.dto;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
+import jakarta.json.bind.annotation.JsonbTransient;
 import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -17,7 +18,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Yoham Gabriel @ YGB Studio
  */
 @JsonbPropertyOrder(value = {"termId", "name", "slug", "termGroup", "taxonomy"})
-public class ClientTerm implements EmbeddedResult {
+public class ClientTerm implements JsonSerializable {
 
   @JsonbNillable
   @JsonbProperty("term_id")
@@ -31,9 +32,7 @@ public class ClientTerm implements EmbeddedResult {
   @JsonbProperty("slug")
   private String slug;
 
-  @JsonbNillable
-  @JsonbProperty("term_group")
-  private long termGroup;
+  @JsonbTransient private long termGroup;
 
   @JsonbNillable
   @JsonbProperty("taxonomy")
