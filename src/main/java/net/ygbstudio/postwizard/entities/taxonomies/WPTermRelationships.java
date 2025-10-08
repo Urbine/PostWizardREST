@@ -43,6 +43,10 @@ import net.ygbstudio.postwizard.entities.WPost;
 @NamedQuery(
     name = "WPTermRelationships.DeleteByTermTaxonomyID",
     query = "DELETE FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
+@NamedQuery(
+    name = "WPTermRelationships.CountByTermTaxonomyID",
+    query =
+        "SELECT COUNT(rel) FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
 public class WPTermRelationships {
 
   @EmbeddedId private WPTermRelationshipsID id;
