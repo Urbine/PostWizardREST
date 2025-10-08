@@ -9,7 +9,7 @@ import org.jspecify.annotations.NullMarked;
  * @author Yoham Gabriel @ YGB Studio
  */
 @NullMarked
-public class Exceptions implements Util {
+public final class Exceptions implements Util {
 
   private Exceptions() {
     throw new AssertionError("Unable to instantiate utility class");
