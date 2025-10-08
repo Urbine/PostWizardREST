@@ -11,7 +11,6 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -27,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -35,12 +33,9 @@ import java.util.logging.Logger;
 import net.ygbstudio.postwizard.dto.BatchJobResponse;
 import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
-import net.ygbstudio.postwizard.dto.ClientTaxonomy;
-import net.ygbstudio.postwizard.dto.ClientTerm;
 import net.ygbstudio.postwizard.dto.ErrorResponse;
 import net.ygbstudio.postwizard.dto.PostDumpResponse;
 import net.ygbstudio.postwizard.dto.ServerResponse;
-import net.ygbstudio.postwizard.dto.ServerResult;
 import net.ygbstudio.postwizard.models.PostType;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
@@ -552,180 +547,6 @@ public class PostDataController {
             "Status " + internalServerError.getStatusCode());
         return Response.status(internalServerError).entity(randomisationError).build();
       }
-    }
-  }
-
-  /**
-   * Endpoint to link a term to a post. This method accepts a {@code postId}, a {@code ClientTerm}
-   * payload, and an optional {@code link} parameter. If the {@code link} parameter is true, the
-   * method will attempt to link the term to the post provided as a path parameter.
-   *
-   * <p>If the {@code link} parameter is false, the method will search for the term provided in the
-   * payload. If the term is found, it will be returned as a response. If the term name and slug are
-   * located and linked to different term IDs, the method will return a response with a conflict
-   * status {@code 409}.
-   *
-   * <p>Enabling {@code link} will resolve any conflicts automatically and create the term if it
-   * does not exist or if it seems unique.
-   *
-   * @param postId the ID of the post to link the term to
-   * @param link a boolean indicating whether to auto-link the term to the post
-   * @param clientTerm the term to link to the post
-   * @return a Response object containing the result of the link operation and the term ID
-   */
-  @POST
-  @Path("taxonomies")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response checkTermTaxonomy(
-      @QueryParam("Id") long postId,
-      @QueryParam("link") @DefaultValue("false") boolean link,
-      @QueryParam("unlink") @DefaultValue("false") boolean unlink,
-      ClientTerm clientTerm) {
-    Response.StatusType internalServerError = Response.Status.INTERNAL_SERVER_ERROR;
-    Response.StatusType conflict = Response.Status.CONFLICT;
-    try {
-      logStepIn(postDataControllerLog, postId, link, unlink, clientTerm);
-      if (postId <= 0 && link) {
-        Response.StatusType badRequest = Response.Status.BAD_REQUEST;
-        ErrorResponse invalidpostId =
-            new ErrorResponse(
-                "Invalid Post ID or Payload",
-                "Provide a valid details and try again",
-                badRequest.getStatusCode());
-        logStepOut(postDataControllerLog, invalidpostId, badRequest);
-        return Response.status(badRequest).entity(invalidpostId).build();
-      } else if (postId > 0 && link) {
-        Optional<ClientTaxonomy> createdRelationship =
-            taxonomyService.createTermRelationship(clientTerm, postId);
-        if (createdRelationship.isPresent()) {
-          Optional<ClientTerm> fromTermTaxonomyId =
-              taxonomyService.getClientTermByTaxonomyId(
-                  createdRelationship.get().getTermTaxonomyId());
-          if (fromTermTaxonomyId.isPresent()) {
-            logStepOut(postDataControllerLog, createdRelationship.get());
-            return Response.ok(
-                    new ServerResponse(
-                        "Post ID: "
-                            + postId
-                            + " has been linked to taxonomy type: "
-                            + createdRelationship.get().getTaxonomyName()
-                            + " with ID: "
-                            + createdRelationship.get().getTermTaxonomyId()
-                            + " with name: "
-                            + fromTermTaxonomyId.get().getName()
-                            + " and slug: "
-                            + fromTermTaxonomyId.get().getSlug(),
-                        Response.Status.OK.getStatusCode()),
-                    MediaType.APPLICATION_JSON_TYPE)
-                .build();
-          }
-        } else {
-          ErrorResponse noRelationshipCreated =
-              new ErrorResponse(
-                  "No relationship modified. The term/slug combination is likely not unique",
-                  "Please try again with a different term/slug",
-                  conflict.getStatusCode());
-          logStepOut(postDataControllerLog, noRelationshipCreated, conflict);
-          return Response.status(conflict).entity(noRelationshipCreated).build();
-        }
-      } else if (unlink) {
-        boolean isRemoved = taxonomyService.removeTermRelationship(postId, clientTerm);
-        if (isRemoved) {
-          /*
-           termExists should not throw NoSuchElementException since the term indeed exists,
-           thus the request reached this far, else the exception is caught by this method and
-           the response will be 500. This is rare, but possible.
-          */
-          ClientTerm termExists = taxonomyService.termExists(clientTerm.getName()).orElseThrow();
-          logStepOut(postDataControllerLog, "Post relationship removed");
-          return Response.ok(
-                  new ServerResponse(
-                      "Removed relationship for post "
-                          + postId
-                          + " and term: "
-                          + termExists.getName()
-                          + " with slug: "
-                          + termExists.getSlug(),
-                      Response.Status.OK.getStatusCode()),
-                  MediaType.APPLICATION_JSON_TYPE)
-              .build();
-        }
-      } else {
-        Optional<ClientTerm> termExists = taxonomyService.termExists(clientTerm.getName());
-        Optional<ClientTerm> termSlugExists = taxonomyService.termSlugExists(clientTerm.getSlug());
-        if (termExists.isPresent() && termSlugExists.isPresent()) {
-          if (termExists.get().equals(termSlugExists.get())) {
-            return Response.ok(termExists.get(), MediaType.APPLICATION_JSON_TYPE).build();
-          } else {
-            ServerResponse differingTerms =
-                new ServerResponse(
-                    "Found terms distinct terms: "
-                        + termExists.get().getName()
-                        + " and "
-                        + termExists.get().getSlug()
-                        + " vs "
-                        + termSlugExists.get().getName()
-                        + " and "
-                        + termSlugExists.get().getSlug(),
-                    conflict.getStatusCode());
-            logStepOut(postDataControllerLog, differingTerms, conflict);
-            return Response.status(conflict).entity(differingTerms).build();
-          }
-        }
-      }
-    } catch (Exception e) {
-      logStepOut(postDataControllerLog, e, e.getCause(), e.getMessage(), e.getStackTrace());
-      ErrorResponse serverError =
-          new ErrorResponse(
-              "An error has occurred while processing this request",
-              "Please review your request and try again",
-              internalServerError.getStatusCode());
-      return Response.status(internalServerError).entity(serverError).build();
-    }
-    logStepOut(postDataControllerLog, internalServerError);
-    return Response.status(internalServerError)
-        .entity(
-            new ErrorResponse(
-                "No term found nor processed in this request",
-                "Please try again",
-                internalServerError.getStatusCode()))
-        .build();
-  }
-
-  @DELETE
-  @Path("taxonomies/remove")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response removeTermTaxonomy(ClientTerm clientTerm) {
-    try {
-      Optional<ClientTerm> removedTerm = taxonomyService.removeTermTaxonomy(clientTerm);
-      if (removedTerm.isPresent()) {
-        logStepOut(postDataControllerLog, removedTerm.get().toString());
-        ServerResult removedTermResponse =
-            new ServerResult(
-                List.of(removedTerm.get()),
-                "Term removed from the database successfully",
-                Response.Status.OK.getStatusCode());
-        return Response.ok(removedTermResponse, MediaType.APPLICATION_JSON_TYPE).build();
-      } else {
-        Response.StatusType notFound = Response.Status.NOT_FOUND;
-        logStepOut(postDataControllerLog, clientTerm.toString(), notFound);
-        return Response.status(notFound)
-            .entity(
-                new ErrorResponse("Term not found", "Please try again", notFound.getStatusCode()))
-            .build();
-      }
-    } catch (Exception e) {
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(
-              new ErrorResponse(
-                  "An error has occurred while processing this request",
-                  "Please review your request and try again",
-                  Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-          .build();
     }
   }
 }
