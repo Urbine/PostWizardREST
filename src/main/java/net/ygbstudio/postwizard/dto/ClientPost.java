@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Data Transfer Object (DTO) for client posts. This class represents a post in the Post Director
+ * Data Transfer Object (DTO) for client posts. This class represents a post in the PostWizard
  * application, including its author, content, title, slug, status, and type.
  *
  * <p>The class fields are named according to the actual entries in the WordPress database, allowing

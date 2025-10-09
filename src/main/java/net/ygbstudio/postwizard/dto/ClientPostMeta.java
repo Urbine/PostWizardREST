@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Data Transfer Object (DTO) for client post metadata. This class represents the metadata
- * associated with a post in the Post Director application, including video details and other
+ * associated with a post in the PostWizard application, including video details and other
  * attributes.
  *
  * <p>The class fields are named according to the actual entries in the WordPress database, allowing
