@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class PostDataControllerTests {
+public class PostControllerTests {
 
   public static final String TEST_WAR = "arquillian-pw-tests-posts-rest.war";
   public static final String API_VERSION = "v1";
