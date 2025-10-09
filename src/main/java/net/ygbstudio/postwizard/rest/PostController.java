@@ -185,8 +185,9 @@ public class PostController {
         postService.clientPostUpdateStrategy(clientPost);
         logStepOut(postDataControllerLog, postId);
         postDataControllerLog.fine(
-            "Post ID updated successfully: Response.Status.OK - Requested by "
-                + request.getRemoteAddr());
+            () ->
+                "Post ID updated successfully: Response.Status.OK - Requested by "
+                    + request.getRemoteAddr());
         return Response.ok(
                 new ServerResponse(
                     "Post ID " + postId + " has been modified with the fields provided",

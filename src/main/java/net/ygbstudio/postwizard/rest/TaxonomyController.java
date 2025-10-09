@@ -51,7 +51,7 @@ public class TaxonomyController {
    * Endpoint to link a term to a post. This method accepts a {@code postId}, a {@code ClientTerm}
    * payload, and an optional {@code link} parameter. If the {@code link} parameter is true, the
    * method will attempt to link the term to the post provided as a path parameter. The same is true
-   * if no post id is provided, the method tries to locate an existing method and creates additional
+   * if no post id is provided, the method tries to locate an existing term and creates additional
    * ones if needed.
    *
    * <p>If aterm name and slug are located and linked to different term IDs, the method will return
@@ -144,13 +144,14 @@ public class TaxonomyController {
                   MediaType.APPLICATION_JSON_TYPE)
               .build();
         } else {
-          Optional<ClientTaxonomy> taxonomyTermExists = taxonomyService.addTerm(clientTerm);
-          if (taxonomyTermExists.isPresent()) {
+          Optional<ClientTaxonomy> taxonomyTermCreate = taxonomyService.addTerm(clientTerm);
+          Optional<ClientTerm> newClientTerm = taxonomyService.termExists(clientTerm.getName());
+          if (taxonomyTermCreate.isPresent() && newClientTerm.isPresent()) {
             return Response.ok(
                     new ServerResult(
                         () ->
                             "Term: " + clientTerm.getName() + " added to the database successfully",
-                        List.of(taxonomyTermExists.get()),
+                        List.of(newClientTerm.get()),
                         Response.Status.OK.getStatusCode()),
                     MediaType.APPLICATION_JSON_TYPE)
                 .build();
