@@ -22,6 +22,7 @@ import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.entities.WPost;
 import net.ygbstudio.postwizard.models.PostType;
 import net.ygbstudio.postwizard.models.Taxonomy;
+import net.ygbstudio.postwizard.rest.PostController;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -33,7 +34,7 @@ import org.jspecify.annotations.Nullable;
  * every method call.
  *
  * @see PostManager
- * @see net.ygbstudio.postwizard.rest.PostDataController
+ * @see PostController
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped

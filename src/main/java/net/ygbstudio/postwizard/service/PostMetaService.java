@@ -31,6 +31,7 @@ import net.ygbstudio.postwizard.models.Orientation;
 import net.ygbstudio.postwizard.models.PostMetaKeys;
 import net.ygbstudio.postwizard.models.Production;
 import net.ygbstudio.postwizard.models.ToggleField;
+import net.ygbstudio.postwizard.rest.PostController;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
@@ -45,7 +46,7 @@ import org.jspecify.annotations.Nullable;
  * operations with every method call.
  *
  * @see PostMetaManager
- * @see net.ygbstudio.postwizard.rest.PostDataController
+ * @see PostController
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
