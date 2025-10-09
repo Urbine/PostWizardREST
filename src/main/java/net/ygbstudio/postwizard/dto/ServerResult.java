@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * ServerResult is a DTO class that represents a response from the server for operations that return
  * another client-side DTO as part of their response as long as they implement the {@link
- * JsonSerializable} interface.
+ * ClientDeliverable} interface.
  *
  * <p>It contains fields for an action message, HTTP status code, a timestamp indicating when the
  * response was created, and a result object that is compatible with JsonB binding to preserve
@@ -28,7 +28,7 @@ public class ServerResult {
   private String action;
 
   @JsonbProperty("data")
-  private List<JsonSerializable> result;
+  private List<ClientDeliverable> result;
 
   @JsonbProperty("status_code")
   private int status;
@@ -36,18 +36,18 @@ public class ServerResult {
   @JsonbProperty("completed_at")
   private Instant timestamp;
 
-  public ServerResult(Supplier<String> action, List<JsonSerializable> result, int status) {
+  public ServerResult(Supplier<String> action, List<ClientDeliverable> result, int status) {
     this.action = action.get();
     this.result = result;
     this.status = status;
     this.timestamp = Instant.now();
   }
 
-  public List<JsonSerializable> getResult() {
+  public List<ClientDeliverable> getResult() {
     return result;
   }
 
-  public void setResult(List<JsonSerializable> result) {
+  public void setResult(List<ClientDeliverable> result) {
     this.result = result;
   }
 

@@ -40,7 +40,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
       "postModifiedGMT"
     })
 @JsonbVisibility(ClientDTOVisibilityStrategy.class)
-public class ClientPost implements BatchDeliverable {
+public class ClientPost implements ClientBatchDeliverable {
 
   @JsonbProperty("postID")
   private Long ID;

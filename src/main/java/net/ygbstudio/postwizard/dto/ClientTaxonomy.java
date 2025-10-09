@@ -16,7 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Yoham Gabriel @ YGB Studio
  */
 @JsonbPropertyOrder({"termTaxonomyId", "term", "taxonomy", "description", "count"})
-public class ClientTaxonomy implements JsonSerializable {
+public class ClientTaxonomy implements ClientDeliverable {
 
   @JsonbNillable
   @JsonbProperty("term_taxonomy_id")

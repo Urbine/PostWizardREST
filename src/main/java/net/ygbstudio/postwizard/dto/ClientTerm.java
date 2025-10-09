@@ -18,7 +18,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Yoham Gabriel @ YGB Studio
  */
 @JsonbPropertyOrder(value = {"termId", "name", "slug", "termGroup", "taxonomy"})
-public class ClientTerm implements JsonSerializable {
+public class ClientTerm implements ClientDeliverable {
 
   @JsonbNillable
   @JsonbProperty("term_id")
