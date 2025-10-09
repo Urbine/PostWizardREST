@@ -4,7 +4,7 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 
 /**
- * Represents a post in the Post Director application. This is an experimental merge of {@link
+ * Represents a post in the PostWizard application. This is an experimental merge of {@link
  * PostMeta} and {@link net.ygbstudio.postwizard.entities.WPMeta} fields, however, alternatives are
  * being implemented like database join associations that collect a group of attributes based on a
  * single post.

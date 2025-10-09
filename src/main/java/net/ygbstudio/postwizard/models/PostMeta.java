@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Represents metadata for a post in the Post Director application.
+ * Represents metadata for a post in the PostWizard application.
  *
  * <p>This class contains various attributes related to a video post, such as production details,
  * orientation, and other fields that model the object.
