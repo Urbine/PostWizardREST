@@ -1,5 +1,7 @@
 package net.ygbstudio.postwizard.rest;
 
+import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleBadRequest;
+import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleConflict;
 import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleException;
 import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleNotFound;
 import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
@@ -24,10 +26,9 @@ import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.ygbstudio.postwizard.dto.ClientDeliverable;
 import net.ygbstudio.postwizard.dto.ClientTaxonomy;
 import net.ygbstudio.postwizard.dto.ClientTerm;
-import net.ygbstudio.postwizard.dto.ErrorResponse;
-import net.ygbstudio.postwizard.dto.JsonSerializable;
 import net.ygbstudio.postwizard.dto.ServerResult;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import net.ygbstudio.postwizard.service.TaxonomyService;
@@ -71,18 +72,10 @@ public class TaxonomyController {
       @QueryParam("link") @DefaultValue("false") boolean link,
       @QueryParam("unlink") @DefaultValue("false") boolean unlink,
       ClientTerm clientTerm) {
-    Response.StatusType conflict = Response.Status.CONFLICT;
     try {
       logStepIn(taxonomyControllerLog, postId, link, unlink, clientTerm);
       if (postId <= 0 && link) {
-        Response.StatusType badRequest = Response.Status.BAD_REQUEST;
-        ErrorResponse invalidpostId =
-            new ErrorResponse(
-                "Invalid Post ID or Payload",
-                "Provide a valid details and try again",
-                badRequest.getStatusCode());
-        logStepOut(taxonomyControllerLog, invalidpostId, badRequest);
-        return Response.status(badRequest).entity(invalidpostId).build();
+        return handleBadRequest(() -> "Invalid Post ID or Payload", taxonomyControllerLog);
       } else if (postId > 0 && link) {
         Optional<ClientTaxonomy> createdRelationship =
             taxonomyService.createTermRelationship(clientTerm, postId);
@@ -101,13 +94,7 @@ public class TaxonomyController {
                 .build();
           }
         } else {
-          ErrorResponse noRelationshipCreated =
-              new ErrorResponse(
-                  "No relationship modified. The term/slug combination is likely not unique",
-                  "Please try again with a different term/slug",
-                  conflict.getStatusCode());
-          logStepOut(taxonomyControllerLog, noRelationshipCreated, conflict);
-          return Response.status(conflict).entity(noRelationshipCreated).build();
+          return handleConflict(() -> "No relationship modified", taxonomyControllerLog);
         }
       } else if (postId > 0 && unlink) {
         boolean isRemoved = taxonomyService.removeTermRelationship(postId, clientTerm);
@@ -151,7 +138,7 @@ public class TaxonomyController {
                   new ServerResult(
                       () -> "Found match for term: " + clientTerm.getName(),
                       termExists
-                          .<List<JsonSerializable>>map(List::of)
+                          .<List<ClientDeliverable>>map(List::of)
                           .orElse(Collections.emptyList()),
                       Response.Status.OK.getStatusCode()),
                   MediaType.APPLICATION_JSON_TYPE)
@@ -193,12 +180,7 @@ public class TaxonomyController {
                 Response.Status.OK.getStatusCode());
         return Response.ok(removedTermResponse, MediaType.APPLICATION_JSON_TYPE).build();
       } else {
-        Response.StatusType notFound = Response.Status.NOT_FOUND;
-        logStepOut(taxonomyControllerLog, clientTerm.toString(), notFound);
-        return Response.status(notFound)
-            .entity(
-                new ErrorResponse("Term not found", "Please try again", notFound.getStatusCode()))
-            .build();
+        return handleNotFound(() -> "Term not found", taxonomyControllerLog);
       }
     } catch (Exception e) {
       return handleException(taxonomyControllerLog, e);
