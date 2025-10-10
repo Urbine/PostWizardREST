@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -139,7 +140,11 @@ public class TaxonomyService {
   }
 
   /**
-   * Retrieves a term by its name and converts it into a client-side DTO {@code ClientTerm}.
+   * Retrieves the first occurrence of a term by its name and converts it into a client-side DTO
+   * {@code ClientTerm}.
+   *
+   * <p>If you need to search a term name and match it with the taxonomy name provided by the
+   * client, use the {@link #eitherTermNameOrSlugExists(ClientTerm, boolean)} method.
    *
    * @param termName the name of the term to retrieve
    * @return the client-side DTO {@code ClientTerm} if the term exists, {@code Optional.empty()}
@@ -152,7 +157,11 @@ public class TaxonomyService {
   }
 
   /**
-   * Retrieves a term by its slug and converts it into a client-side DTO {@code ClientTerm}.
+   * Retrieves the first occurrence of a term by its slug and converts it into a client-side DTO
+   * {@code ClientTerm}.
+   *
+   * <p>If you need to search a term slug and match it with the taxonomy name provided by the
+   * client, use the {@link #eitherTermNameOrSlugExists(ClientTerm, boolean)} method.
    *
    * @param termSlug the slug of the term to retrieve
    * @return the client-side DTO {@code ClientTerm} if the term exists, {@code Optional.empty()}
@@ -166,17 +175,41 @@ public class TaxonomyService {
 
   /**
    * Retrieves a term by its name or slug and converts it into a client-side DTO {@code ClientTerm}.
+   * If the term exists, it returns the term; otherwise, it returns an empty Optional.
+   *
+   * <p>This method will return the first term that matches the term name or slug that has the same
+   * taxonomy name provided by the client, if any. If no taxonomy name is provided, it will return
+   * the first match.
+   *
+   * <p><strong>WordPress supports duplicate name and slug for terms as long as the taxonomies are
+   * different.
    *
    * @param clientTerm the client-side schema DTO term to retrieve
+   * @param enforceTaxonomyMatch if true, the presence of a taxonomy name provided by the client
+   *     will be enforced.
    * @return the client-side DTO {@code ClientTerm} if the term exists, {@code Optional.empty()}
    *     otherwise
    */
   @Transactional(TxType.REQUIRES_NEW)
-  public Optional<WPTerms> eitherTermNameOrSlugExists(@NonNull ClientTerm clientTerm) {
+  public Optional<WPTerms> eitherTermNameOrSlugExists(
+      @NonNull ClientTerm clientTerm, boolean enforceTaxonomyMatch) {
+    if (clientTerm.getTaxonomy().getTaxonomyName() == null && enforceTaxonomyMatch)
+      return Optional.empty();
+
+    Predicate<? super WPTerms> termMatchPredicate =
+        term ->
+            Objects.isNull(clientTerm.getTaxonomy().getTaxonomyName())
+                || term.getTaxonomy()
+                    .getTaxonomy()
+                    .equals(clientTerm.getTaxonomy().getTaxonomyName());
+
     return termsDAO
         .termNameExists(clientTerm.getName())
-        .findFirst()
-        .or(() -> termsDAO.termSlugExists(clientTerm.getSlug()).findFirst());
+        .filter(termMatchPredicate)
+        .findAny()
+        .or(
+            () ->
+                termsDAO.termSlugExists(clientTerm.getSlug()).filter(termMatchPredicate).findAny());
   }
 
   /**
@@ -280,7 +313,7 @@ public class TaxonomyService {
     String newSlug = providedTerm.getSlug();
     if (newName == null) return Optional.empty();
 
-    Optional<WPTerms> eitherTermNameOrSlugExists = eitherTermNameOrSlugExists(providedTerm);
+    Optional<WPTerms> eitherTermNameOrSlugExists = eitherTermNameOrSlugExists(providedTerm, true);
     String idealSlug = Pattern.compile("\\W").matcher(newName.toLowerCase()).replaceAll("-");
 
     if (eitherTermNameOrSlugExists.isEmpty()) {
@@ -418,7 +451,7 @@ public class TaxonomyService {
         termsDAO.termNameAndSlugExists(clientTermName, clientTermSlug).findFirst();
 
     if (existingTermNameAndSlug.isEmpty()) {
-      finalTerm = eitherTermNameOrSlugExists(clientTerm);
+      finalTerm = eitherTermNameOrSlugExists(clientTerm, false);
     } else finalTerm = existingTermNameAndSlug;
 
     return finalTerm
