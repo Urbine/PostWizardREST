@@ -128,33 +128,44 @@ public class TaxonomyController {
   @Produces(MediaType.APPLICATION_JSON)
   public Response addTaxonomyTerm(ClientTerm clientTerm) {
     try {
-      if (clientTerm.getName() != null) {
-        Optional<WPTerms> termNameAndSlugExists =
-            taxonomyService.eitherTermNameOrSlugExists(clientTerm);
-        if (termNameAndSlugExists.isPresent()) {
-          Optional<ClientTerm> termExists =
-              taxonomyService.convertToClientTerm(termNameAndSlugExists);
-          return Response.ok(
-                  new ServerResult(
-                      () -> "Found match for term: " + clientTerm.getName(),
-                      termExists
-                          .<List<ClientDeliverable>>map(List::of)
-                          .orElse(Collections.emptyList()),
-                      Response.Status.OK.getStatusCode()),
-                  MediaType.APPLICATION_JSON_TYPE)
-              .build();
+      if (clientTerm.getName() != null && !clientTerm.getName().isBlank()) {
+        if (clientTerm.getTaxonomy() == null
+            || clientTerm.getTaxonomy().getTaxonomyName() == null) {
+          return handleBadRequest(
+              () -> "A Taxonomy name is required for term creation", taxonomyControllerLog);
         } else {
-          Optional<ClientTaxonomy> taxonomyTermCreate = taxonomyService.addTerm(clientTerm);
-          Optional<ClientTerm> newClientTerm = taxonomyService.termExists(clientTerm.getName());
-          if (taxonomyTermCreate.isPresent() && newClientTerm.isPresent()) {
+          Optional<WPTerms> termNameAndSlugExists =
+              taxonomyService.eitherTermNameOrSlugExists(clientTerm, true);
+          if (termNameAndSlugExists.isPresent()) {
+            Optional<ClientTerm> termExists =
+                taxonomyService.convertToClientTerm(termNameAndSlugExists);
             return Response.ok(
                     new ServerResult(
-                        () ->
-                            "Term: " + clientTerm.getName() + " added to the database successfully",
-                        List.of(newClientTerm.get()),
+                        () -> "Found match for term: " + clientTerm.getName(),
+                        termExists
+                            .<List<ClientDeliverable>>map(List::of)
+                            .orElse(Collections.emptyList()),
                         Response.Status.OK.getStatusCode()),
                     MediaType.APPLICATION_JSON_TYPE)
                 .build();
+          } else {
+            Optional<ClientTaxonomy> taxonomyTermCreate = taxonomyService.addTerm(clientTerm);
+            if (taxonomyTermCreate.isPresent()) {
+              Optional<WPTerms> newClientTerm =
+                  taxonomyService.eitherTermNameOrSlugExists(clientTerm, true);
+              if (newClientTerm.isPresent())
+                return Response.ok(
+                        new ServerResult(
+                            () ->
+                                "Term: "
+                                    + clientTerm.getName()
+                                    + " added to the database successfully",
+                            List.of(
+                                taxonomyService.convertToClientTerm(newClientTerm).orElseThrow()),
+                            Response.Status.OK.getStatusCode()),
+                        MediaType.APPLICATION_JSON_TYPE)
+                    .build();
+            }
           }
         }
       }
