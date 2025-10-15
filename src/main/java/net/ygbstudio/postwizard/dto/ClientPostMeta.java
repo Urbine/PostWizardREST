@@ -238,7 +238,7 @@ public class ClientPostMeta implements ClientBatchDeliverable {
     return thumb;
   }
 
-  public void setThumb(String thumb) {
+  public void setThumbURI(String thumb) {
     this.thumb = thumb;
   }
 
