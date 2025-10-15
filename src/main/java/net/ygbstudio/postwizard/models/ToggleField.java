@@ -9,7 +9,9 @@ package net.ygbstudio.postwizard.models;
  */
 public enum ToggleField {
   ON("on"),
-  OFF("off");
+  OFF("off"),
+  YES("yes"),
+  NO("no");
 
   private final String value;
 
