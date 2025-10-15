@@ -24,6 +24,7 @@ public enum PostMetaKeys {
   DURATION("duration"),
   YOAST_FOCUSKW("_yoast_wpseo_focuskw"),
   YOAST_METADESC("_yoast_wpseo_metadesc"),
+  WP_ATTACHED_FILE("_wp_attached_file"),
   OTHERS("otherKeys"),
   FEATURED("featured_video");
 
