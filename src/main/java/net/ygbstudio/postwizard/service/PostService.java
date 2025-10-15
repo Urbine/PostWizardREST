@@ -85,6 +85,21 @@ public class PostService {
   }
 
   /**
+   * Retrieves the ID of a media post based on its slug (title).
+   *
+   * @param slug the slug (title) of the media post
+   * @return the ID of the media post if found, otherwise returns 0
+   */
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public long getMediaPostIdBySlug(String slug) {
+    return dbPostManager
+        .getMediaByTitle(slug)
+        .filter(wPost -> wPost.getId() != null)
+        .map(WPost::getId)
+        .orElse(0L);
+  }
+
+  /**
    * Validates if the provided post type is a valid PostType enumeration value.
    *
    * @param postType the post type to validate
