@@ -211,6 +211,8 @@ Authorization: Bearer your.jwt.token.here
 - `limit`: Maximum number of videos to select (default: 10)
 - `link`: (Optional, boolean) Set to `true` to automatically link the term to the post
 - `unlink`: (Optional, boolean) Set to `true` to unlink the term from the post
+- `autothumb`: (Optional, boolean) Set to `true` to automatically set the thumbnail URL from media posts with the same slug
+- `retries`: (Optional, integer) Set the number of retries to wait for the media file to be available (default: 10) (used with `autothumb`)
 
 ---
 
@@ -230,7 +232,7 @@ Content-Type: application/json
 - `POST /v1/posts/meta/{postId}` - Update post metadata
 
 ```http
-POST /v1/posts/meta/123
+POST /v1/posts/meta/123?autothumb={boolean}&retries={int}
 Content-Type: application/json
 ```
 ```json
@@ -287,7 +289,7 @@ GET /v1/posts/dump?type=attachment
 GET /v1/posts/dump?type=all
 ```
 ---
-- `POST /v1/posts/featured/randomize?limit={limit}` - Randomize featured videos
+- `POST /v1/posts/featured/randomize?limit={int}` - Randomize featured videos
 
 ```http
 POST /v1/posts/featured/randomize?limit=10
@@ -300,7 +302,7 @@ The application provides comprehensive support for managing post taxonomies (cat
 ##### Link/Unlink Terms to Posts
 
 ```http
-POST /v1/taxonomies/check?id={id}&link={link}&unlink={unlink}
+POST /v1/taxonomies/check?id={long}&link={boolean}&unlink={boolean}
 Content-Type: application/json
 ```
 ```json
