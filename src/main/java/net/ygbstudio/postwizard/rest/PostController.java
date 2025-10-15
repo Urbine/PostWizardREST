@@ -41,6 +41,7 @@ import net.ygbstudio.postwizard.dto.ServerResponse;
 import net.ygbstudio.postwizard.models.PostType;
 import net.ygbstudio.postwizard.service.PostService;
 import net.ygbstudio.postwizard.tasks.RandomiseFeaturedTask;
+import org.jspecify.annotations.Nullable;
 
 /**
  * RESTful web service for managing post metadata in the PostWizard application. This class provides
@@ -56,6 +57,7 @@ public class PostController {
       Logger.getLogger(PostController.class.getName());
 
   @SuppressWarnings("unused")
+  @Nullable
   private static final FileHandler logFileHandler =
       loggingInit(postDataControllerLog, Level.ALL, true);
 
