@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -35,6 +36,7 @@ import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.dto.PostDumpResponse;
 import net.ygbstudio.postwizard.dto.ServerResponse;
 import net.ygbstudio.postwizard.models.PostMetaKeys;
+import net.ygbstudio.postwizard.service.EnvironmentService;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
 import org.jspecify.annotations.Nullable;
@@ -56,6 +58,8 @@ public class PostMetaController {
   @Inject PostMetaService postMetaService;
 
   @Inject PostService postService;
+
+  @Inject EnvironmentService environment;
 
   /**
    * Endpoint to retrieve post metadata by post ID. This method returns a JSON representation of the
@@ -124,8 +128,13 @@ public class PostMetaController {
    * Endpoint to update post metadata based on the provided ClientPostMeta object. This method
    * validates the post ID and updates the metadata in the database.
    *
+   * <p>This method has incorporates an {@code autoThumb} feature that automatically updates the
+   * thumbnail based on any attachment posts named after the post's slug. This feature is disabled
+   * by default. To enable it, set the {@code autoThumb} parameter to true in the request.
+   *
    * @param postId the ID of the post for which metadata is to be updated
    * @param postMetaFields the ClientPostMeta object containing post metadata to update
+   * @param autoThumb whether to automatically update the thumbnail based on related post media
    * @return Response indicating the result of the update operation
    */
   @POST
@@ -135,7 +144,7 @@ public class PostMetaController {
   @Produces(MediaType.APPLICATION_JSON)
   public Response updatePostMeta(
       @PathParam("postId") long postId,
-      @QueryParam("autothumb") boolean autothumb,
+      @QueryParam("autothumb") boolean autoThumb,
       ClientPostMeta postMetaFields) {
 
     logStepIn(postMetaControllerLog, postId, postMetaFields);
@@ -149,14 +158,19 @@ public class PostMetaController {
         return handleNotFound(() -> "Post ID " + postId + " not found", postMetaControllerLog);
 
       } else {
-        if (autothumb && isWPost) {
+        if (autoThumb && isWPost) {
           ClientPost post = postService.getClientPost(postId);
           long mediaPostId = postService.getMediaPostIdBySlug(post.getSlug());
           if (mediaPostId > 0) {
             Optional<String> mediaFile =
                 postMetaService.getMetaValueByPostID(mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
             if (mediaFile.isPresent()) {
-              // TODO: Add WPOptions support for WP Environment access
+              String siteUploadsPath = environment.getUploadsURLPrefix();
+              String mediaFilePath =
+                  Objects.nonNull(siteUploadsPath)
+                      ? String.join("/", siteUploadsPath, mediaFile.get())
+                      : "";
+              if (!mediaFilePath.isEmpty()) postMetaFields.setThumbURI(mediaFilePath);
             }
           }
         }
