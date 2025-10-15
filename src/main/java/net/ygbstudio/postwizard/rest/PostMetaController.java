@@ -13,6 +13,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -145,6 +146,7 @@ public class PostMetaController {
   public Response updatePostMeta(
       @PathParam("postId") long postId,
       @QueryParam("autothumb") boolean autoThumb,
+      @QueryParam("retrylimit") @DefaultValue("10") int retries,
       ClientPostMeta postMetaFields) {
 
     logStepIn(postMetaControllerLog, postId, postMetaFields);
@@ -164,13 +166,25 @@ public class PostMetaController {
           if (mediaPostId > 0) {
             Optional<String> mediaFile =
                 postMetaService.getMetaValueByPostID(mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
-            if (mediaFile.isPresent()) {
-              String siteUploadsPath = environment.getUploadsURLPrefix();
-              String mediaFilePath =
-                  Objects.nonNull(siteUploadsPath)
-                      ? String.join("/", siteUploadsPath, mediaFile.get())
-                      : "";
-              if (!mediaFilePath.isEmpty()) postMetaFields.setThumbURI(mediaFilePath);
+            int currentTry = 0;
+            while (true) {
+              if (mediaFile.isPresent()) {
+                String siteUploadsPath = environment.getUploadsURLPrefix();
+                String mediaFilePath =
+                    Objects.nonNull(siteUploadsPath)
+                        ? String.join("/", siteUploadsPath, mediaFile.get())
+                        : "";
+                if (!mediaFilePath.isEmpty()) {
+                  postMetaFields.setThumbURI(mediaFilePath);
+                  break;
+                }
+              } else {
+                mediaFile =
+                    postMetaService.getMetaValueByPostID(
+                        mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
+                currentTry++;
+                if (currentTry >= retries) break;
+              }
             }
           }
         }
