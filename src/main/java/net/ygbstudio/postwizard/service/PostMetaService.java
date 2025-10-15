@@ -452,7 +452,7 @@ public class PostMetaService {
                           .equals(ToggleField.ON.toString()));
                   break;
                 case THUMBNAIL:
-                  convertedObj.setThumb(metaFieldValue);
+                  convertedObj.setThumbURI(metaFieldValue);
                   break;
                 case VIDEOURL:
                   convertedObj.setVideoURL(metaFieldValue);
