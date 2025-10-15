@@ -27,6 +27,8 @@ import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.dto.ClientDeliverable;
 import net.ygbstudio.postwizard.dto.ClientTaxonomy;
 import net.ygbstudio.postwizard.dto.ClientTerm;
@@ -129,7 +131,8 @@ public class TaxonomyController {
   @RolesAllowed(value = {"user"})
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response addTaxonomyTerm(ClientTerm clientTerm) {
+  public Response addTaxonomyTerm(
+      @QueryParam("clean") @DefaultValue("true") boolean clean, ClientTerm clientTerm) {
     try {
       if (clientTerm.getName() != null && !clientTerm.getName().isBlank()) {
         if (clientTerm.getTaxonomy() == null
@@ -152,8 +155,16 @@ public class TaxonomyController {
                     MediaType.APPLICATION_JSON_TYPE)
                 .build();
           } else {
-            Optional<ClientTaxonomy> taxonomyTermCreate = taxonomyService.addTerm(clientTerm);
+            Optional<ClientTaxonomy> taxonomyTermCreate =
+                taxonomyService.addTerm(clientTerm, clean);
             if (taxonomyTermCreate.isPresent()) {
+              if (clean)
+                clientTerm.setName(
+                    Pattern.compile("[\\W_]")
+                        .splitAsStream(clientTerm.getName())
+                        .filter(s -> !s.isEmpty())
+                        .map(String::trim)
+                        .collect(Collectors.joining(" ")));
               Optional<WPTerms> newClientTerm =
                   taxonomyService.eitherTermNameOrSlugExists(clientTerm, true);
               if (newClientTerm.isPresent()) {
