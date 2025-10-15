@@ -14,6 +14,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.dao.PostManager;
 import net.ygbstudio.postwizard.dao.TaxonomyManager;
 import net.ygbstudio.postwizard.dao.TermRelationshipsManager;
@@ -304,17 +305,34 @@ public class TaxonomyService {
    * Adds a new term to the database and returns the client-side DTO {@code ClientTaxonomy}.
    *
    * @param providedTerm the client-side schema DTO term to add
+   * @param cleanTerm whether to clean the term name and slug of special characters
    * @return the client-side DTO {@code ClientTaxonomy} if the term is added successfully, {@code
    *     Optional.empty()} otherwise
    */
-  public Optional<ClientTaxonomy> addTerm(ClientTerm providedTerm) {
+  public Optional<ClientTaxonomy> addTerm(@NonNull ClientTerm providedTerm, boolean cleanTerm) {
     String taxonomyName = providedTerm.getTaxonomy().getTaxonomyName();
     String newName = providedTerm.getName();
     String newSlug = providedTerm.getSlug();
     if (newName == null) return Optional.empty();
 
+    Pattern noSpecialCharsOrUnderscores = Pattern.compile("[\\W_]");
+
+    if (cleanTerm) {
+      newName =
+          noSpecialCharsOrUnderscores
+              .splitAsStream(newName)
+              .filter(s -> !s.isEmpty())
+              .map(String::trim)
+              .collect(Collectors.joining(" "));
+    }
+
     Optional<WPTerms> eitherTermNameOrSlugExists = eitherTermNameOrSlugExists(providedTerm, true);
-    String idealSlug = Pattern.compile("\\W").matcher(newName.toLowerCase()).replaceAll("-");
+    String idealSlug =
+        noSpecialCharsOrUnderscores
+            .splitAsStream(newName.toLowerCase())
+            .filter(s -> !s.isEmpty())
+            .map(String::trim)
+            .collect(Collectors.joining("-"));
 
     if (eitherTermNameOrSlugExists.isEmpty()) {
       if (newSlug == null || !newSlug.equals(idealSlug)) newSlug = idealSlug;
@@ -423,7 +441,7 @@ public class TaxonomyService {
         identifyExistingTermRelationships(providedTerm, sessionPost.get());
 
     if (existingRelationship.isEmpty()) {
-      Optional<ClientTaxonomy> newClientTaxonomy = addTerm(providedTerm);
+      Optional<ClientTaxonomy> newClientTaxonomy = addTerm(providedTerm, true);
       if (newClientTaxonomy.isPresent())
         return addNewTermRelationship(newClientTaxonomy, sessionPost);
     }
