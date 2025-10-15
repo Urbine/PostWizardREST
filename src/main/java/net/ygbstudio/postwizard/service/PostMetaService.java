@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -130,13 +131,13 @@ public class PostMetaService {
 
   /**
    * Filters entries by meta key, filters them by a given predicate and transforms them using a
-   * given function applicable to the WPMeta object. The function returns a new list of the
+   * given function applicable to the WPMeta object. The function returns a new set of the
    * transformed objects.
    *
    * @param metaKey the meta key to filter the metadata entries by
    * @param filterPredicate the predicate to apply to each WPMeta object
    * @param transformer the function to apply to each WPMeta object
-   * @return List of Long containing the IDs of featured videos.
+   * @return Set of Long containing the IDs of featured videos.
    */
   @Transactional(value = TxType.REQUIRES_NEW)
   public <R> Set<R> filterMetaKeyEntriesBy(
@@ -149,6 +150,20 @@ public class PostMetaService {
         .filter(filterPredicate)
         .map(transformer)
         .collect(Collectors.toUnmodifiableSet());
+  }
+
+  /**
+   * Retrieves the value of a specific metadata key for a given post ID.
+   *
+   * @param postID the ID of the post
+   * @param metaKey the PostMetaKeys enum member representing the metadata key to retrieve
+   * @return an Optional containing the metadata value if found, or empty if not found
+   */
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public Optional<String> getMetaValueByPostID(long postID, PostMetaKeys metaKey) {
+    return dbPostMetaManager
+        .findMetaKeyByPostID(metaKey.toString(), postID)
+        .map(WPMeta::getMetaFieldValue);
   }
 
   /*
