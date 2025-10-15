@@ -28,6 +28,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -146,7 +148,7 @@ public class PostMetaController {
   public Response updatePostMeta(
       @PathParam("postId") long postId,
       @QueryParam("autothumb") boolean autoThumb,
-      @QueryParam("retrylimit") @DefaultValue("10") int retries,
+      @QueryParam("retries") @DefaultValue("10") int retries,
       ClientPostMeta postMetaFields) {
 
     logStepIn(postMetaControllerLog, postId, postMetaFields);
@@ -164,10 +166,10 @@ public class PostMetaController {
           ClientPost post = postService.getClientPost(postId);
           long mediaPostId = postService.getMediaPostIdBySlug(post.getSlug());
           if (mediaPostId > 0) {
-            Optional<String> mediaFile =
-                postMetaService.getMetaValueByPostID(mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
-            int currentTry = 0;
+            AtomicInteger currentTry = new AtomicInteger(0);
             while (true) {
+              Optional<String> mediaFile =
+                  postMetaService.getMetaValueByPostID(mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
               if (mediaFile.isPresent()) {
                 String siteUploadsPath = environment.getUploadsURLPrefix();
                 String mediaFilePath =
@@ -179,11 +181,19 @@ public class PostMetaController {
                   break;
                 }
               } else {
-                mediaFile =
-                    postMetaService.getMetaValueByPostID(
-                        mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
-                currentTry++;
-                if (currentTry >= retries) break;
+                try {
+                  TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ie) {
+                  Thread.currentThread().interrupt();
+                  break;
+                }
+                if (currentTry.incrementAndGet() >= retries) {
+                  postMetaControllerLog.warning(
+                      () ->
+                          String.format(
+                              "Failed to update post meta thumbnail after %d retries", retries));
+                  break;
+                }
               }
             }
           }
@@ -192,8 +202,9 @@ public class PostMetaController {
         postMetaService.clientPostMetaUpdateStrategy(postMetaFields, true);
         logStepOut(postMetaControllerLog, postId, postMetaFields);
         postMetaControllerLog.fine(
-            "Post ID updated successfully: Response.Status.OK - Requested by "
-                + request.getRemoteAddr());
+            () ->
+                "Post ID updated successfully: Response.Status.OK - Requested by "
+                    + request.getRemoteAddr());
         return Response.ok(
                 new ServerResponse(
                     "Post ID: " + postId + " modified with the fields provided.",
