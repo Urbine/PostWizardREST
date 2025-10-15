@@ -18,6 +18,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Collections;
@@ -84,13 +85,15 @@ public class TaxonomyController {
               taxonomyService.getClientTermByTaxonomyId(
                   createdRelationship.get().getTermTaxonomyId());
           if (fromTermTaxonomyId.isPresent()) {
-            logStepOut(taxonomyControllerLog, createdRelationship.get());
-            return Response.ok(
+            Response.StatusType created = Response.Status.CREATED;
+            logStepOut(taxonomyControllerLog, createdRelationship.get(), created.getStatusCode());
+            return Response.status(created)
+                .entity(
                     new ServerResult(
-                        () -> "Post ID: " + postId + " has been linked to taxonomy",
+                        () -> "Created term relationship for" + postId,
                         List.of(createdRelationship.get(), fromTermTaxonomyId.get()),
-                        Response.Status.OK.getStatusCode()),
-                    MediaType.APPLICATION_JSON_TYPE)
+                        created.getStatusCode()))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .build();
           }
         } else {
@@ -153,8 +156,12 @@ public class TaxonomyController {
             if (taxonomyTermCreate.isPresent()) {
               Optional<WPTerms> newClientTerm =
                   taxonomyService.eitherTermNameOrSlugExists(clientTerm, true);
-              if (newClientTerm.isPresent())
-                return Response.ok(
+              if (newClientTerm.isPresent()) {
+                Response.StatusType created = Response.Status.CREATED;
+                logStepOut(
+                    taxonomyControllerLog, newClientTerm.get().toString(), created.getStatusCode());
+                return Response.status(created)
+                    .entity(
                         new ServerResult(
                             () ->
                                 "Term: "
@@ -162,9 +169,10 @@ public class TaxonomyController {
                                     + " added to the database successfully",
                             List.of(
                                 taxonomyService.convertToClientTerm(newClientTerm).orElseThrow()),
-                            Response.Status.OK.getStatusCode()),
-                        MediaType.APPLICATION_JSON_TYPE)
+                            created.getStatusCode()))
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .build();
+              }
             }
           }
         }
