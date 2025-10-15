@@ -18,19 +18,23 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ygbstudio.postwizard.dto.BatchJobResponse;
+import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.dto.PostDumpResponse;
 import net.ygbstudio.postwizard.dto.ServerResponse;
+import net.ygbstudio.postwizard.models.PostMetaKeys;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
 import org.jspecify.annotations.Nullable;
@@ -129,7 +133,10 @@ public class PostMetaController {
   @RolesAllowed(value = {"user"})
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response updatePostMeta(@PathParam("postId") long postId, ClientPostMeta postMetaFields) {
+  public Response updatePostMeta(
+      @PathParam("postId") long postId,
+      @QueryParam("autothumb") boolean autothumb,
+      ClientPostMeta postMetaFields) {
 
     logStepIn(postMetaControllerLog, postId, postMetaFields);
     logControllerPath(postMetaControllerLog, context, request);
@@ -142,6 +149,17 @@ public class PostMetaController {
         return handleNotFound(() -> "Post ID " + postId + " not found", postMetaControllerLog);
 
       } else {
+        if (autothumb && isWPost) {
+          ClientPost post = postService.getClientPost(postId);
+          long mediaPostId = postService.getMediaPostIdBySlug(post.getSlug());
+          if (mediaPostId > 0) {
+            Optional<String> mediaFile =
+                postMetaService.getMetaValueByPostID(mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
+            if (mediaFile.isPresent()) {
+              // TODO: Add WPOptions support for WP Environment access
+            }
+          }
+        }
         postMetaFields.setID(postId);
         postMetaService.clientPostMetaUpdateStrategy(postMetaFields, true);
         logStepOut(postMetaControllerLog, postId, postMetaFields);
