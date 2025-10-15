@@ -52,6 +52,15 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
+  public Optional<WPost> getMediaByTitle(String title) {
+    return em.createNamedQuery("WPost.FindMediaByTitle", WPost.class)
+        .setParameter("title", title)
+        .getResultStream()
+        .findFirst();
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
   public Optional<WPost> getPostById(long postId) {
     return em.createNamedQuery("WPost.FindByID", WPost.class)
         .setParameter("postId", postId)

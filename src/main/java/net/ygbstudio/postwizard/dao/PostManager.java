@@ -92,6 +92,14 @@ public interface PostManager {
   Set<WPTerms> getPostTermsById(@NonNull Long postId);
 
   /**
+   * Retrieves a media post by its slug.
+   *
+   * @param title the title of the media post to retrieve. Usually the slug of the post.
+   * @return the WPost entry matching the specified slug, or null if not found
+   */
+  Optional<WPost> getMediaByTitle(String title);
+
+  /**
    * Deletes a post entry with the specified ID.
    *
    * @param postId the ID of the post to delete
