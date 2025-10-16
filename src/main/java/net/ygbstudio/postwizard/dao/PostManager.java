@@ -3,6 +3,7 @@ package net.ygbstudio.postwizard.dao;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.entities.WPost;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
@@ -95,9 +96,9 @@ public interface PostManager {
    * Retrieves a media post by its slug.
    *
    * @param title the title of the media post to retrieve. Usually the slug of the post.
-   * @return the WPost entry matching the specified slug, or null if not found
+   * @return a Stream of WPost entries matching the specified slug
    */
-  Optional<WPost> getMediaByTitle(String title);
+  Stream<WPost> getMediaByTitle(String title);
 
   /**
    * Deletes a post entry with the specified ID.

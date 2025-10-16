@@ -59,6 +59,14 @@ public interface PostMetaManager {
   Optional<WPMeta> findMetaKeyByPostID(@NonNull String metaKey, long postID);
 
   /**
+   * Retrieves all post metadata entries that match a specific meta value.
+   *
+   * @param metaValuePattern the meta value to filter the metadata entries (e.g. "%.jpg%")
+   * @return a Stream of WPMeta entries that match the specified meta value
+   */
+  Stream<WPMeta> findMetaValueLike(@NonNull String metaValuePattern);
+
+  /**
    * Retrieves all post metadata entries that match a specific pattern in their value.
    *
    * @param pattern the regex String pattern to match against the metadata values
