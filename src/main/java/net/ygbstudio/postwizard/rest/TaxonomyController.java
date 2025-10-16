@@ -4,6 +4,7 @@ import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleBadRequest;
 import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleConflict;
 import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleException;
 import static net.ygbstudio.postwizard.rest.ResponseHandlers.handleNotFound;
+import static net.ygbstudio.postwizard.utils.Helpers.specialCharCleanJoin;
 import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
 import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
@@ -27,8 +28,6 @@ import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.dto.ClientDeliverable;
 import net.ygbstudio.postwizard.dto.ClientTaxonomy;
 import net.ygbstudio.postwizard.dto.ClientTerm;
@@ -140,6 +139,7 @@ public class TaxonomyController {
           return handleBadRequest(
               () -> "A Taxonomy name is required for term creation", taxonomyControllerLog);
         } else {
+          if (clean) clientTerm.setName(specialCharCleanJoin(clientTerm.getName(), " "));
           Optional<WPTerms> termNameAndSlugExists =
               taxonomyService.eitherTermNameOrSlugExists(clientTerm, true);
           if (termNameAndSlugExists.isPresent()) {
@@ -158,13 +158,7 @@ public class TaxonomyController {
             Optional<ClientTaxonomy> taxonomyTermCreate =
                 taxonomyService.addTerm(clientTerm, clean);
             if (taxonomyTermCreate.isPresent()) {
-              if (clean)
-                clientTerm.setName(
-                    Pattern.compile("[\\W_]")
-                        .splitAsStream(clientTerm.getName())
-                        .filter(s -> !s.isEmpty())
-                        .map(String::trim)
-                        .collect(Collectors.joining(" ")));
+              if (clean) clientTerm.setName(specialCharCleanJoin(clientTerm.getName(), " "));
               Optional<WPTerms> newClientTerm =
                   taxonomyService.eitherTermNameOrSlugExists(clientTerm, true);
               if (newClientTerm.isPresent()) {
