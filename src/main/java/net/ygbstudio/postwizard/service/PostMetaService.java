@@ -166,6 +166,22 @@ public class PostMetaService {
         .map(WPMeta::getMetaFieldValue);
   }
 
+  /**
+   * Retrieves the value of a specific metadata key for a given post ID.
+   *
+   * @param metaValuePattern the pattern to match the metadata value (e.g. "%.jpg%")
+   * @param metaKey the PostMetaKeys enum member representing the metadata key to retrieve
+   * @return an Optional containing the metadata value if found, or empty if not found
+   */
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public Optional<String> getMetaValueLike(String metaValuePattern, PostMetaKeys metaKey) {
+    return dbPostMetaManager
+        .findMetaValueLike(metaValuePattern)
+        .filter(post -> post.getMetaFieldKey().equals(metaKey.toString()))
+        .map(WPMeta::getMetaFieldValue)
+        .findFirst();
+  }
+
   /*
    * Get random post IDs from the database method.
    *
