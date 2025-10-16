@@ -40,7 +40,6 @@ import net.ygbstudio.postwizard.dto.ServerResponse;
 import net.ygbstudio.postwizard.service.EnvironmentService;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
-import org.apache.commons.lang3.function.TriConsumer;
 import org.jspecify.annotations.Nullable;
 
 @ApplicationScoped
@@ -164,19 +163,28 @@ public class PostMetaController {
       } else {
         if (autoThumb && isWPost) {
           ClientPost post = postService.getClientPost(postId);
+          long mediaPostId = postService.getMediaPostIdBySlug(post.getSlug());
           String siteUploadsPath = environment.getUploadsURLPrefix();
-
-          TriConsumer<Long, String, ClientPost> updateThumb =
-              (Long realPostId, String uploadsPath, ClientPost clientPost) -> {
-                String autoThumbPath =
-                    postMetaService.autoThumbMatching(realPostId, uploadsPath, clientPost);
-                postMetaFields.setThumbURI(autoThumbPath);
-              };
 
           // Used Atomic class for lambda capture purposes
           AtomicInteger currentTry = new AtomicInteger(0);
           while (postMetaFields.getThumbURI() == null) {
-            updateThumb.accept(postId, siteUploadsPath, post);
+            boolean isThumbUpdated =
+                postMetaService.autoThumbMatch(
+                    post.getID(),
+                    siteUploadsPath,
+                    post,
+                    () -> postService.getClientPost(mediaPostId));
+            if (isThumbUpdated) break;
+
+            if (currentTry.incrementAndGet() >= retries) {
+              postMetaControllerLog.warning(
+                  () ->
+                      String.format(
+                          "Failed to update post meta thumbnail after %d retries", retries));
+              break;
+            }
+
             try {
               TimeUnit.SECONDS.sleep(timeout);
             } catch (InterruptedException ie) {
@@ -190,13 +198,6 @@ public class PostMetaController {
               postMetaControllerLog.fine(
                   () ->
                       "InterruptedException -> Stacktrace: " + Arrays.toString(ie.getStackTrace()));
-              break;
-            }
-            if (currentTry.incrementAndGet() >= retries) {
-              postMetaControllerLog.warning(
-                  () ->
-                      String.format(
-                          "Failed to update post meta thumbnail after %d retries", retries));
               break;
             }
           }
