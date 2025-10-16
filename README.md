@@ -214,6 +214,7 @@ Authorization: Bearer your.jwt.token.here
 - `clean`: (Optional, boolean) Set to `true` to clean the term name from special characters and underscores
 - `autothumb`: (Optional, boolean) Set to `true` to automatically set the thumbnail URL from media posts named after the main post's slug to add its file name to that post's metadata
 - `retries`: (Optional, integer) Set the number of retries to wait for the media file to be available (default: 10) (used with `autothumb`)
+- `timeout`: (Optional, long) Set the timeout in **seconds** to wait (before each retry) for the media file to be available (default: 1) (used with `autothumb` and `retries`)
 
 ---
 
@@ -230,10 +231,10 @@ Content-Type: application/json
 }
 ```
 ---
-- `POST /v1/posts/meta/{postId}?autothumb={boolean}&retries={int}` - Update post metadata
+- `POST /v1/posts/meta/{postId}?autothumb={boolean}&retries={int}&timeout={long}` - Update post metadata
 
 ```http
-POST /v1/posts/meta/123?autothumb={boolean}&retries={int}
+POST /v1/posts/meta/123?autothumb={boolean}&retries={int}&timeout={long}
 Content-Type: application/json
 ```
 ```json
