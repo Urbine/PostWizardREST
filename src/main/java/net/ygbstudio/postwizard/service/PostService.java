@@ -91,11 +91,12 @@ public class PostService {
    * @return the ID of the media post if found, otherwise returns 0
    */
   @Transactional(value = TxType.REQUIRES_NEW)
-  public long getMediaPostIdBySlug(String slug) {
+  public Long getMediaPostIdBySlug(String slug) {
     return dbPostManager
         .getMediaByTitle(slug)
         .filter(wPost -> wPost.getId() != null)
         .map(WPost::getId)
+        .findFirst()
         .orElse(0L);
   }
 
