@@ -61,7 +61,8 @@ public class EnvironmentService {
   }
 
   /**
-   * Retrieves the uploads URL prefix without the year and month folders in the WordPress site.
+   * Retrieves the uploads URL prefix without the year and month folders in the WordPress site. For
+   * example: {@code http://example.com/wp-content/uploads}
    *
    * <p>Members of the {@link InternalPath} enum can be concatenated to form the path since their
    * class overrides the {@link Object#toString()} method in a programmer-friendly way.
