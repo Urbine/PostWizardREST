@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NullMarked;
@@ -175,5 +176,24 @@ public final class Helpers implements Util {
     return Arrays.stream(enumType.getEnumConstants())
         .filter(key -> valuePattern.test(key.toString()))
         .findFirst();
+  }
+
+  /**
+   * Cleans a string by removing special characters and underscores and joining the remaining words
+   * with a delimiter.
+   *
+   * <p>As part of the process, excess whitespace is removed and each word is trimmed. Useful for
+   * tag cleaning and slug generation.
+   *
+   * @param toBeCleaned the string of text to be inspected and cleaned
+   * @param delimiter the delimiter to use for joining the remaining words
+   * @return the cleaned string joined by your delimiter
+   */
+  public static String specialCharCleanJoin(String toBeCleaned, String delimiter) {
+    return Pattern.compile("[\\W_]")
+        .splitAsStream(toBeCleaned)
+        .filter(s -> !s.isEmpty())
+        .map(String::trim)
+        .collect(Collectors.joining(delimiter));
   }
 }
