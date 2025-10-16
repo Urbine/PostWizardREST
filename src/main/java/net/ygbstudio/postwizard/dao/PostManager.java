@@ -101,6 +101,14 @@ public interface PostManager {
   Stream<WPost> getMediaByTitle(String title);
 
   /**
+   * Retrieves a media post by its slug using a native query.
+   *
+   * @param title the title of the media post to retrieve. Usually the slug of the post.
+   * @return the GUID of the media post
+   */
+  String getGUIDByTitleNative(@NonNull String title);
+
+  /**
    * Deletes a post entry with the specified ID.
    *
    * @param postId the ID of the post to delete

@@ -60,6 +60,14 @@ public class PostDAO implements PostManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
+  public String getGUIDByTitleNative(@NonNull String title) {
+    return em.createNamedQuery("WPost.FindMediaGUIDByTitle", String.class)
+        .setParameter(1, title)
+        .getSingleResult();
+  }
+
+  @Transactional(value = TxType.REQUIRED)
+  @Override
   public Optional<WPost> getPostById(long postId) {
     return em.createNamedQuery("WPost.FindByID", WPost.class)
         .setParameter("postId", postId)

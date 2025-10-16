@@ -62,9 +62,12 @@ public interface PostMetaManager {
    * Retrieves all post metadata entries that match a specific meta value.
    *
    * @param metaValuePattern the meta value to filter the metadata entries (e.g. "%.jpg%")
-   * @return a Stream of WPMeta entries that match the specified meta value
+   * @param metaKey the meta key to filter the metadata entries
+   * @param useNative whether to use a native query or not
+   * @return the meta value that matches the specified meta value pattern
    */
-  Stream<WPMeta> findMetaValueLike(@NonNull String metaValuePattern);
+  String findMetaValueLike(
+      @NonNull String metaValuePattern, @Nullable String metaKey, boolean useNative);
 
   /**
    * Retrieves all post metadata entries that match a specific pattern in their value.

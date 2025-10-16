@@ -73,10 +73,18 @@ public class PostMetaDAO implements PostMetaManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public Stream<WPMeta> findMetaValueLike(@NonNull String metaValuePattern) {
+  public String findMetaValueLike(
+      @NonNull String metaValuePattern, @Nullable String metaKey, boolean useNative) {
+    if (metaKey != null && useNative)
+      return em.createNamedQuery("WPMeta.FindMetaValueLikeNative", String.class)
+          .setParameter(1, metaKey)
+          .setParameter(2, metaValuePattern)
+          .getSingleResult();
+
     return em.createNamedQuery("WPMeta.FindMetaValueLike", WPMeta.class)
         .setParameter("metaValuePattern", metaValuePattern)
-        .getResultStream();
+        .getSingleResult()
+        .getMetaFieldValue();
   }
 
   @Transactional(value = TxType.REQUIRED)
