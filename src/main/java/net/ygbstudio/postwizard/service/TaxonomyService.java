@@ -1,6 +1,7 @@
 package net.ygbstudio.postwizard.service;
 
 import static net.ygbstudio.postwizard.utils.Helpers.enumFromValue;
+import static net.ygbstudio.postwizard.utils.Helpers.specialCharCleanJoin;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -13,8 +14,6 @@ import java.util.function.Predicate;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.dao.PostManager;
 import net.ygbstudio.postwizard.dao.TaxonomyManager;
 import net.ygbstudio.postwizard.dao.TermRelationshipsManager;
@@ -310,39 +309,28 @@ public class TaxonomyService {
    *     Optional.empty()} otherwise
    */
   public Optional<ClientTaxonomy> addTerm(@NonNull ClientTerm providedTerm, boolean cleanTerm) {
-    String taxonomyName = providedTerm.getTaxonomy().getTaxonomyName();
-    String newName = providedTerm.getName();
-    String newSlug = providedTerm.getSlug();
-    if (newName == null) return Optional.empty();
+    providedTerm.setName(
+        cleanTerm && Objects.nonNull(providedTerm.getName()) && !providedTerm.getName().isEmpty()
+            ? specialCharCleanJoin(providedTerm.getName(), " ")
+            : providedTerm.getName());
 
-    Pattern noSpecialCharsOrUnderscores = Pattern.compile("[\\W_]");
-
-    if (cleanTerm) {
-      newName =
-          noSpecialCharsOrUnderscores
-              .splitAsStream(newName)
-              .filter(s -> !s.isEmpty())
-              .map(String::trim)
-              .collect(Collectors.joining(" "));
-    }
+    if (providedTerm.getName() == null || providedTerm.getName().isEmpty()) return Optional.empty();
 
     Optional<WPTerms> eitherTermNameOrSlugExists = eitherTermNameOrSlugExists(providedTerm, true);
-    String idealSlug =
-        noSpecialCharsOrUnderscores
-            .splitAsStream(newName.toLowerCase())
-            .filter(s -> !s.isEmpty())
-            .map(String::trim)
-            .collect(Collectors.joining("-"));
+    String idealSlug = specialCharCleanJoin(providedTerm.getName().toLowerCase(), "-");
+
+    String taxonomyName = providedTerm.getTaxonomy().getTaxonomyName();
+    String providedSlug = providedTerm.getSlug();
 
     if (eitherTermNameOrSlugExists.isEmpty()) {
-      if (newSlug == null || !newSlug.equals(idealSlug)) newSlug = idealSlug;
+      if (providedSlug == null || !providedSlug.equals(idealSlug)) providedSlug = idealSlug;
       return switch (enumFromValue(Taxonomy.class, taxonomyName, true).orElse(Taxonomy.OTHERS)) {
-        case TAG -> addPostTag(newName, newSlug);
-        case MODELS -> addModel(StringUtils.capitalize(newName), newSlug);
+        case TAG -> addPostTag(providedTerm.getName(), providedSlug);
+        case MODELS -> addModel(StringUtils.capitalize(providedTerm.getName()), providedSlug);
         case CATEGORY ->
             addCategory(
-                newName,
-                newSlug,
+                providedTerm.getName(),
+                providedSlug,
                 Objects.requireNonNullElse(providedTerm.getTaxonomy().getDescription(), ""));
         default -> Optional.empty();
       };
