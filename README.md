@@ -212,7 +212,7 @@ Authorization: Bearer your.jwt.token.here
 - `link`: (Optional, boolean) Set to `true` to automatically link the term to the post
 - `unlink`: (Optional, boolean) Set to `true` to unlink the term from the post
 - `clean`: (Optional, boolean) Set to `true` to clean the term name from special characters and underscores
-- `autothumb`: (Optional, boolean) Set to `true` to automatically set the thumbnail URL from media posts named after the main post's slug
+- `autothumb`: (Optional, boolean) Set to `true` to automatically set the thumbnail URL from media posts named after the main post's slug to add its file name to that post's metadata
 - `retries`: (Optional, integer) Set the number of retries to wait for the media file to be available (default: 10) (used with `autothumb`)
 
 ---
