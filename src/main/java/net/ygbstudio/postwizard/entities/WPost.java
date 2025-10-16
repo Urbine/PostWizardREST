@@ -40,6 +40,9 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 @NamedQuery(
     name = "WPost.FindMediaByTitle",
     query = "SELECT p FROM WPost p WHERE p.postType = 'attachment' AND p.postTitle = :title")
+@NamedQuery(
+    name = "WPost.FindMediaByTitleLike",
+    query = "SELECT p FROM WPost p WHERE p.postType = 'attachment' AND p.postTitle LIKE :title")
 public class WPost {
 
   @Id

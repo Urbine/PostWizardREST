@@ -46,6 +46,10 @@ import java.util.Objects;
     name = "WPMeta.RandomPostByMetaKey",
     query =
         "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey ORDER BY FUNCTION('RAND')")
+@NamedQuery(
+    name = "WPMeta.FindMetaValueLike",
+    query =
+        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldValue LIKE :metaValuePattern")
 public class WPMeta {
 
   @Id
