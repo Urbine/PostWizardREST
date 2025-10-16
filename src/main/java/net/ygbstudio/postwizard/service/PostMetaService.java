@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.ygbstudio.postwizard.dao.PostMetaManager;
+import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.models.Ethnicity;
@@ -34,6 +35,7 @@ import net.ygbstudio.postwizard.models.Production;
 import net.ygbstudio.postwizard.models.ToggleField;
 import net.ygbstudio.postwizard.rest.PostController;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -180,6 +182,36 @@ public class PostMetaService {
         .filter(post -> post.getMetaFieldKey().equals(metaKey.toString()))
         .map(WPMeta::getMetaFieldValue)
         .findFirst();
+  }
+
+  /**
+   * Auto thumbnail matching method.
+   *
+   * <p>This method attempts to find a matching media file for the given post ID and attachment post
+   * slug if, and only if, {@code attachmentPost} is present and its name matches the slug pattern
+   * {@code %%<slug>%%} from {@code postID}. If no matching media file in {@code wp_postmeta} is
+   * found, the GUID of {@code attachmentPost} is returned.
+   *
+   * <p>In the worst case scenario, an empty string is returned and consumers should handle this
+   * case.
+   *
+   * @param postID the ID of the post
+   * @param siteUploadsPath the path to the site uploads directory. Typically provided by {@link
+   *     EnvironmentService}
+   * @param attachmentPost the ClientPost object representing the attachment post
+   * @return the path to the auto-matched thumbnail
+   */
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public String autoThumbMatching(
+      long postID, @Nullable String siteUploadsPath, @NonNull ClientPost attachmentPost) {
+    Optional<String> mediaFile =
+        getMetaValueLike(
+            String.format("%%%s%%", attachmentPost.getSlug()), PostMetaKeys.WP_ATTACHED_FILE);
+
+    return mediaFile
+        .map(
+            file -> Objects.nonNull(siteUploadsPath) ? String.join("/", siteUploadsPath, file) : "")
+        .orElse(Objects.nonNull(attachmentPost.getGuid()) ? attachmentPost.getGuid() : "");
   }
 
   /*
