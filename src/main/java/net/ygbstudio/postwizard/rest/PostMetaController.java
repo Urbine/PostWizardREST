@@ -27,12 +27,8 @@ import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,10 +37,10 @@ import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.dto.PostDumpResponse;
 import net.ygbstudio.postwizard.dto.ServerResponse;
-import net.ygbstudio.postwizard.models.PostMetaKeys;
 import net.ygbstudio.postwizard.service.EnvironmentService;
 import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
+import org.apache.commons.lang3.function.TriConsumer;
 import org.jspecify.annotations.Nullable;
 
 @ApplicationScoped
@@ -168,62 +164,40 @@ public class PostMetaController {
       } else {
         if (autoThumb && isWPost) {
           ClientPost post = postService.getClientPost(postId);
-          if (post.getSlug() != null && !post.getSlug().isEmpty()) {
+          String siteUploadsPath = environment.getUploadsURLPrefix();
 
-            String siteUploadsPath = environment.getUploadsURLPrefix();
-            UnaryOperator<String> buildMediaFilePath =
-                (String mediaFile) ->
-                    Objects.nonNull(siteUploadsPath)
-                        ? String.join("/", siteUploadsPath, mediaFile)
-                        : "";
+          TriConsumer<Long, String, ClientPost> updateThumb =
+              (Long realPostId, String uploadsPath, ClientPost clientPost) -> {
+                String autoThumbPath =
+                    postMetaService.autoThumbMatching(realPostId, uploadsPath, clientPost);
+                postMetaFields.setThumbURI(autoThumbPath);
+              };
 
-            Consumer<String> updatePostMetaThumb =
-                (String mediaFile) -> {
-                  postMetaFields.setThumbURI(mediaFile);
-                  postMetaControllerLog.info(
-                      () -> "AutoThumb completed successfully: " + mediaFile);
-                };
+          // Used Atomic class for lambda capture purposes
+          AtomicInteger currentTry = new AtomicInteger(0);
+          while (postMetaFields.getThumbURI() == null) {
+            updateThumb.accept(postId, siteUploadsPath, post);
+            try {
+              TimeUnit.SECONDS.sleep(timeout);
+            } catch (InterruptedException ie) {
+              Thread.currentThread().interrupt();
+              postMetaControllerLog.warning(
+                  () ->
+                      String.format(
+                          "Interrupted thread due to InterruptedException while waiting for media file. Retries (%d/%d)",
+                          currentTry.get(), retries));
 
-            AtomicInteger currentTry = new AtomicInteger(0);
-            while (true) {
-              Optional<String> mediaFile =
-                  postMetaService.getMetaValueLike(
-                      String.format("%%%s%%", post.getSlug()), PostMetaKeys.WP_ATTACHED_FILE);
-              if (mediaFile.isPresent()) {
-                String mediaFilePath = buildMediaFilePath.apply(mediaFile.get());
-                if (!mediaFilePath.isEmpty()) {
-                  updatePostMetaThumb.accept(mediaFilePath);
-                  break;
-                }
-              } else {
-                if (post.getGuid() != null && !post.getGuid().isEmpty()) {
-                  updatePostMetaThumb.accept(post.getGuid());
-                  break;
-                }
-                try {
-                  TimeUnit.SECONDS.sleep(timeout);
-                } catch (InterruptedException ie) {
-                  Thread.currentThread().interrupt();
-                  postMetaControllerLog.warning(
-                      () ->
-                          String.format(
-                              "Interrupted thread due to InterruptedException while waiting for media file. Retries (%d/%d)",
-                              currentTry.get(), retries));
-
-                  postMetaControllerLog.fine(
-                      () ->
-                          "InterruptedException -> Stacktrace: "
-                              + Arrays.toString(ie.getStackTrace()));
-                  break;
-                }
-                if (currentTry.incrementAndGet() >= retries) {
-                  postMetaControllerLog.warning(
-                      () ->
-                          String.format(
-                              "Failed to update post meta thumbnail after %d retries", retries));
-                  break;
-                }
-              }
+              postMetaControllerLog.fine(
+                  () ->
+                      "InterruptedException -> Stacktrace: " + Arrays.toString(ie.getStackTrace()));
+              break;
+            }
+            if (currentTry.incrementAndGet() >= retries) {
+              postMetaControllerLog.warning(
+                  () ->
+                      String.format(
+                          "Failed to update post meta thumbnail after %d retries", retries));
+              break;
             }
           }
         }
