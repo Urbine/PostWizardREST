@@ -31,6 +31,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -150,6 +152,7 @@ public class PostMetaController {
       @PathParam("postId") long postId,
       @QueryParam("autothumb") boolean autoThumb,
       @QueryParam("retries") @DefaultValue("10") int retries,
+      @QueryParam("timeout") @DefaultValue("1") long timeout,
       ClientPostMeta postMetaFields) {
 
     logStepIn(postMetaControllerLog, postId, postMetaFields);
@@ -166,26 +169,38 @@ public class PostMetaController {
         if (autoThumb && isWPost) {
           ClientPost post = postService.getClientPost(postId);
           if (post.getSlug() != null && !post.getSlug().isEmpty()) {
+
+            String siteUploadsPath = environment.getUploadsURLPrefix();
+            UnaryOperator<String> buildMediaFilePath =
+                (String mediaFile) ->
+                    Objects.nonNull(siteUploadsPath)
+                        ? String.join("/", siteUploadsPath, mediaFile)
+                        : "";
+
+            Consumer<String> updatePostMetaThumb =
+                (String mediaFile) -> {
+                  postMetaFields.setThumbURI(mediaFile);
+                  postMetaControllerLog.info(
+                      () -> "AutoThumb completed successfully: " + mediaFile);
+                };
+
             AtomicInteger currentTry = new AtomicInteger(0);
             while (true) {
               Optional<String> mediaFile =
                   postMetaService.getMetaValueLike(
                       String.format("%%%s%%", post.getSlug()), PostMetaKeys.WP_ATTACHED_FILE);
               if (mediaFile.isPresent()) {
-                String siteUploadsPath = environment.getUploadsURLPrefix();
-                String mediaFilePath =
-                    Objects.nonNull(siteUploadsPath)
-                        ? String.join("/", siteUploadsPath, mediaFile.get())
-                        : "";
+                String mediaFilePath = buildMediaFilePath.apply(mediaFile.get());
                 if (!mediaFilePath.isEmpty()) {
-                  postMetaFields.setThumbURI(mediaFilePath);
-                  postMetaControllerLog.info(
-                      () -> "Auto thumb updated successfully: " + mediaFilePath);
+                  updatePostMetaThumb.accept(mediaFilePath);
                   break;
                 }
+              } else if (post.getGuid() != null && !post.getGuid().isEmpty()) {
+                updatePostMetaThumb.accept(post.getGuid());
+                break;
               } else {
                 try {
-                  TimeUnit.SECONDS.sleep(1);
+                  TimeUnit.SECONDS.sleep(timeout);
                 } catch (InterruptedException ie) {
                   Thread.currentThread().interrupt();
                   postMetaControllerLog.warning(
