@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +36,7 @@ import net.ygbstudio.postwizard.models.PostMetaKeys;
 import net.ygbstudio.postwizard.models.Production;
 import net.ygbstudio.postwizard.models.ToggleField;
 import net.ygbstudio.postwizard.rest.PostController;
+import net.ygbstudio.postwizard.utils.QuadFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -176,12 +179,8 @@ public class PostMetaService {
    * @return an Optional containing the metadata value if found, or empty if not found
    */
   @Transactional(value = TxType.REQUIRES_NEW)
-  public Optional<String> getMetaValueLike(String metaValuePattern, PostMetaKeys metaKey) {
-    return dbPostMetaManager
-        .findMetaValueLike(metaValuePattern)
-        .filter(post -> post.getMetaFieldKey().equals(metaKey.toString()))
-        .map(WPMeta::getMetaFieldValue)
-        .findFirst();
+  public String getMetaValueLike(String metaValuePattern, PostMetaKeys metaKey) {
+    return dbPostMetaManager.findMetaValueLike(metaValuePattern, metaKey.toString(), true);
   }
 
   /**
@@ -190,28 +189,58 @@ public class PostMetaService {
    * <p>This method attempts to find a matching media file for the given post ID and attachment post
    * slug if, and only if, {@code attachmentPost} is present and its name matches the slug pattern
    * {@code %%<slug>%%} from {@code postID}. If no matching media file in {@code wp_postmeta} is
-   * found, the GUID of {@code attachmentPost} is returned.
+   * found, the GUID of {@code attachmentPost} is fetched and used as a fallback.
    *
-   * <p>In the worst case scenario, an empty string is returned and consumers should handle this
-   * case.
-   *
-   * @param postID the ID of the post
-   * @param siteUploadsPath the path to the site uploads directory. Typically provided by {@link
-   *     EnvironmentService}
-   * @param attachmentPost the ClientPost object representing the attachment post
-   * @return the path to the auto-matched thumbnail
+   * @param postId the target post to update with the thumbnail path
+   * @param siteUploadsPath the uploads URL prefix with the site URL. Typically, this is provided by
+   *     the {@link EnvironmentService}.
+   * @param attachmentPost the media post that matches the slug pattern of the target post.
+   * @param mediaPostSupplier a supplier that returns (lazily) the media post that contains the GUID
+   *     if no matching media file is found in {@code wp_postmeta}.
+   * @return true if the thumbnail was updated successfully, false otherwise (in case of exception).
    */
   @Transactional(value = TxType.REQUIRES_NEW)
-  public String autoThumbMatching(
-      long postID, @Nullable String siteUploadsPath, @NonNull ClientPost attachmentPost) {
-    Optional<String> mediaFile =
+  public boolean autoThumbMatch(
+      long postId,
+      @Nullable String siteUploadsPath,
+      @NonNull ClientPost attachmentPost,
+      Supplier<ClientPost> mediaPostSupplier) {
+    String mediaFile =
         getMetaValueLike(
             String.format("%%%s%%", attachmentPost.getSlug()), PostMetaKeys.WP_ATTACHED_FILE);
 
-    return mediaFile
-        .map(
-            file -> Objects.nonNull(siteUploadsPath) ? String.join("/", siteUploadsPath, file) : "")
-        .orElse(Objects.nonNull(attachmentPost.getGuid()) ? attachmentPost.getGuid() : "");
+    String guid = null;
+    if (mediaFile == null || mediaFile.isBlank()) {
+      guid = mediaPostSupplier.get().getGuid();
+    }
+
+    QuadFunction<Long, PostMetaKeys, String, Boolean, Boolean> updatePostMetaAuto =
+        (postID, metaKey, metaValue, autoCreate) -> {
+          try {
+            dbPostMetaManager.updatePostMetaAuto(postID, metaKey.toString(), metaValue, autoCreate);
+            return true;
+          } catch (Exception anyEx) {
+            postMetaServiceLog.warning(
+                () -> "Failed to update post meta auto: " + anyEx.getMessage());
+            postMetaServiceLog.fine(
+                () ->
+                    "Failed to update post meta auto. Stacktrace: "
+                        + Arrays.toString(anyEx.getStackTrace()));
+            return false;
+          }
+        };
+
+    if (mediaFile != null && !mediaFile.isBlank()) {
+      String thumbUploadPath =
+          Objects.nonNull(siteUploadsPath)
+              ? String.format("%s/%s", siteUploadsPath, mediaFile)
+              : "";
+      return updatePostMetaAuto.apply(postId, PostMetaKeys.THUMBNAIL, thumbUploadPath, true);
+    } else if (guid != null && !guid.isBlank()) {
+      return updatePostMetaAuto.apply(postId, PostMetaKeys.THUMBNAIL, guid, true);
+    }
+
+    return false;
   }
 
   /*
