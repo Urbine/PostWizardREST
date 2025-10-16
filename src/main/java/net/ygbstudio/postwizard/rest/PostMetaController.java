@@ -195,10 +195,11 @@ public class PostMetaController {
                   updatePostMetaThumb.accept(mediaFilePath);
                   break;
                 }
-              } else if (post.getGuid() != null && !post.getGuid().isEmpty()) {
-                updatePostMetaThumb.accept(post.getGuid());
-                break;
               } else {
+                if (post.getGuid() != null && !post.getGuid().isEmpty()) {
+                  updatePostMetaThumb.accept(post.getGuid());
+                  break;
+                }
                 try {
                   TimeUnit.SECONDS.sleep(timeout);
                 } catch (InterruptedException ie) {
