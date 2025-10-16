@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import java.util.Objects;
@@ -50,6 +51,9 @@ import java.util.Objects;
     name = "WPMeta.FindMetaValueLike",
     query =
         "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldValue LIKE :metaValuePattern")
+@NamedNativeQuery(
+    name = "WPMeta.FindMetaValueLikeNative",
+    query = "SELECT `meta_value` FROM `wp_postmeta` where `meta_key` = ? AND `meta_value` LIKE ?")
 public class WPMeta {
 
   @Id
