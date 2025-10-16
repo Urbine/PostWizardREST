@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -164,12 +165,12 @@ public class PostMetaController {
       } else {
         if (autoThumb && isWPost) {
           ClientPost post = postService.getClientPost(postId);
-          long mediaPostId = postService.getMediaPostIdBySlug(post.getSlug());
-          if (mediaPostId > 0) {
+          if (post.getSlug() != null && !post.getSlug().isEmpty()) {
             AtomicInteger currentTry = new AtomicInteger(0);
             while (true) {
               Optional<String> mediaFile =
-                  postMetaService.getMetaValueByPostID(mediaPostId, PostMetaKeys.WP_ATTACHED_FILE);
+                  postMetaService.getMetaValueLike(
+                      String.format("%%%s%%", post.getSlug()), PostMetaKeys.WP_ATTACHED_FILE);
               if (mediaFile.isPresent()) {
                 String siteUploadsPath = environment.getUploadsURLPrefix();
                 String mediaFilePath =
@@ -178,6 +179,8 @@ public class PostMetaController {
                         : "";
                 if (!mediaFilePath.isEmpty()) {
                   postMetaFields.setThumbURI(mediaFilePath);
+                  postMetaControllerLog.info(
+                      () -> "Auto thumb updated successfully: " + mediaFilePath);
                   break;
                 }
               } else {
@@ -185,6 +188,16 @@ public class PostMetaController {
                   TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException ie) {
                   Thread.currentThread().interrupt();
+                  postMetaControllerLog.warning(
+                      () ->
+                          String.format(
+                              "Interrupted thread due to InterruptedException while waiting for media file. Retries (%d/%d)",
+                              currentTry.get(), retries));
+
+                  postMetaControllerLog.fine(
+                      () ->
+                          "InterruptedException -> Stacktrace: "
+                              + Arrays.toString(ie.getStackTrace()));
                   break;
                 }
                 if (currentTry.incrementAndGet() >= retries) {
