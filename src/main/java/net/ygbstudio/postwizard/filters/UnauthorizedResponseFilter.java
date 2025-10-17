@@ -26,8 +26,7 @@ public class UnauthorizedResponseFilter implements ContainerResponseFilter {
    * @throws IOException If an I/O error occurs.
    */
   @Override
-  public void filter(ContainerRequestContext reqContext, ContainerResponseContext resContext)
-      throws IOException {
+  public void filter(ContainerRequestContext reqContext, ContainerResponseContext resContext) {
     int unauthorizedStatusCode = Response.Status.UNAUTHORIZED.getStatusCode();
 
     ErrorResponse authException =

@@ -4,7 +4,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.Response;
-import java.io.IOException;
 import net.ygbstudio.postwizard.dto.ErrorResponse;
 
 /**
@@ -18,8 +17,7 @@ public class InternalServerErrorFilter implements ContainerResponseFilter {
 
   @Override
   public void filter(
-      ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-      throws IOException {
+      ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     int internalServerErrorStatus = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
     ErrorResponse internalServerError =
         new ErrorResponse(
