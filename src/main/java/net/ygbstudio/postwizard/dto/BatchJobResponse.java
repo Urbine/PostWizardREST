@@ -4,7 +4,6 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -49,7 +48,7 @@ public class BatchJobResponse {
     this.status = status;
     this.timestamp = Instant.now();
     this.postIds = List.copyOf(postIds);
-    this.totalProcessed = Objects.nonNull(postIds) ? postIds.size() : 0;
+    this.totalProcessed = postIds.size();
   }
 
   public String getMessage() {

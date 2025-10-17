@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * PostDumpResponse is a DTO class that represents a response from the server for post dump
@@ -19,7 +18,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @author Yoham Gabriel B @ YGB Studio
  */
-@NullMarked
 @JsonbPropertyOrder({"message", "status", "siteItems", "totalProcessed", "timestamp"})
 public class PostDumpResponse {
 
