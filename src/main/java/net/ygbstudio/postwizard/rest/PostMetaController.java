@@ -168,14 +168,15 @@ public class PostMetaController {
 
           // Used Atomic class for lambda capture purposes
           AtomicInteger currentTry = new AtomicInteger(0);
-          while (postMetaFields.getThumbURI() == null) {
-            boolean isThumbUpdated =
+          boolean isThumbnailUpdated = false;
+
+          while (!isThumbnailUpdated) {
+            isThumbnailUpdated =
                 postMetaService.autoThumbMatch(
                     post.getID(),
                     siteUploadsPath,
                     post,
                     () -> postService.getClientPost(mediaPostId));
-            if (isThumbUpdated) break;
 
             if (currentTry.incrementAndGet() >= retries) {
               postMetaControllerLog.warning(
