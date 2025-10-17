@@ -19,6 +19,35 @@ import org.jspecify.annotations.NonNull;
 public interface TermRelationshipsManager {
 
   /**
+   * NamedQuery for retrieving a specific term relationship by its ID.
+   *
+   * <p>{@code SELECT rel FROM WPTermRelationships rel WHERE rel.id.objectID = :objectID AND
+   * rel.id.termTaxonomyID = :termTaxonomyID}
+   *
+   * @see WPTermRelationships
+   */
+  String FIND_EXISTING = "WPTermRelationships.FindExisting";
+
+  /**
+   * NamedQuery for deleting a specific term relationship by its term taxonomy ID.
+   *
+   * <p>{@code DELETE FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID}
+   *
+   * @see WPTermRelationships
+   */
+  String DELETE_BY_TERM_TAXONOMY_ID = "WPTermRelationships.DeleteByTermTaxonomyId";
+
+  /**
+   * NamedQuery for counting the number of term relationships associated with a term taxonomy.
+   *
+   * <p>{@code SELECT COUNT(rel) FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID =
+   * :termTaxonomyID}
+   *
+   * @see WPTermRelationships
+   */
+  String COUNT_BY_TERM_TAXONOMY_ID = "WPTermRelationships.CountByTermTaxonomyId";
+
+  /**
    * Finds an existing relationship between a post and a term taxonomy.
    *
    * @param postItem post object

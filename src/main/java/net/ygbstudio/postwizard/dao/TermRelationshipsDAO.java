@@ -30,7 +30,7 @@ public class TermRelationshipsDAO implements TermRelationshipsManager {
   @Override
   public Stream<WPTermRelationships> findExistingRelationship(
       @NonNull WPost postItem, @NonNull WPTermTaxonomy taxonomy) {
-    return em.createNamedQuery("WPTermRelationships.FindExisting", WPTermRelationships.class)
+    return em.createNamedQuery(TermRelationshipsManager.FIND_EXISTING, WPTermRelationships.class)
         .setParameter("objectID", postItem.getId())
         .setParameter("termTaxonomyID", taxonomy.getTermTaxonomyId())
         .getResultStream();
@@ -63,7 +63,7 @@ public class TermRelationshipsDAO implements TermRelationshipsManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public long countTaxonomyRelationships(long termTaxonomyId) {
-    return em.createNamedQuery("WPTermRelationships.CountByTermTaxonomyID", Long.class)
+    return em.createNamedQuery(TermRelationshipsManager.COUNT_BY_TERM_TAXONOMY_ID, Long.class)
         .setParameter("termTaxonomyID", termTaxonomyId)
         .getSingleResult();
   }
@@ -91,7 +91,7 @@ public class TermRelationshipsDAO implements TermRelationshipsManager {
   @Override
   public boolean cleanTaxonomyRelationships(long termTaxonomyId) {
     return em.createNamedQuery(
-                "WPTermRelationships.DeleteByTermTaxonomyID", WPTermRelationships.class)
+                TermRelationshipsManager.DELETE_BY_TERM_TAXONOMY_ID, WPTermRelationships.class)
             .setParameter("termTaxonomyID", termTaxonomyId)
             .executeUpdate()
         > 0;

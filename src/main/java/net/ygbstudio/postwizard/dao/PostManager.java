@@ -21,6 +21,42 @@ import org.jspecify.annotations.NonNull;
 public interface PostManager {
 
   /**
+   * NamedQuery for retrieving all posts.
+   *
+   * <p>{@code SELECT p FROM WPost p}
+   *
+   * @see WPost
+   */
+  String FIND_ALL = "WPost.FindAll";
+
+  /**
+   * NamedQuery for retrieving a post by its ID.
+   *
+   * <p>{@code SELECT p FROM WPost p WHERE p.id = :postId}
+   *
+   * @see WPost
+   */
+  String FIND_BY_ID = "WPost.FindById";
+
+  /**
+   * NamedQuery for retrieving all posts of a specific type.
+   *
+   * <p>{@code SELECT p FROM WPost p WHERE p.postType = :postType}
+   *
+   * @see WPost
+   */
+  String FIND_BY_TYPE = "WPost.FindByType";
+
+  /**
+   * NamedQuery for retrieving media posts by title.
+   *
+   * <p>{@code SELECT p FROM WPost p WHERE p.postType = 'attachment' AND p.postTitle = :title}
+   *
+   * @see WPost
+   */
+  String FIND_MEDIA_BY_TITLE = "WPost.FindMediaByTitle";
+
+  /**
    * Retrieves all posts.
    *
    * @return a List of all WPost entries
@@ -60,7 +96,7 @@ public interface PostManager {
   boolean isValidPost(@NonNull WPost postItem);
 
   /**
-   * Updates a post entry with the provided WPost item. If the postID is less than or equal to 0, no
+   * Updates a post-entry with the provided WPost item. If the postID is less than or equal to 0, no
    * action is taken. If autoCreate is true and the post does not exist, it should create a new
    * post.
    *
@@ -101,15 +137,7 @@ public interface PostManager {
   Stream<WPost> getMediaByTitle(String title);
 
   /**
-   * Retrieves a media post by its slug using a native query.
-   *
-   * @param title the title of the media post to retrieve. Usually the slug of the post.
-   * @return the GUID of the media post
-   */
-  String getGUIDByTitleNative(@NonNull String title);
-
-  /**
-   * Deletes a post entry with the specified ID.
+   * Deletes a post-entry with the specified ID.
    *
    * @param postId the ID of the post to delete
    * @return true if the post was deleted, false otherwise

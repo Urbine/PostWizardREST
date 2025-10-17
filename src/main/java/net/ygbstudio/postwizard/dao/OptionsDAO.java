@@ -29,13 +29,13 @@ public class OptionsDAO implements OptionManager {
   @Transactional(TxType.REQUIRED)
   @Override
   public Stream<WPOptions> getAllOptions() {
-    return em.createNamedQuery("WPOptions.FindAll", WPOptions.class).getResultStream();
+    return em.createNamedQuery(OptionManager.FIND_ALL, WPOptions.class).getResultStream();
   }
 
   @Transactional(TxType.REQUIRED)
   @Override
   public Optional<WPOptions> getOptionByName(String optionName) {
-    return em.createNamedQuery("WPOptions.FindByOptionName", WPOptions.class)
+    return em.createNamedQuery(OptionManager.FIND_BY_OPTION_NAME, WPOptions.class)
         .setParameter("optionName", optionName)
         .getResultStream()
         .findFirst();

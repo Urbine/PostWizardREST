@@ -27,7 +27,7 @@ public class TaxonomyDAO implements TaxonomyManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public Stream<WPTermTaxonomy> termTaxonomyIdExists(long taxonomyID) {
-    return em.createNamedQuery("WPTermTaxonomy.ExistsByID", WPTermTaxonomy.class)
+    return em.createNamedQuery(TaxonomyManager.EXISTS_BY_ID, WPTermTaxonomy.class)
         .setParameter("termTaxonomyId", taxonomyID)
         .getResultStream();
   }
@@ -35,7 +35,7 @@ public class TaxonomyDAO implements TaxonomyManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public Stream<WPTermTaxonomy> taxonomyTermExists(@NonNull WPTerms term) {
-    return em.createNamedQuery("WPTermTaxonomy.ExistsByTerm", WPTermTaxonomy.class)
+    return em.createNamedQuery(TaxonomyManager.EXISTS_BY_TERM, WPTermTaxonomy.class)
         .setParameter("term", term)
         .getResultStream();
   }
@@ -43,7 +43,7 @@ public class TaxonomyDAO implements TaxonomyManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public Stream<WPTermTaxonomy> taxonomyExists(@NonNull String taxonomy) {
-    return em.createNamedQuery("WPTermTaxonomy.ExistsByTaxonomy", WPTermTaxonomy.class)
+    return em.createNamedQuery(TaxonomyManager.EXISTS_BY_TAXONOMY, WPTermTaxonomy.class)
         .setParameter("taxonomy", taxonomy)
         .getResultStream();
   }

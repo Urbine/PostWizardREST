@@ -34,13 +34,13 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public List<WPMeta> getAll() {
-    return em.createNamedQuery("WPMeta.FindAll", WPMeta.class).getResultList();
+    return em.createNamedQuery(PostMetaManager.FIND_ALL, WPMeta.class).getResultList();
   }
 
   @Transactional(value = TxType.REQUIRED)
   @Override
   public List<WPMeta> getEntriesByPostID(long id) {
-    return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.FIND_POST_BY_ID, WPMeta.class)
         .setParameter("postId", id)
         .getResultList();
   }
@@ -48,7 +48,7 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public List<Long> getPostIDs() {
-    return em.createNamedQuery("WPMeta.FindAllPostIDs", Long.class)
+    return em.createNamedQuery(PostMetaManager.FIND_ALL_POST_IDS, Long.class)
         .getResultStream()
         .distinct()
         .toList();
@@ -57,14 +57,14 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public Stream<WPMeta> getEntriesByMetaKey(@NonNull String key) {
-    return em.createNamedQuery("WPMeta.FindByMetaKey", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.FIND_POST_BY_META_KEY, WPMeta.class)
         .setParameter("metaKey", key)
         .getResultStream();
   }
 
   @Transactional(value = TxType.REQUIRED)
   public Optional<WPMeta> findMetaKeyByPostID(@NonNull String metaKey, long postId) {
-    return em.createNamedQuery("WPMeta.FindKeyByPostID", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.FIND_KEY_BY_POST_ID, WPMeta.class)
         .setParameter("metaKey", metaKey)
         .setParameter("postId", postId)
         .getResultStream()
@@ -73,18 +73,14 @@ public class PostMetaDAO implements PostMetaManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public String findMetaValueLike(
-      @NonNull String metaValuePattern, @Nullable String metaKey, boolean useNative) {
-    if (metaKey != null && useNative)
-      return em.createNamedQuery("WPMeta.FindMetaValueLikeNative", String.class)
-          .setParameter(1, metaKey)
-          .setParameter(2, metaValuePattern)
-          .getSingleResult();
-
-    return em.createNamedQuery("WPMeta.FindMetaValueLike", WPMeta.class)
+  public Optional<String> findMetaValueLike(
+      @NonNull String metaValuePattern, @Nullable String metaKey) {
+    return em.createNamedQuery(PostMetaManager.FIND_META_VALUE_LIKE, WPMeta.class)
         .setParameter("metaValuePattern", metaValuePattern)
-        .getSingleResult()
-        .getMetaFieldValue();
+        .getResultStream()
+        .filter(post -> post.getMetaFieldKey().equals(metaKey))
+        .findFirst()
+        .map(WPMeta::getMetaFieldValue);
   }
 
   @Transactional(value = TxType.REQUIRED)
@@ -92,7 +88,7 @@ public class PostMetaDAO implements PostMetaManager {
   public List<WPMeta> getMetaValueMatches(@NonNull String pattern) {
     Predicate<String> metaValFind = Pattern.compile(pattern).asPredicate();
 
-    return em.createNamedQuery("WPMeta.FindAll", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.FIND_ALL, WPMeta.class)
         .getResultStream()
         .filter(elem -> metaValFind.test(elem.getMetaFieldValue()))
         .toList();
@@ -108,7 +104,7 @@ public class PostMetaDAO implements PostMetaManager {
   @Override
   public Optional<WPMeta> updatePostMetaValue(
       long postId, @NonNull String metaKey, @NonNull String newValue) {
-    return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.FIND_POST_BY_ID, WPMeta.class)
         .setParameter("postId", postId)
         .getResultStream()
         .filter(p -> p.getMetaFieldKey().equals(metaKey))
@@ -123,7 +119,7 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   public Set<WPMeta> getRandomPostsByMetaKey(
       @NonNull String metaKey, long limitBy, @NonNull Predicate<? super WPMeta> filterPredicate) {
-    return em.createNamedQuery("WPMeta.RandomPostByMetaKey", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.RANDOM_POST_BY_META_KEY, WPMeta.class)
         .setParameter("metaKey", metaKey)
         .getResultStream()
         .filter(filterPredicate)
@@ -160,7 +156,7 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public boolean postExists(long postId) {
-    return em.createNamedQuery("WPMeta.FindPostByID", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.FIND_POST_BY_ID, WPMeta.class)
         .setParameter("postId", postId)
         .getResultStream()
         .findFirst()
@@ -181,7 +177,7 @@ public class PostMetaDAO implements PostMetaManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public boolean metaKeyExists(long postId, @NonNull String metaKey) {
-    return em.createNamedQuery("WPMeta.FindByMetaKey", WPMeta.class)
+    return em.createNamedQuery(PostMetaManager.FIND_POST_BY_META_KEY, WPMeta.class)
         .setParameter("metaKey", metaKey)
         .getResultStream()
         .findFirst()

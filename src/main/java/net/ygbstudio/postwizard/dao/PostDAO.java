@@ -39,13 +39,13 @@ public class PostDAO implements PostManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public List<WPost> getAllPosts() {
-    return em.createNamedQuery("WPost.FindAll", WPost.class).getResultList();
+    return em.createNamedQuery(PostManager.FIND_ALL, WPost.class).getResultList();
   }
 
   @Transactional(value = TxType.REQUIRED)
   @Override
   public List<WPost> getAllByType(@NonNull String postType) {
-    return em.createNamedQuery("WPost.FindByType", WPost.class)
+    return em.createNamedQuery(PostManager.FIND_BY_TYPE, WPost.class)
         .setParameter("postType", postType)
         .getResultList();
   }
@@ -53,23 +53,15 @@ public class PostDAO implements PostManager {
   @Transactional(value = TxType.REQUIRED)
   @Override
   public Stream<WPost> getMediaByTitle(String title) {
-    return em.createNamedQuery("WPost.FindMediaByTitle", WPost.class)
+    return em.createNamedQuery(PostManager.FIND_MEDIA_BY_TITLE, WPost.class)
         .setParameter("title", title)
         .getResultStream();
   }
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public String getGUIDByTitleNative(@NonNull String title) {
-    return em.createNamedQuery("WPost.FindMediaGUIDByTitle", String.class)
-        .setParameter(1, title)
-        .getSingleResult();
-  }
-
-  @Transactional(value = TxType.REQUIRED)
-  @Override
   public Optional<WPost> getPostById(long postId) {
-    return em.createNamedQuery("WPost.FindByID", WPost.class)
+    return em.createNamedQuery(PostManager.FIND_BY_ID, WPost.class)
         .setParameter("postId", postId)
         .getResultStream()
         .findFirst();

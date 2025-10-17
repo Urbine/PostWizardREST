@@ -15,6 +15,34 @@ import org.jspecify.annotations.NonNull;
  * @author Yoham Gabriel @ YGB Studio
  */
 public interface TaxonomyManager {
+
+  /**
+   * NamedQuery for retrieving a specific taxonomy by its ID.
+   *
+   * <p>{@code SELECT t FROM WPTermTaxonomy t WHERE t.termTaxonomyId = :termTaxonomyId}
+   *
+   * @see WPTermTaxonomy
+   */
+  String EXISTS_BY_ID = "WPTermTaxonomy.ExistsById";
+
+  /**
+   * NamedQuery for retrieving a specific taxonomy by its term.
+   *
+   * <p>{@code SELECT t FROM WPTermTaxonomy t WHERE t.term = :term}
+   *
+   * @see WPTermTaxonomy
+   */
+  String EXISTS_BY_TERM = "WPTermTaxonomy.ExistsByTerm";
+
+  /**
+   * NamedQuery for retrieving a specific taxonomy by its taxonomy.
+   *
+   * <p>{@code SELECT t FROM WPTermTaxonomy t WHERE t.taxonomy = :taxonomy}
+   *
+   * @see WPTermTaxonomy
+   */
+  String EXISTS_BY_TAXONOMY = "WPTermTaxonomy.ExistsByTaxonomy";
+
   /**
    * Checks if a taxonomy exists in the server database.
    *

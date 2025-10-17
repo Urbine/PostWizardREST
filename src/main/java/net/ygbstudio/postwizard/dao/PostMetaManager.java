@@ -20,6 +20,75 @@ import org.jspecify.annotations.Nullable;
 public interface PostMetaManager {
 
   /**
+   * NamedQuery for retrieving all post metadata entries.
+   *
+   * <p>{@code SELECT postMeta FROM WPMeta postMeta}
+   *
+   * @see WPMeta
+   */
+  String FIND_ALL = "WPMeta.FindAll";
+
+  /**
+   * NamedQuery for retrieving all unique post IDs that have associated metadata entries.
+   *
+   * <p>{@code SELECT DISTINCT postID FROM WPMeta}
+   *
+   * @see WPMeta
+   */
+  String FIND_ALL_POST_IDS = "WPMeta.FindAllPostIDs";
+
+  /**
+   * NamedQuery for retrieving all post metadata entries associated with a specific post ID.
+   *
+   * <p>{@code SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postId}
+   *
+   * @see WPMeta
+   */
+  String FIND_POST_BY_ID = "WPMeta.FindPostById";
+
+  /**
+   * NamedQuery for retrieving all post metadata entries associated with a specific meta key.
+   *
+   * <p>{@code SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey}
+   *
+   * @see WPMeta
+   */
+  String FIND_POST_BY_META_KEY = "WPMeta.FindByMetaKey";
+
+  /**
+   * NamedQuery for retrieving a specific post metadata entry by its post ID and meta key.
+   *
+   * <p>{@code SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postId AND
+   * postMeta.metaFieldKey = :metaKey}
+   *
+   * @see WPMeta
+   */
+  String FIND_KEY_BY_POST_ID = "WPMeta.FindKeyByPostId";
+
+  /**
+   * NamedQuery for retrieving a random post metadata entry associated with a specific meta key.
+   *
+   * <p>{@code "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey ORDER BY
+   * FUNCTION('RAND')"}
+   *
+   * <p><em>NOTE: This query uses a provider-specific function (MariaDB) to generate a random number
+   * and order the results by it. Keep in mind if you port this application to a different database.
+   *
+   * @see WPMeta
+   */
+  String RANDOM_POST_BY_META_KEY = "WPMeta.RandomPostByMetaKey";
+
+  /**
+   * NamedQuery for retrieving all post metadata entries that match a specific meta value.
+   *
+   * <p>{@code SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldValue LIKE
+   * :metaValuePattern}
+   *
+   * @see WPMeta
+   */
+  String FIND_META_VALUE_LIKE = "WPMeta.FindMetaValueLike";
+
+  /**
    * Retrieves all post metadata entries.
    *
    * @return a List of all WPMeta entries
@@ -63,11 +132,9 @@ public interface PostMetaManager {
    *
    * @param metaValuePattern the meta value to filter the metadata entries (e.g. "%.jpg%")
    * @param metaKey the meta key to filter the metadata entries
-   * @param useNative whether to use a native query or not
    * @return the meta value that matches the specified meta value pattern
    */
-  String findMetaValueLike(
-      @NonNull String metaValuePattern, @Nullable String metaKey, boolean useNative);
+  Optional<String> findMetaValueLike(@NonNull String metaValuePattern, @Nullable String metaKey);
 
   /**
    * Retrieves all post metadata entries that match a specific pattern in their value.

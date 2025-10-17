@@ -15,6 +15,51 @@ import org.jspecify.annotations.NonNull;
 public interface TermsManager {
 
   /**
+   * Named query for finding all terms in the server database.
+   *
+   * <p>{@code SELECT t FROM WPTerms t}
+   *
+   * @see WPTerms
+   */
+  String FIND_ALL = "WPTerms.FindAll";
+
+  /**
+   * Named query for checking if a term exists in the server database by ID.
+   *
+   * <p>{@code SELECT t FROM WPTerms t WHERE t.term_id = :termId}
+   *
+   * @see WPTerms
+   */
+  String EXISTS_BY_ID = "WPTerms.ExistsById";
+
+  /**
+   * Named query for checking if a term exists in the server database by slug.
+   *
+   * <p>{@code SELECT t FROM WPTerms t WHERE t.slug = :termSlug}
+   *
+   * @see WPTerms
+   */
+  String EXISTS_BY_SLUG = "WPTerms.ExistsBySlug";
+
+  /**
+   * Named query for checking if a term exists in the server database by name.
+   *
+   * <p>{@code SELECT t FROM WPTerms t WHERE t.name = :termName}
+   *
+   * @see WPTerms
+   */
+  String EXISTS_BY_NAME = "WPTerms.ExistsByName";
+
+  /**
+   * Named query for checking if a term exists in the server database by name and slug.
+   *
+   * <p>{@code SELECT t FROM WPTerms t WHERE t.name = :termName AND t.slug = :termSlug}
+   *
+   * @see WPTerms
+   */
+  String EXISTS_BY_NAME_AND_SLUG = "WPTerms.ExistsByNameAndSlug";
+
+  /**
    * Checks if a term exists in the server database.
    *
    * @param termID the ID of the term for which existence is checked

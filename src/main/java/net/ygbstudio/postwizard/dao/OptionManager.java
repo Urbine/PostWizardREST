@@ -15,6 +15,24 @@ import net.ygbstudio.postwizard.entities.WPOptions;
 public interface OptionManager {
 
   /**
+   * Named query for finding all WordPress options.
+   *
+   * <p>{@code SELECT o FROM WPOptions o}
+   *
+   * @see WPOptions
+   */
+  String FIND_ALL = "WPOptions.FindAll";
+
+  /**
+   * Named query for finding a specific WordPress option by name.
+   *
+   * <p>{@code SELECT o FROM WPOptions o WHERE o.optionName = :optionName}
+   *
+   * @see WPOptions
+   */
+  String FIND_BY_OPTION_NAME = "WPOptions.FindByOptionName";
+
+  /**
    * Retrieves all WordPress options from the database.
    *
    * @return A Stream of all WordPress options.
