@@ -12,8 +12,6 @@ package net.ygbstudio.postwizard.exceptions;
  */
 public class InvalidIdentifier extends RuntimeException {
 
-  private static final long serialVersionUID = 1L;
-
   public InvalidIdentifier() {
     super();
   }
