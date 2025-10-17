@@ -1,8 +1,10 @@
-package net.ygbstudio.postwizard.utils;
+package net.ygbstudio.postwizard.utils.function;
 
 /**
- * A functional interface similar to {@link java.util.function.Function} that represents a function
- * of four input parameters.
+ * A functional interface similar to {@link java.util.function.Function}.
+ *
+ * <p>In this case, {@link QuadFunction} represents a function of four input parameters and a return
+ * value of type {@code R}.
  *
  * @param <T> the type of the first input parameter
  * @param <U> the type of the second input parameter
@@ -13,9 +15,10 @@ package net.ygbstudio.postwizard.utils;
 public interface QuadFunction<T, U, V, W, R> {
 
   /**
-   * Applies the function to the given arguments just like {@link
-   * java.util.function.Function#apply(Object)}
+   * Applies the function to the given arguments just like the functional interface in the <br>
+   * {@link java.util.function.Function} package.
    *
+   * @see java.util.function.Function#apply(Object)
    * @param t the first input parameter
    * @param u the second input parameter
    * @param v the third input parameter

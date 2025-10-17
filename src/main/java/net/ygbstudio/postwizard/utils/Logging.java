@@ -52,8 +52,7 @@ public final class Logging implements Util {
     if (!logDir.exists()) logDir.mkdir();
 
     FileHandler globalFileHandler =
-        new FileHandler(
-            logsPath.toAbsolutePath().toString() + platformSeparator + fileName + "-%g", append);
+        new FileHandler(logsPath.toAbsolutePath() + platformSeparator + fileName + "-%g", append);
     globalFileHandler.setLevel(loggingLevel);
     return globalFileHandler;
   }

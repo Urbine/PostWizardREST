@@ -23,7 +23,7 @@ public final class Security implements Util {
   /**
    * Generates a random secret key for JWT signing.
    *
-   * @param bits Bit strength of the key (must be a multiple of 8).
+   * @param bits the bit strength of the key (must be a multiple of 8).
    * @param algorithm Algorithm to use for the key. Refer to {@link <a
    *     href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyGenerator">StandardNames
    *     - KeyGenerator</a>} for available algorithm names supported by {@link SecretKeySpec}.
