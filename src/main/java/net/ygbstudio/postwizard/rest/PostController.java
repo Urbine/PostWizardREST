@@ -155,10 +155,10 @@ public class PostController {
 
   /**
    * Endpoint to update a post based on the provided ClientPost object. This method validates the
-   * post ID and updates the post entry in the database. New posts cannot be created using this
+   * post ID and updates the post-entry in the database. New posts cannot be created using this
    * method; it is intended for updating existing posts only.
    *
-   * <p>Creation of new post entries in the database must be done through the WordPress API, so that
+   * <p>Creation of new post-entries in the database must be done through the WordPress API, so that
    * relevant entries can be modified using this method.
    *
    * @param postId the ID of the post to update
