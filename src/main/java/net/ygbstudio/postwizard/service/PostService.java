@@ -94,7 +94,7 @@ public class PostService {
   public Long getMediaPostIdBySlug(String slug) {
     return dbPostManager
         .getMediaByTitle(slug)
-        .filter(wPost -> wPost.getId() != null)
+        .filter(Objects::nonNull)
         .map(WPost::getId)
         .findFirst()
         .orElse(0L);
@@ -127,7 +127,7 @@ public class PostService {
    * WPost object, sets its properties from the ClientPost object, and updates the post entry in the
    * database.
    *
-   * <p>Creation of new post entries in the database have been temporarily disabled to prevent
+   * <p>Creation of new post-entries in the database have been temporarily disabled to prevent
    * accidental data loss or malformed entries. The WordPress API should be used to create new
    * posts, so that relevant entries can be modified using this method.
    *
@@ -167,10 +167,10 @@ public class PostService {
 
   /**
    * Retrieves the post details for a given post ID and converts it into a ClientPost object. This
-   * method fetches the post entries from the database and populates the ClientPost object with the
+   * method fetches the post-entries from the database and populates the ClientPost object with the
    * corresponding values based on the PostKeys enumeration.
    *
-   * <p>This method is used to convert the raw post entries into a structured ClientPost object that
+   * <p>This method is used to convert the raw post-entries into a structured ClientPost object that
    * can be easily consumed by the client without exposing the underlying database structure. Also,
    * {@code getClientPost} runs within a new transaction context to ensure that the retrieval
    * operation is isolated from other transactions.

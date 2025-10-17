@@ -36,7 +36,8 @@ import net.ygbstudio.postwizard.models.PostMetaKeys;
 import net.ygbstudio.postwizard.models.Production;
 import net.ygbstudio.postwizard.models.ToggleField;
 import net.ygbstudio.postwizard.rest.PostController;
-import net.ygbstudio.postwizard.utils.QuadFunction;
+import net.ygbstudio.postwizard.utils.function.QuadConsumer;
+import net.ygbstudio.postwizard.utils.function.QuadFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -179,8 +180,9 @@ public class PostMetaService {
    * @return an Optional containing the metadata value if found, or empty if not found
    */
   @Transactional(value = TxType.REQUIRES_NEW)
-  public String getMetaValueLike(String metaValuePattern, PostMetaKeys metaKey) {
-    return dbPostMetaManager.findMetaValueLike(metaValuePattern, metaKey.toString(), true);
+  public Optional<String> getMetaValueLike(
+      @NonNull String metaValuePattern, @NonNull PostMetaKeys metaKey) {
+    return dbPostMetaManager.findMetaValueLike(metaValuePattern, metaKey.toString());
   }
 
   /**
@@ -205,17 +207,18 @@ public class PostMetaService {
       @Nullable String siteUploadsPath,
       @NonNull ClientPost attachmentPost,
       Supplier<ClientPost> mediaPostSupplier) {
-    String mediaFile =
+    Optional<String> mediaFile =
         getMetaValueLike(
             String.format("%%%s%%", attachmentPost.getSlug()), PostMetaKeys.WP_ATTACHED_FILE);
 
     String guid = null;
-    if (mediaFile == null || mediaFile.isBlank()) {
+    if (mediaFile.isEmpty() || mediaFile.get().isBlank()) {
       guid = mediaPostSupplier.get().getGuid();
     }
 
     QuadFunction<Long, PostMetaKeys, String, Boolean, Boolean> updatePostMetaAuto =
         (postID, metaKey, metaValue, autoCreate) -> {
+          if (postID <= 0) return false;
           try {
             dbPostMetaManager.updatePostMetaAuto(postID, metaKey.toString(), metaValue, autoCreate);
             return true;
@@ -230,7 +233,7 @@ public class PostMetaService {
           }
         };
 
-    if (mediaFile != null && !mediaFile.isBlank()) {
+    if (mediaFile.isPresent() && !mediaFile.get().isBlank()) {
       String thumbUploadPath =
           Objects.nonNull(siteUploadsPath)
               ? String.format("%s/%s", siteUploadsPath, mediaFile)
@@ -361,77 +364,94 @@ public class PostMetaService {
     long postId = clientPost.getID();
     if (postId <= 0) return;
 
+    QuadConsumer<Long, PostMetaKeys, String, Boolean> updatePostMetaAuto =
+        (postID, metaKey, metaValue, create) -> {
+          try {
+            dbPostMetaManager.updatePostMetaAuto(postID, metaKey.toString(), metaValue, create);
+          } catch (Exception anyEx) {
+            postMetaServiceLog.warning(
+                () ->
+                    "Failed to update post meta auto -> Key: "
+                        + metaKey
+                        + ": "
+                        + anyEx.getMessage());
+            postMetaServiceLog.fine(
+                () ->
+                    "Failed to update post meta auto in clientPostMetaUpdateStrategy -> "
+                        + metaKey
+                        + ". Stacktrace: "
+                        + Arrays.toString(anyEx.getStackTrace()));
+          }
+        };
+
     getTransformClassFields(clientPost.getClass(), Field::getName)
         .forEach(
             p -> {
               switch (enumFromValue(PostMetaKeys.class, p, true).orElse(PostMetaKeys.OTHERS)) {
-                case ID:
-                  break;
                 case HOURS:
                   if (clientPost.getHours() != 0)
-                    dbPostMetaManager.updatePostMetaAuto(
+                    updatePostMetaAuto.accept(
                         postId,
-                        PostMetaKeys.HOURS.toString(),
+                        PostMetaKeys.HOURS,
                         Long.toString(clientPost.getHours()),
                         autoCreate);
                   break;
                 case MINUTES:
                   if (clientPost.getMinutes() != 0)
-                    dbPostMetaManager.updatePostMetaAuto(
+                    updatePostMetaAuto.accept(
                         postId,
-                        PostMetaKeys.MINUTES.toString(),
+                        PostMetaKeys.MINUTES,
                         Long.toString(clientPost.getMinutes()),
                         autoCreate);
                   break;
                 case SECONDS:
                   if (clientPost.getSeconds() != 0)
-                    dbPostMetaManager.updatePostMetaAuto(
+                    updatePostMetaAuto.accept(
                         postId,
-                        PostMetaKeys.SECONDS.toString(),
+                        PostMetaKeys.SECONDS,
                         Long.toString(clientPost.getSeconds()),
                         autoCreate);
                   break;
                 case EMBED:
                   String embedCode = clientPost.getEmbedCode();
                   if (Objects.nonNull(embedCode) && !embedCode.isBlank())
-                    dbPostMetaManager.updatePostMetaAuto(
-                        postId, PostMetaKeys.EMBED.toString(), embedCode, autoCreate);
+                    updatePostMetaAuto.accept(postId, PostMetaKeys.EMBED, embedCode, autoCreate);
                   break;
                 case PRODUCTION:
                   String clientProduction = clientPost.getVideoProduction();
                   if (isValidProduction(clientProduction))
-                    dbPostMetaManager.updatePostMetaAuto(
-                        postId, PostMetaKeys.PRODUCTION.toString(), clientProduction, autoCreate);
+                    updatePostMetaAuto.accept(
+                        postId, PostMetaKeys.PRODUCTION, clientProduction, autoCreate);
                   break;
                 case ORIENTATION:
                   String clientOrientation = clientPost.getVideoOrientation();
                   if (isValidOrientation(clientOrientation))
-                    dbPostMetaManager.updatePostMetaAuto(
-                        postId, PostMetaKeys.ORIENTATION.toString(), clientOrientation, autoCreate);
+                    updatePostMetaAuto.accept(
+                        postId, PostMetaKeys.ORIENTATION, clientOrientation, autoCreate);
                   break;
                 case ETHNICITY:
                   String clientEthnicity = clientPost.getEthnicity();
                   if (isValidEthnicity(clientEthnicity))
-                    dbPostMetaManager.updatePostMetaAuto(
+                    updatePostMetaAuto.accept(
                         postId,
-                        PostMetaKeys.ETHNICITY.toString(),
+                        PostMetaKeys.ETHNICITY,
                         StringUtils.capitalize(clientEthnicity),
                         autoCreate);
                   break;
                 case HAIRCOLOR:
                   String clientHairColor = clientPost.getHairColor();
                   if (isValidHairColor(clientHairColor))
-                    dbPostMetaManager.updatePostMetaAuto(
+                    updatePostMetaAuto.accept(
                         postId,
-                        PostMetaKeys.HAIRCOLOR.toString(),
+                        PostMetaKeys.HAIRCOLOR,
                         StringUtils.capitalize(clientHairColor),
                         autoCreate);
                   break;
                 case HDVIDEO:
                   if (clientPost.getVideoHD() != null)
-                    dbPostMetaManager.updatePostMetaAuto(
+                    updatePostMetaAuto.accept(
                         postId,
-                        PostMetaKeys.HDVIDEO.toString(),
+                        PostMetaKeys.HDVIDEO,
                         clientPost.getVideoHD()
                             ? ToggleField.ON.toString()
                             : ToggleField.OFF.toString(),
@@ -440,26 +460,24 @@ public class PostMetaService {
                 case THUMBNAIL:
                   String thumbURI = clientPost.getThumbURI();
                   if (Objects.nonNull(thumbURI) && !thumbURI.isBlank())
-                    dbPostMetaManager.updatePostMetaAuto(
-                        postId, PostMetaKeys.THUMBNAIL.toString(), thumbURI, autoCreate);
+                    updatePostMetaAuto.accept(postId, PostMetaKeys.THUMBNAIL, thumbURI, autoCreate);
                   break;
                 case VIDEOURL:
                   String videoURL = clientPost.getVideoURL();
                   if (Objects.nonNull(videoURL) && !videoURL.isBlank())
-                    dbPostMetaManager.updatePostMetaAuto(
-                        postId, PostMetaKeys.VIDEOURL.toString(), videoURL, autoCreate);
+                    updatePostMetaAuto.accept(postId, PostMetaKeys.VIDEOURL, videoURL, autoCreate);
                   break;
                 case YOAST_FOCUSKW:
                   String focusKW = clientPost.getYoastFocusKW();
                   if (Objects.nonNull(focusKW) && !focusKW.isBlank())
-                    dbPostMetaManager.updatePostMetaAuto(
-                        postId, PostMetaKeys.YOAST_FOCUSKW.toString(), focusKW, autoCreate);
+                    updatePostMetaAuto.accept(
+                        postId, PostMetaKeys.YOAST_FOCUSKW, focusKW, autoCreate);
                   break;
                 case YOAST_METADESC:
                   String metaDesc = clientPost.getYoastMetaDesc();
                   if (Objects.nonNull(metaDesc) && !metaDesc.isBlank())
-                    dbPostMetaManager.updatePostMetaAuto(
-                        postId, PostMetaKeys.YOAST_METADESC.toString(), metaDesc, autoCreate);
+                    updatePostMetaAuto.accept(
+                        postId, PostMetaKeys.YOAST_METADESC, metaDesc, autoCreate);
                   break;
                 default:
                   break;
