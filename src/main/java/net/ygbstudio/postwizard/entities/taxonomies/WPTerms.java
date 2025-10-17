@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "`wp_terms`")
 @NamedQuery(name = "WPTerms.FindAll", query = "SELECT t FROM WPTerms t")
-@NamedQuery(name = "WPTerms.ExistsByID", query = "SELECT t FROM WPTerms t WHERE t.id = :termId")
+@NamedQuery(name = "WPTerms.ExistsById", query = "SELECT t FROM WPTerms t WHERE t.id = :termId")
 @NamedQuery(
     name = "WPTerms.ExistsBySlug",
     query = "SELECT t FROM WPTerms t WHERE t.slug = :termSlug")

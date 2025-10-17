@@ -32,7 +32,7 @@ import java.util.StringJoiner;
 @Entity
 @Table(name = "`wp_term_taxonomy`")
 @NamedQuery(
-    name = "WPTermTaxonomy.ExistsByID",
+    name = "WPTermTaxonomy.ExistsById",
     query = "SELECT t FROM WPTermTaxonomy t WHERE t.termTaxonomyId = :termTaxonomyId")
 @NamedQuery(
     name = "WPTermTaxonomy.ExistsByTerm",

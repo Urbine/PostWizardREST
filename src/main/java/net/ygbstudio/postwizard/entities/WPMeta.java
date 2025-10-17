@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import java.util.Objects;
@@ -32,15 +31,15 @@ import java.util.Objects;
 @NamedQuery(name = "WPMeta.FindAll", query = "SELECT postMeta FROM WPMeta postMeta")
 @NamedQuery(
     name = "WPMeta.FindAllPostIDs",
-    query = "SELECT postMeta.wpPost.id FROM WPMeta postMeta")
+    query = "SELECT DISTINCT postMeta.wpPost.id FROM WPMeta postMeta")
 @NamedQuery(
-    name = "WPMeta.FindPostByID",
+    name = "WPMeta.FindPostById",
     query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postId")
 @NamedQuery(
     name = "WPMeta.FindByMetaKey",
     query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey")
 @NamedQuery(
-    name = "WPMeta.FindKeyByPostID",
+    name = "WPMeta.FindKeyByPostId",
     query =
         "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey AND postMeta.wpPost.id = :postId")
 @NamedQuery(
@@ -51,9 +50,6 @@ import java.util.Objects;
     name = "WPMeta.FindMetaValueLike",
     query =
         "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldValue LIKE :metaValuePattern")
-@NamedNativeQuery(
-    name = "WPMeta.FindMetaValueLikeNative",
-    query = "SELECT `meta_value` FROM `wp_postmeta` where `meta_key` = ? AND `meta_value` LIKE ?")
 public class WPMeta {
 
   @Id

@@ -37,7 +37,7 @@ import java.util.StringJoiner;
 @Table(name = "`wp_termmeta`")
 @NamedQuery(
     name = "WPTermMeta.FindTermMetaByID",
-    query = "SELECT t FROM WPTermMeta t WHERE t.termItem.id = :termId")
+    query = "SELECT tm FROM WPTermMeta tm WHERE tm.termItem.id = :termId")
 public class WPTermMeta {
   @Id
   @Column(name = "meta_id", nullable = false)

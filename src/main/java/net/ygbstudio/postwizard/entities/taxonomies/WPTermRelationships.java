@@ -41,10 +41,10 @@ import net.ygbstudio.postwizard.entities.WPost;
     query =
         "SELECT rel FROM WPTermRelationships rel WHERE rel.id.objectID = :objectID AND rel.id.termTaxonomyID = :termTaxonomyID")
 @NamedQuery(
-    name = "WPTermRelationships.DeleteByTermTaxonomyID",
+    name = "WPTermRelationships.DeleteByTermTaxonomyId",
     query = "DELETE FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
 @NamedQuery(
-    name = "WPTermRelationships.CountByTermTaxonomyID",
+    name = "WPTermRelationships.CountByTermTaxonomyId",
     query =
         "SELECT COUNT(rel) FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
 public class WPTermRelationships {
