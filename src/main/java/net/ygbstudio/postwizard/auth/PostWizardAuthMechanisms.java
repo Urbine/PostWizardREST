@@ -13,7 +13,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.security.enterprise.AuthenticationException;
 import jakarta.security.enterprise.AuthenticationStatus;
 import jakarta.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import jakarta.security.enterprise.authentication.mechanism.http.HttpMessageContext;
@@ -82,8 +81,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
   public AuthenticationStatus validateRequest(
       @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
-      @NonNull HttpMessageContext context)
-      throws AuthenticationException {
+      @NonNull HttpMessageContext context) {
     String userIP = request.getRemoteAddr();
     String currentURI = request.getRequestURI();
     String authHeaders = request.getHeader(HttpHeaders.AUTHORIZATION);
