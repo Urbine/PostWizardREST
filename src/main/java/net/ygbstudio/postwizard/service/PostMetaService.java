@@ -214,6 +214,9 @@ public class PostMetaService {
     String guid = null;
     if (mediaFile.isEmpty() || mediaFile.get().isBlank()) {
       guid = mediaPostSupplier.get().getGuid();
+
+      // If there is no thumbnail match in `wp_postmeta` or `wp_posts`, return false
+      if (guid == null) return false;
     }
 
     QuadFunction<Long, PostMetaKeys, String, Boolean, Boolean> updatePostMetaAuto =
@@ -236,7 +239,7 @@ public class PostMetaService {
     if (mediaFile.isPresent() && !mediaFile.get().isBlank()) {
       String thumbUploadPath =
           Objects.nonNull(siteUploadsPath)
-              ? String.format("%s/%s", siteUploadsPath, mediaFile)
+              ? String.format("%s/%s", siteUploadsPath, mediaFile.get())
               : "";
       return updatePostMetaAuto.apply(postId, PostMetaKeys.THUMBNAIL, thumbUploadPath, true);
     } else if (guid != null && !guid.isBlank()) {
