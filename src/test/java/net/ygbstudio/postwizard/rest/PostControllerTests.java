@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.test;
+package net.ygbstudio.postwizard.rest;
 
 import static net.ygbstudio.postwizard.utils.Helpers.getPropertiesFromResources;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class PostControllerTests {
 
-  public static final String TEST_WAR = "arquillian-pw-tests-posts-rest.war";
+  public static final String TEST_WAR = "arquillian-pw-tests-posts-test.war";
   public static final String API_VERSION = "v1";
 
   private static final Client client = ClientBuilder.newClient();
@@ -47,9 +47,9 @@ public class PostControllerTests {
         Maven.resolver()
             .loadPomFromFile("pom.xml")
             .resolve(
-                "io.jsonwebtoken:jjwt-api:0.12.6",
-                "io.jsonwebtoken:jjwt-impl:0.12.6",
-                "io.jsonwebtoken:jjwt-jackson:0.12.6")
+                "io.jsonwebtoken:jjwt-api:0.13.0",
+                "io.jsonwebtoken:jjwt-impl:0.13.0",
+                "io.jsonwebtoken:jjwt-jackson:0.13.0")
             .withTransitivity()
             .asFile();
 

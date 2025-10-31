@@ -1,11 +1,10 @@
-package net.ygbstudio.postwizard.test;
+package net.ygbstudio.postwizard.dao;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import jakarta.inject.Inject;
-import net.ygbstudio.postwizard.dao.TermsManager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

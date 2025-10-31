@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.test;
+package net.ygbstudio.postwizard.dao;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -6,8 +6,6 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import jakarta.inject.Inject;
 import java.util.Optional;
-import net.ygbstudio.postwizard.dao.TaxonomyManager;
-import net.ygbstudio.postwizard.dao.TermsManager;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.test;
+package net.ygbstudio.postwizard.service;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +17,6 @@ import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.models.PostMetaKeys;
 import net.ygbstudio.postwizard.models.ToggleField;
-import net.ygbstudio.postwizard.service.PostMetaService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

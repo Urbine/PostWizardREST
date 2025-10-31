@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.test;
+package net.ygbstudio.postwizard.dao;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 
 import jakarta.inject.Inject;
 import java.util.Set;
-import net.ygbstudio.postwizard.dao.PostDAO;
 import net.ygbstudio.postwizard.entities.WPMeta;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;

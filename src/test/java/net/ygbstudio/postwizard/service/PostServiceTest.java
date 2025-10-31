@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.test;
+package net.ygbstudio.postwizard.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.models.PostType;
-import net.ygbstudio.postwizard.service.PostService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.test;
+package net.ygbstudio.postwizard.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
-import net.ygbstudio.postwizard.utils.Helpers;
-import net.ygbstudio.postwizard.utils.Reflection;
 import org.junit.jupiter.api.Test;
 
 /**
