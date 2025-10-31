@@ -12,7 +12,9 @@ A high-performance, secure RESTful API for WordPress content management, built w
 - **Headless CMS Ready**: Perfect for headless WordPress architectures, and mobile apps that require fast, reliable content delivery.
 - **Developer Friendly**: Clean, well-documented API endpoints with consistent response formats and comprehensive error handling.
 - **Scalable Architecture**: Designed to handle high traffic loads while maintaining performance, making it ideal for high-traffic WordPress sites.
+- **Plugin Compatibility**: Seamlessly integrates with popular WordPress plugins like [Yoast SEO](https://yoast.com/) and [CompressX](https://compressx.io/), ensuring SEO metadata and image optimizations work as expected.
 - **Modern Development Workflow**: Built with modern development practices, including comprehensive integration testing, CI/CD integration, and containerization support.
+
 
 This API extends WordPress's capabilities while maintaining compatibility with your existing content structure, making it an excellent choice for developers looking to build high-performance applications on top of WordPress.
 
@@ -140,6 +142,8 @@ export PWLOG_LEVEL="DEBUG"
    - Verify the JNDI datasource name in `src/main/liberty/config/server.xml` matches the JNDI datasource name in `src/main/resources/META-INF/persistence.xml`
    
 3. **Test and build the project**
+   - **Prerequisite**: A working WordPress installation is required as the application integrates with an existing WordPress database
+   - Persistance must be configured in `src/main/liberty/config/server.xml` with the database name and credentials before testing.
    ```bash
    # Set up Liberty server and install required features
    mvn liberty:create liberty:install-feature
@@ -150,6 +154,14 @@ export PWLOG_LEVEL="DEBUG"
    # Test and Build the project
    mvn package
    ```
+   - If you just want to package the project and deploy it, make sure the database is configured correctly as mentioned and proceed with this command:
+   ```bash
+   mvn -DskipTests package 
+   ```
+   > **Note**: 
+   > The `-DskipTests` option is used to skip the tests during the build process. 
+   > The test suite is always run manually before deploying the application as part of our commit process.
+   > In future iterations, the test suite will be run automatically before building the artifact in the CI/CD pipeline.
 
 4. **Deploy**
    Deploy the generated `PostWizardREST.war` to your application server
