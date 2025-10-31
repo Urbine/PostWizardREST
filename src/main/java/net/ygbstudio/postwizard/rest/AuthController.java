@@ -5,7 +5,6 @@ import static net.ygbstudio.postwizard.auth.PostWizardAuthMechanisms.secretKey;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +31,8 @@ import net.ygbstudio.postwizard.utils.Logging;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
-@RequestScoped
+@RolesAllowed("user")
+@Produces(MediaType.APPLICATION_JSON)
 @Path("auth")
 public class AuthController {
 
@@ -60,8 +60,6 @@ public class AuthController {
    */
   @GET
   @Path("login")
-  @RolesAllowed("user")
-  @Produces(MediaType.APPLICATION_JSON)
   public Response getAppToken() {
     String userIP = request.getRemoteAddr();
     postwizardAuthEPoint.entering("User with IP: " + userIP, "getAppToken()");

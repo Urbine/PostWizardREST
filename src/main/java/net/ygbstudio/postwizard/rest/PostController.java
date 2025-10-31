@@ -11,7 +11,6 @@ import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
@@ -49,7 +48,9 @@ import org.jspecify.annotations.Nullable;
  *
  * @author Yoham Gabriel @ YGB Studio
  */
-@RequestScoped
+@RolesAllowed(value = {"user"})
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 @Path("posts")
 public class PostController {
 
@@ -77,9 +78,6 @@ public class PostController {
    */
   @GET
   @Path("dump")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response getPostDump(@DefaultValue("post") @QueryParam("type") String postType) {
     logStepIn(postDataControllerLog, context.getPath());
     try {
@@ -126,8 +124,6 @@ public class PostController {
    */
   @GET
   @Path("{postId: [0-9]+}")
-  @RolesAllowed(value = {"user"})
-  @Produces(MediaType.APPLICATION_JSON)
   public Response getPostById(@PathParam("postId") long postId) {
     logStepIn(postDataControllerLog, postId);
     logControllerPath(postDataControllerLog, context, request);
@@ -167,9 +163,6 @@ public class PostController {
    */
   @POST
   @Path("{postId: [0-9]+}")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response updatePostWP(@PathParam("postId") long postId, ClientPost clientPost) {
     logStepIn(postDataControllerLog, postId);
     logControllerPath(postDataControllerLog, context, request);
@@ -210,9 +203,6 @@ public class PostController {
    */
   @POST
   @Path("batch")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response postBatchUpdate(List<ClientPost> clientPosts) {
     logStepIn(postDataControllerLog, clientPosts);
     if (clientPosts.isEmpty()) {
@@ -245,8 +235,6 @@ public class PostController {
    */
   @GET
   @Path("randomfeatured")
-  @RolesAllowed(value = {"user"})
-  @Produces(MediaType.APPLICATION_JSON)
   public Response randomiseFeaturedVideos(@QueryParam("limit") @DefaultValue("10") int limit) {
     if (limit < 0) {
       return handleBadRequest(() -> "Limit has to be greater than 0", postDataControllerLog);

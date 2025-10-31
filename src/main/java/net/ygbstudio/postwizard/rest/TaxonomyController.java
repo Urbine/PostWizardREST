@@ -10,7 +10,6 @@ import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -36,15 +35,17 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import net.ygbstudio.postwizard.service.TaxonomyService;
 import org.jspecify.annotations.Nullable;
 
-@ApplicationScoped
+@RolesAllowed(value = {"user"})
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 @Path("taxonomies")
 public class TaxonomyController {
 
-  public static final Logger taxonomyControllerLog =
+  private static final Logger taxonomyControllerLog =
       Logger.getLogger(TaxonomyController.class.getName());
 
   @Nullable
-  public static final FileHandler taxonomyControllerFileHandler =
+  private static final FileHandler taxonomyControllerFileHandler =
       loggingInit(taxonomyControllerLog, Level.ALL, true);
 
   @Inject private TaxonomyService taxonomyService;
@@ -66,9 +67,6 @@ public class TaxonomyController {
    */
   @POST
   @Path("check")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response checkTermTaxonomy(
       @QueryParam("id") long postId,
       @QueryParam("link") @DefaultValue("false") boolean link,
@@ -127,9 +125,6 @@ public class TaxonomyController {
 
   @POST
   @Path("add")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response addTaxonomyTerm(
       @QueryParam("clean") @DefaultValue("true") boolean clean, ClientTerm clientTerm) {
     try {
@@ -190,9 +185,6 @@ public class TaxonomyController {
 
   @DELETE
   @Path("remove")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response removeTermTaxonomy(ClientTerm clientTerm) {
     try {
       Optional<ClientTerm> removedTerm = taxonomyService.removeTermTaxonomy(clientTerm);

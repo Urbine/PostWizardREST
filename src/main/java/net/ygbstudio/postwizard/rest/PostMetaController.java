@@ -9,7 +9,6 @@ import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
@@ -42,14 +41,16 @@ import net.ygbstudio.postwizard.service.PostMetaService;
 import net.ygbstudio.postwizard.service.PostService;
 import org.jspecify.annotations.Nullable;
 
-@ApplicationScoped
+@RolesAllowed(value = {"user"})
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 @Path("posts/meta")
 public class PostMetaController {
-  public static final Logger postMetaControllerLog =
+  private static final Logger postMetaControllerLog =
       Logger.getLogger(PostMetaController.class.getName());
 
   @Nullable
-  public static final FileHandler postMetaControllerFileHandler =
+  private static final FileHandler postMetaControllerFileHandler =
       loggingInit(postMetaControllerLog, Level.ALL, true);
 
   @Context HttpServletRequest request;
@@ -71,8 +72,6 @@ public class PostMetaController {
    */
   @GET
   @Path("{postId: [0-9]+}")
-  @RolesAllowed(value = {"user"})
-  @Produces(MediaType.APPLICATION_JSON)
   public Response getPostMeta(@PathParam("postId") long postId) {
 
     logStepIn(postMetaControllerLog, postId);
@@ -102,8 +101,6 @@ public class PostMetaController {
    */
   @GET
   @Path("dump")
-  @RolesAllowed(value = {"user"})
-  @Produces(MediaType.APPLICATION_JSON)
   public Response getPostMetaDump() {
     logStepIn(postMetaControllerLog, context.getPath());
     try {
@@ -140,9 +137,6 @@ public class PostMetaController {
    */
   @POST
   @Path("{postId: [0-9]+}")
-  @RolesAllowed(value = {"user"})
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response updatePostMeta(
       @PathParam("postId") long postId,
       @QueryParam("autothumb") boolean autoThumb,
@@ -237,9 +231,6 @@ public class PostMetaController {
    * @return Response indicating the result of the batch update operation
    */
   @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed(value = {"user"})
   @Path("batch")
   public Response postMetaBatchUpdate(List<ClientPostMeta> postMetaColl) {
     logStepIn(postMetaControllerLog, postMetaColl);
