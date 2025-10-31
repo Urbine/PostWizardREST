@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -34,12 +35,17 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTermRelationships;
  */
 @Entity
 @Table(name = "`wp_posts`")
-@NamedQuery(name = "WPost.FindAll", query = "SELECT p FROM WPost p")
-@NamedQuery(name = "WPost.FindById", query = "SELECT p from WPost p WHERE p.id = :postId")
-@NamedQuery(name = "WPost.FindByType", query = "SELECT p FROM WPost p WHERE p.postType = :postType")
-@NamedQuery(
-    name = "WPost.FindMediaByTitle",
-    query = "SELECT p FROM WPost p WHERE p.postType = 'attachment' AND p.postTitle = :title")
+@NamedQueries(
+    value = {
+      @NamedQuery(name = "WPost.FindAll", query = "SELECT p FROM WPost p"),
+      @NamedQuery(name = "WPost.FindById", query = "SELECT p from WPost p WHERE p.id = :postId"),
+      @NamedQuery(
+          name = "WPost.FindByType",
+          query = "SELECT p FROM WPost p WHERE p.postType = :postType"),
+      @NamedQuery(
+          name = "WPost.FindMediaByTitle",
+          query = "SELECT p FROM WPost p WHERE p.postType = 'attachment' AND p.postTitle = :title")
+    })
 public class WPost {
 
   @Id

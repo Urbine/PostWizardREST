@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import java.util.Objects;
@@ -26,10 +27,13 @@ import java.util.StringJoiner;
  */
 @Entity
 @Table(name = "`wp_options`")
-@NamedQuery(name = "WPOptions.FindAll", query = "SELECT o FROM WPOptions o")
-@NamedQuery(
-    name = "WPOptions.FindByOptionName",
-    query = "SELECT o FROM WPOptions o WHERE o.optionName = :optionName")
+@NamedQueries(
+    value = {
+      @NamedQuery(name = "WPOptions.FindAll", query = "SELECT o FROM WPOptions o"),
+      @NamedQuery(
+          name = "WPOptions.FindByOptionName",
+          query = "SELECT o FROM WPOptions o WHERE o.optionName = :optionName")
+    })
 public class WPOptions {
 
   @Id

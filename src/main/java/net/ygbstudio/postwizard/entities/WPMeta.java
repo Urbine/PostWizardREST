@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import java.util.Objects;
@@ -28,28 +29,31 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "`wp_postmeta`")
-@NamedQuery(name = "WPMeta.FindAll", query = "SELECT postMeta FROM WPMeta postMeta")
-@NamedQuery(
-    name = "WPMeta.FindAllPostIDs",
-    query = "SELECT DISTINCT postMeta.wpPost.id FROM WPMeta postMeta")
-@NamedQuery(
-    name = "WPMeta.FindPostById",
-    query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postId")
-@NamedQuery(
-    name = "WPMeta.FindByMetaKey",
-    query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey")
-@NamedQuery(
-    name = "WPMeta.FindKeyByPostId",
-    query =
-        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey AND postMeta.wpPost.id = :postId")
-@NamedQuery(
-    name = "WPMeta.RandomPostByMetaKey",
-    query =
-        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey ORDER BY FUNCTION('RAND')")
-@NamedQuery(
-    name = "WPMeta.FindMetaValueLike",
-    query =
-        "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldValue LIKE :metaValuePattern")
+@NamedQueries(
+    value = {
+      @NamedQuery(name = "WPMeta.FindAll", query = "SELECT postMeta FROM WPMeta postMeta"),
+      @NamedQuery(
+          name = "WPMeta.FindAllPostIDs",
+          query = "SELECT DISTINCT postMeta.wpPost.id FROM WPMeta postMeta"),
+      @NamedQuery(
+          name = "WPMeta.FindPostById",
+          query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.wpPost.id = :postId"),
+      @NamedQuery(
+          name = "WPMeta.FindByMetaKey",
+          query = "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey"),
+      @NamedQuery(
+          name = "WPMeta.FindKeyByPostId",
+          query =
+              "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey AND postMeta.wpPost.id = :postId"),
+      @NamedQuery(
+          name = "WPMeta.RandomPostByMetaKey",
+          query =
+              "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldKey = :metaKey ORDER BY FUNCTION('RAND')"),
+      @NamedQuery(
+          name = "WPMeta.FindMetaValueLike",
+          query =
+              "SELECT postMeta FROM WPMeta postMeta WHERE postMeta.metaFieldValue LIKE :metaValuePattern")
+    })
 public class WPMeta {
 
   @Id

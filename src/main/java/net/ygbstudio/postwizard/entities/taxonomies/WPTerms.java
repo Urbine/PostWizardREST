@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -33,17 +34,22 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "`wp_terms`")
-@NamedQuery(name = "WPTerms.FindAll", query = "SELECT t FROM WPTerms t")
-@NamedQuery(name = "WPTerms.ExistsById", query = "SELECT t FROM WPTerms t WHERE t.id = :termId")
-@NamedQuery(
-    name = "WPTerms.ExistsBySlug",
-    query = "SELECT t FROM WPTerms t WHERE t.slug = :termSlug")
-@NamedQuery(
-    name = "WPTerms.ExistsByName",
-    query = "SELECT t FROM WPTerms t WHERE t.name = :termName")
-@NamedQuery(
-    name = "WPTerms.ExistsByNameAndSlug",
-    query = "SELECT t FROM WPTerms t WHERE t.name = :termName AND t.slug = :termSlug")
+@NamedQueries(
+    value = {
+      @NamedQuery(name = "WPTerms.FindAll", query = "SELECT t FROM WPTerms t"),
+      @NamedQuery(
+          name = "WPTerms.ExistsById",
+          query = "SELECT t FROM WPTerms t WHERE t.id = :termId"),
+      @NamedQuery(
+          name = "WPTerms.ExistsBySlug",
+          query = "SELECT t FROM WPTerms t WHERE t.slug = :termSlug"),
+      @NamedQuery(
+          name = "WPTerms.ExistsByName",
+          query = "SELECT t FROM WPTerms t WHERE t.name = :termName"),
+      @NamedQuery(
+          name = "WPTerms.ExistsByNameAndSlug",
+          query = "SELECT t FROM WPTerms t WHERE t.name = :termName AND t.slug = :termSlug")
+    })
 public class WPTerms {
   @Id
   @Column(name = "term_id", nullable = false)

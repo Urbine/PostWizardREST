@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -31,15 +32,18 @@ import java.util.StringJoiner;
  */
 @Entity
 @Table(name = "`wp_term_taxonomy`")
-@NamedQuery(
-    name = "WPTermTaxonomy.ExistsById",
-    query = "SELECT t FROM WPTermTaxonomy t WHERE t.termTaxonomyId = :termTaxonomyId")
-@NamedQuery(
-    name = "WPTermTaxonomy.ExistsByTerm",
-    query = "SELECT t FROM WPTermTaxonomy t WHERE t.term = :term")
-@NamedQuery(
-    name = "WPTermTaxonomy.ExistsByTaxonomy",
-    query = "SELECT t FROM WPTermTaxonomy t WHERE t.taxonomy = :taxonomy")
+@NamedQueries(
+    value = {
+      @NamedQuery(
+          name = "WPTermTaxonomy.ExistsById",
+          query = "SELECT t FROM WPTermTaxonomy t WHERE t.termTaxonomyId = :termTaxonomyId"),
+      @NamedQuery(
+          name = "WPTermTaxonomy.ExistsByTerm",
+          query = "SELECT t FROM WPTermTaxonomy t WHERE t.term = :term"),
+      @NamedQuery(
+          name = "WPTermTaxonomy.ExistsByTaxonomy",
+          query = "SELECT t FROM WPTermTaxonomy t WHERE t.taxonomy = :taxonomy")
+    })
 public class WPTermTaxonomy {
   @Id
   @Column(name = "term_taxonomy_id", nullable = false)

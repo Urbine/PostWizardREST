@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -36,17 +37,21 @@ import net.ygbstudio.postwizard.entities.WPost;
  */
 @Entity
 @Table(name = "`wp_term_relationships`")
-@NamedQuery(
-    name = "WPTermRelationships.FindExisting",
-    query =
-        "SELECT rel FROM WPTermRelationships rel WHERE rel.id.objectID = :objectID AND rel.id.termTaxonomyID = :termTaxonomyID")
-@NamedQuery(
-    name = "WPTermRelationships.DeleteByTermTaxonomyId",
-    query = "DELETE FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
-@NamedQuery(
-    name = "WPTermRelationships.CountByTermTaxonomyId",
-    query =
-        "SELECT COUNT(rel) FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
+@NamedQueries(
+    value = {
+      @NamedQuery(
+          name = "WPTermRelationships.FindExisting",
+          query =
+              "SELECT rel FROM WPTermRelationships rel WHERE rel.id.objectID = :objectID AND rel.id.termTaxonomyID = :termTaxonomyID"),
+      @NamedQuery(
+          name = "WPTermRelationships.DeleteByTermTaxonomyId",
+          query =
+              "DELETE FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID"),
+      @NamedQuery(
+          name = "WPTermRelationships.CountByTermTaxonomyId",
+          query =
+              "SELECT COUNT(rel) FROM WPTermRelationships rel WHERE rel.id.termTaxonomyID = :termTaxonomyID")
+    })
 public class WPTermRelationships {
 
   @EmbeddedId private WPTermRelationshipsID id;
