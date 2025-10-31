@@ -27,7 +27,6 @@ import net.ygbstudio.postwizard.entities.taxonomies.WPTermTaxonomy;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
 import net.ygbstudio.postwizard.models.Taxonomy;
 import net.ygbstudio.postwizard.models.TermMeta;
-import net.ygbstudio.postwizard.rest.PostController;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -47,7 +46,7 @@ import org.jspecify.annotations.Nullable;
  * @see TermsMetaManager
  * @see TermRelationshipsManager
  * @see PostManager
- * @see PostController
+ * @see net.ygbstudio.postwizard.rest.TaxonomyController
  * @author Yoham Gabriel @ YGB Studio
  */
 @ApplicationScoped
