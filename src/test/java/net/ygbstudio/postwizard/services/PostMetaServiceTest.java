@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.service;
+package net.ygbstudio.postwizard.services;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
