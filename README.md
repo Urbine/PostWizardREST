@@ -24,7 +24,7 @@ This API extends WordPress's capabilities while maintaining compatibility with y
 - **Content Management**: Full CRUD operations for blog posts
 - **Advanced Taxonomy System**: Hierarchical categorization and tagging system
 - **Metadata Management**: Extensible metadata system for custom post attributes
-- **Batch Processing**: Efficient bulk operations for posts and metadata
+- **Batch Processing**: Efficient bulk operations for posts and metadata by leveraging the Jakarta Concurrency specification
 - **Scheduled Tasks**: Automated content management tasks
 
 ### Security Features
