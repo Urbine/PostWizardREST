@@ -17,7 +17,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ygbstudio.postwizard.exceptions.ScheduledTaskException;
-import net.ygbstudio.postwizard.service.PostMetaService;
+import net.ygbstudio.postwizard.services.PostMetaService;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
