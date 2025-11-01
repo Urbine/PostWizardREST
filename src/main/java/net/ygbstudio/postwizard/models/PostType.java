@@ -7,7 +7,7 @@ package net.ygbstudio.postwizard.models;
  * enum constant is associated with its corresponding string representation used in the WordPress
  * database.
  *
- * @see net.ygbstudio.postwizard.service.PostService
+ * @see net.ygbstudio.postwizard.services.PostService
  * @see <a
  *     href="https://developer.wordpress.org/reference/functions/get_post_type/">get_post_type()</a>
  * @author Yoham Gabriel @ YGB Studio

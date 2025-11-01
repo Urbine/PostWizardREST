@@ -3,7 +3,7 @@ package net.ygbstudio.postwizard.models;
 /**
  * Enum class representing a series of sexual orientations for content classification purposes.
  *
- * @see net.ygbstudio.postwizard.service.PostMetaService
+ * @see net.ygbstudio.postwizard.services.PostMetaService
  * @author Yoham Gabriel B @ YGB Studio
  */
 public enum Orientation {

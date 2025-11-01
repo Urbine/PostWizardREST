@@ -5,7 +5,7 @@ package net.ygbstudio.postwizard.models;
  * Not all taxonomies have this meta terms, but they are still used in the application to allow for
  * theme-specific functionality that depends on data in the {@code wp_termmeta}.
  *
- * @see net.ygbstudio.postwizard.service.TaxonomyService
+ * @see net.ygbstudio.postwizard.services.TaxonomyService
  * @see Taxonomy
  * @author Yoham Gabriel B @ YGB Studio
  */

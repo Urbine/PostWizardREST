@@ -4,7 +4,7 @@ package net.ygbstudio.postwizard.models;
  * Enum representing the keys used in post metadata. This enum provides a way to manage and retrieve
  * post metadata keys in a type-safe manner.
  *
- * @see net.ygbstudio.postwizard.service.PostMetaService
+ * @see net.ygbstudio.postwizard.services.PostMetaService
  * @author Yoham Gabriel @ YGB Studio
  */
 public enum PostMetaKeys {

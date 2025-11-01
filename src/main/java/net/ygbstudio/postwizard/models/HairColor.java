@@ -3,7 +3,7 @@ package net.ygbstudio.postwizard.models;
 /**
  * Enum class representing a series of hair colors for content classification purposes.
  *
- * @see net.ygbstudio.postwizard.service.PostMetaService
+ * @see net.ygbstudio.postwizard.services.PostMetaService
  * @author Yoham Gabriel B @ YGB Studio
  */
 public enum HairColor {
