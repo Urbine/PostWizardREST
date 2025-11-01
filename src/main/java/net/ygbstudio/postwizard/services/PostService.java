@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.service;
+package net.ygbstudio.postwizard.services;
 
 import static net.ygbstudio.postwizard.utils.Helpers.isInEnum;
 import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
@@ -130,8 +130,8 @@ public class PostService {
    * accidental data loss or malformed entries. The WordPress API should be used to create new
    * posts, so that relevant entries can be modified using this method.
    *
-   * <p>This method runs within a new transaction context to ensure that the update operation is
-   * isolated from other transactions.
+   * <p>This method runs within a new tx context to ensure that the update operation is isolated
+   * from other transactions.
    *
    * @param clientPost the ClientPost object containing post details to update
    */
@@ -171,8 +171,8 @@ public class PostService {
    *
    * <p>This method is used to convert the raw post-entries into a structured ClientPost object that
    * can be easily consumed by the client without exposing the underlying database structure. Also,
-   * {@code getClientPost} runs within a new transaction context to ensure that the retrieval
-   * operation is isolated from other transactions.
+   * {@code getClientPost} runs within a new tx context to ensure that the retrieval operation is
+   * isolated from other transactions.
    *
    * @param postID the ID of the post for which details are requested
    * @return ClientPost object containing the post details

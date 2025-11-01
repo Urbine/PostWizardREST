@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.service;
+package net.ygbstudio.postwizard.services;
 
 import static net.ygbstudio.postwizard.utils.Helpers.enumFromValue;
 import static net.ygbstudio.postwizard.utils.Helpers.isInEnum;
@@ -353,7 +353,7 @@ public class PostMetaService {
    * the database. Unlike posts, metadata fields can be created if the schema provided by the client
    * is correct and constitutes a relevant key in the WordPress site.
    *
-   * <p>This method runs within a new transaction to ensure that the updates are isolated from other
+   * <p>This method runs within a new tx to ensure that the updates are isolated from other
    * operations and can be committed or rolled back independently.
    *
    * @param clientPost the ClientPostMeta object containing post metadata to update
@@ -494,7 +494,7 @@ public class PostMetaService {
    *
    * <p>This method is used to convert the raw metadata entries into a structured ClientPostMeta
    * object that can be easily consumed by the client without exposing the underlying database
-   * structure and runs within a new transaction to ensure data consistency and isolation from other
+   * structure and runs within a new tx to ensure data consistency and isolation from other
    * operations.
    *
    * @param postID the ID of the post for which metadata is requested

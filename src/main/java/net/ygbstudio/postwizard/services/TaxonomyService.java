@@ -1,4 +1,4 @@
-package net.ygbstudio.postwizard.service;
+package net.ygbstudio.postwizard.services;
 
 import static net.ygbstudio.postwizard.utils.Helpers.enumFromValue;
 import static net.ygbstudio.postwizard.utils.Helpers.specialCharCleanJoin;
