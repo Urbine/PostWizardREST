@@ -10,7 +10,9 @@ import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
 import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 
+import jakarta.annotation.Resource;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +41,8 @@ import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.dto.PostDumpResponse;
 import net.ygbstudio.postwizard.dto.ServerResponse;
 import net.ygbstudio.postwizard.models.PostType;
-import net.ygbstudio.postwizard.service.PostService;
+import net.ygbstudio.postwizard.services.PostService;
+import net.ygbstudio.postwizard.tasks.BatchTaskUnit;
 import net.ygbstudio.postwizard.tasks.RandomiseFeaturedTask;
 import org.jspecify.annotations.Nullable;
 
@@ -64,6 +68,7 @@ public class PostController {
 
   @Context private UriInfo context;
   @Context private HttpServletRequest request;
+  @Resource private ManagedExecutorService managedExecutorService;
 
   @Inject private PostService postService;
 
@@ -210,7 +215,19 @@ public class PostController {
           () -> "Unable to complete batch job." + " No items to process", postDataControllerLog);
     } else {
       try {
-        clientPosts.forEach(post -> postService.clientPostUpdateStrategy(post));
+        AtomicInteger batchCounter = new AtomicInteger(0);
+        int batchSize = clientPosts.size();
+        List<BatchTaskUnit> batchTaskList = new ArrayList<>();
+        clientPosts.forEach(
+            post ->
+                batchTaskList.add(
+                    new BatchTaskUnit(
+                        post.getID(),
+                        batchCounter.incrementAndGet(),
+                        batchSize,
+                        () -> postService.clientPostUpdateStrategy(post))));
+
+        batchTaskList.forEach(managedExecutorService::execute);
         return Response.ok(
                 new BatchJobResponse(
                     "Post batch job executed successfully",

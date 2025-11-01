@@ -32,7 +32,7 @@ import net.ygbstudio.postwizard.dto.ClientTaxonomy;
 import net.ygbstudio.postwizard.dto.ClientTerm;
 import net.ygbstudio.postwizard.dto.ServerResult;
 import net.ygbstudio.postwizard.entities.taxonomies.WPTerms;
-import net.ygbstudio.postwizard.service.TaxonomyService;
+import net.ygbstudio.postwizard.services.TaxonomyService;
 import org.jspecify.annotations.Nullable;
 
 @RolesAllowed(value = {"user"})

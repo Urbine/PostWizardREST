@@ -8,7 +8,9 @@ import static net.ygbstudio.postwizard.utils.Logging.logStepIn;
 import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
 import static net.ygbstudio.postwizard.utils.Logging.loggingInit;
 
+import jakarta.annotation.Resource;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
@@ -24,6 +26,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,9 +39,10 @@ import net.ygbstudio.postwizard.dto.ClientPost;
 import net.ygbstudio.postwizard.dto.ClientPostMeta;
 import net.ygbstudio.postwizard.dto.PostDumpResponse;
 import net.ygbstudio.postwizard.dto.ServerResponse;
-import net.ygbstudio.postwizard.service.EnvironmentService;
-import net.ygbstudio.postwizard.service.PostMetaService;
-import net.ygbstudio.postwizard.service.PostService;
+import net.ygbstudio.postwizard.services.EnvironmentService;
+import net.ygbstudio.postwizard.services.PostMetaService;
+import net.ygbstudio.postwizard.services.PostService;
+import net.ygbstudio.postwizard.tasks.BatchTaskUnit;
 import org.jspecify.annotations.Nullable;
 
 @RolesAllowed(value = {"user"})
@@ -56,6 +60,8 @@ public class PostMetaController {
   @Context HttpServletRequest request;
 
   @Context UriInfo context;
+
+  @Resource ManagedExecutorService managedExecutorService;
 
   @Inject PostMetaService postMetaService;
 
@@ -242,7 +248,19 @@ public class PostMetaController {
     }
 
     try {
-      postMetaColl.forEach(item -> postMetaService.clientPostMetaUpdateStrategy(item, true));
+      AtomicInteger batchCounter = new AtomicInteger(0);
+      int batchSize = postMetaColl.size();
+      List<BatchTaskUnit> batchTaskList = new ArrayList<>();
+      postMetaColl.forEach(
+          item ->
+              batchTaskList.add(
+                  new BatchTaskUnit(
+                      item.getID(),
+                      batchCounter.incrementAndGet(),
+                      batchSize,
+                      () -> postMetaService.clientPostMetaUpdateStrategy(item, true))));
+
+      batchTaskList.forEach(managedExecutorService::execute);
     } catch (Exception anyEx) {
       return handleException(
           () -> "Update finished/interrupted with errors", postMetaControllerLog, anyEx);
