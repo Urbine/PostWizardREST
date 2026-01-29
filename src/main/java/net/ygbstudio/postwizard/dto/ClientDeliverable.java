@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MPL-2.0
+ * Copyright (c) Yoham Gabriel B.
+ */
+
 package net.ygbstudio.postwizard.dto;
 
 /**

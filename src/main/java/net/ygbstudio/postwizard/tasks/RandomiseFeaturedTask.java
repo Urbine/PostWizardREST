@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MPL-2.0
+ * Copyright (c) Yoham Gabriel B.
+ */
+
 package net.ygbstudio.postwizard.tasks;
 
 import static net.ygbstudio.postwizard.utils.Logging.logStepOut;
