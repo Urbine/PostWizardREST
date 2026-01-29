@@ -15,12 +15,15 @@ PostWizardREST is **no longer actively maintained**, and the associated service 
 This repository is preserved **for reference and educational purposes only**.  
 No support, updates, security patches, or guarantees are provided.
 
+> **Historical note**
+> 
+>  All documentation below reflects the system’s design, features, and API
+> as they existed during active development. It is preserved for architectural
+> reference and educational purposes.
+
 ---
 
 ## Why was PostWizardREST created?
-
-> **Historical context**
-> The following section describes the original design goals and capabilities of PostWizardREST during its active development phase.
 
 PostWizardREST was designed as an **integration hub and server-side extension** for projects such as [PostWizardX3](https://github.com/Urbine/PostWizardX3), handling taxonomy creation, post management, and media-related workflows outside of WordPress’ runtime.
 
@@ -54,9 +57,6 @@ In short, PostWizardREST was **not intended to replace WordPress**, but to **iso
 
 ## ✨ Features
 
-> **Historical context**  
-> These features reflect the system’s capabilities and tech stack at the time of active development.
-
 ### Core Features
 - Full CRUD operations for WordPress posts
 - Advanced taxonomy management (categories, tags, custom taxonomies)
@@ -76,9 +76,6 @@ In short, PostWizardREST was **not intended to replace WordPress**, but to **iso
 - Jenkins - CI/CD pipeline integration
 
 ### Logging
-
-> **Historical context**  
-> The following logging details are preserved for architectural reference.
 
 The application implements a structured, file-based logging system designed for observability, auditing, and troubleshooting in automation-heavy environments.
 
@@ -145,9 +142,6 @@ export PWLOG_LEVEL="DEBUG"
 
 ## 📋 Prerequisites
 
-> **Historical context**  
-> These prerequisites were required during active development.
-
 ### Development
 - JDK 21
 - Maven 3.8+
@@ -163,9 +157,6 @@ export PWLOG_LEVEL="DEBUG"
 ---
 
 ## Getting Started
-
-> **Historical context**  
-> The following setup instructions are preserved for reference and may require adaptation for modern environments.
 
 1. Clone the repository
    ```bash
@@ -194,10 +185,6 @@ export PWLOG_LEVEL="DEBUG"
 ---
 
 ## API Documentation
-
-> **Historical context**
-> The API reference below documents the original REST interface exposed by PostWizardREST.
-> Endpoints are preserved for documentation and architectural reference purposes.
 
 ### API Overview (OpenAPI-Style)
 
@@ -444,8 +431,6 @@ mvn fmt:format
 
 This project is licensed under the **Mozilla Public License 2.0 (MPL-2.0)**.
 
-You are free to **use, modify, and distribute** this software under the terms of the license.
-Modifications to existing files must remain under MPL-2.0.
 ---
 
 ## ⚠️ Disclaimer
