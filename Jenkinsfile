@@ -7,7 +7,6 @@ pipeline {
 
   environment {
     DEPLOY_USER = "jenkins"
-    AGENT_HOST  = "162.246.17.247"
     DEPLOY_DIR  = "/opt/liberty/wlp/usr/servers/defaultServer/apps"
     ARTIFACT    = "target/PostWizardREST.war"
     WAR_FILE    = "PostWizardREST.war"       
