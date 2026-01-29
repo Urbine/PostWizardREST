@@ -36,16 +36,16 @@ By decoupling these responsibilities from WordPress, the project aimed to levera
 * **Direct database access**, avoiding repeated WordPress bootstrap and plugin execution overhead
 * **Scheduled and batch jobs** with proper locking, retries, and concurrency control
 * **Application-server–managed threading and resource pools**, instead of request-bound execution
-* **A language-agnostic REST interface**, enabling integration from non-PHP systems
+* **A REST API decoupled from WordPress’ PHP execution model**, enabling reliable integration with external automation systems
 * **Documentation-driven API design** with explicit contracts
 * **Structured metadata handling** with cascading and relational consistency
 * **Type-safe APIs** to reduce common runtime and data-shape errors
 * **Explicit control over database connections, transactions, and isolation levels**
 * **Extensibility by default**, without reliance on WordPress hooks or filters
-* **Reduced attack surface**, by minimizing public exposure of WordPress endpoints
+* **Reduced attack surface**, by minimizing public exposure of WordPress endpoints commonly targeted by automated attacks against WordPress installations
 * **Observability and audit logging**, enabling detection of abnormal behavior and performance bottlenecks
 * **Developer-friendly modeling of taxonomies and custom fields** for Java-based teams
-* **A continuously evolving WordPress data model abstraction**, suitable for headless or hybrid CMS architectures using Jakarta EE or Spring-based workflows
+* **A WordPress domain abstraction**, designed with future integration into Jakarta EE or Spring ecosystems in mind, including message-driven and batch-oriented enterprise workflows
 * **Compatibility with existing WordPress plugins**, including [Yoast SEO](https://yoast.com/) and [CompressX](https://compressx.io/)
 * **JWT-based authentication**, role-based access control, and request validation
 * **Consistent response formats and structured error handling**
