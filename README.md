@@ -1,5 +1,10 @@
 # 🧙‍♂️ PostWizardREST
 
+![Java](https://img.shields.io/badge/java-21-blue)
+![Code Style](https://img.shields.io/badge/code_style-Google%20Java-blueviolet)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](./LICENSE)
+![Status: Archived](https://img.shields.io/badge/status-archived-lightgrey.svg)
+
 A high-performance, secure RESTful API for WordPress content management, built with modern Java Enterprise architectural patterns. 
 
 PostWizardREST provides a robust complement to the default WordPress REST API, offering performance improvements in specific automation-heavy and enterprise deployment scenarios, enhanced security features, and advanced content management capabilities.
