@@ -4,8 +4,6 @@ A high-performance, secure RESTful API for WordPress content management, built w
 
 PostWizardREST provides a robust complement to the default WordPress REST API, offering performance improvements in specific automation-heavy and enterprise deployment scenarios, enhanced security features, and advanced content management capabilities.
 
----
-
 ## ⚠️ Project Status
 
 **Archived / Discontinued**
@@ -14,6 +12,8 @@ PostWizardREST is **no longer actively maintained**, and the associated service 
 
 This repository is preserved **for reference and educational purposes only**.  
 No support, updates, security patches, or guarantees are provided.
+
+---
 
 > **Historical note**
 > 
@@ -52,8 +52,6 @@ By decoupling these responsibilities from WordPress, the project aimed to levera
 * **Integration testing, CI/CD readiness, and container-friendly deployment**
 
 In short, PostWizardREST was **not intended to replace WordPress**, but to **isolate automation-heavy, security-sensitive, or high-throughput operations** into a system better suited for those concerns, while still using WordPress as the content source of truth.
-
----
 
 ## ✨ Features
 
@@ -138,8 +136,6 @@ export PWLOG_LEVEL="DEBUG"
 * **OpenLiberty** (primary target)
 * **Compatible with any Jakarta EE 10–compliant application server**
 
----
-
 ## 📋 Prerequisites
 
 ### Development
@@ -153,8 +149,6 @@ export PWLOG_LEVEL="DEBUG"
 - **Compatible**: Payara 7.x, WildFly 27+, GlassFish 7.0+
 
 *Note: While the application is developed and tested primarily on OpenLiberty, it's built on standard Jakarta EE 10 APIs and should work on any compatible application server. Some server-specific configuration may be required for non-OpenLiberty deployments.*
-
----
 
 ## Getting Started
 
@@ -181,8 +175,6 @@ export PWLOG_LEVEL="DEBUG"
    > a milestone in the roadmap
    
 4. Deploy the generated WAR to a Jakarta EE 10–compatible application server.
-
----
 
 ## API Documentation
 
@@ -283,6 +275,8 @@ Authorization: Bearer <jwt>
 * `GET /v1/posts/meta/{postId}` — Get post metadata
 * `GET /v1/posts/meta/dump` — Get all post metadata
 * `GET /v1/posts/dump?type={postType}` — Get posts by type (`post`, `attachment`, `all`)
+
+---
 
 ##### Update
 
@@ -394,8 +388,6 @@ Content-Type: application/json
 }
 ```
 
----
-
 ## Project Structure
 
 ```
@@ -414,8 +406,6 @@ src/main/java/net/ygbstudio/postwizard/
 └── utils/          # Utilities
 ```
 
----
-
 ## Code Formatting
 
 Uses **fmt-maven-plugin**, based on the
@@ -425,13 +415,9 @@ Uses **fmt-maven-plugin**, based on the
 mvn fmt:format
 ```
 
----
-
 ## 📄 License
 
 This project is licensed under the **Mozilla Public License 2.0 (MPL-2.0)**.
-
----
 
 ## ⚠️ Disclaimer
 
