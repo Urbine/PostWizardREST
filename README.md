@@ -131,11 +131,6 @@ export PWLOG_LEVEL="DEBUG"
 * **fmt-maven-plugin** (code formatting)
 * **Maven WAR Plugin**
 
-#### Runtime
-
-* **OpenLiberty** (primary target)
-* **Compatible with any Jakarta EE 10–compliant application server**
-
 ## 📋 Prerequisites
 
 ### Development
@@ -145,10 +140,10 @@ export PWLOG_LEVEL="DEBUG"
 - Docker (optional)
 
 ### Application Servers
-- **Primary**: OpenLiberty 23.0.0.3+
-- **Compatible**: Payara 7.x, WildFly 27+, GlassFish 7.0+
+- **Primary:** OpenLiberty 23.0.0.3+
+- **Other Jakarta EE 10 compatible servers:** WildFly 27+, GlassFish 7.x, supported Payara releases
 
-*Note: While the application is developed and tested primarily on OpenLiberty, it's built on standard Jakarta EE 10 APIs and should work on any compatible application server. Some server-specific configuration may be required for non-OpenLiberty deployments.*
+*Note: Some server-specific configuration may be required for non-OpenLiberty deployments.*
 
 ## Getting Started
 
