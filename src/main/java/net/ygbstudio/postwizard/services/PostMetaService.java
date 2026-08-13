@@ -253,7 +253,7 @@ public class PostMetaService {
     return false;
   }
 
-  /*
+  /**
    * Get random post IDs from the database method.
    *
    * @param metaKey the PostMetaKeys enum member to filter the metadata entries by
@@ -267,7 +267,7 @@ public class PostMetaService {
     return dbPostMetaManager.getRandomPostsByMetaKey(metaKey.toString(), limitBy, filterPredicate);
   }
 
-  /*
+  /**
    * Modifies the featured flag for a list of post IDs based on the toggle field provided.
    *
    * @param setOfPostIDs the set of post IDs to modify (toggle)
@@ -282,7 +282,7 @@ public class PostMetaService {
     return setOfPostIDs;
   }
 
-  /*
+  /**
    * Removes the featured flag for all videos in the database.
    *
    * @return List of Long containing the IDs videos with the featured flag removed.
@@ -296,7 +296,7 @@ public class PostMetaService {
     return toggleFeaturedVideos(getAllPostIDs, ToggleField.OFF);
   }
 
-  /*
+  /**
    * Enables the featured flag for all videos in the database.
    *
    * @param setOfPostIDs the set of post IDs to modify (feature)
