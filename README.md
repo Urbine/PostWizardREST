@@ -5,7 +5,7 @@
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](./LICENSE)
 ![Status: Archived](https://img.shields.io/badge/status-archived-lightgrey.svg)
 
-A high-performance, secure RESTful API for WordPress content management, built with modern Java Enterprise architectural patterns. 
+A high-performance, secure RESTful API for WordPress content management, built with modern Java Enterprise architectural patterns.
 
 PostWizardREST provides a robust complement to the default WordPress REST API, offering performance improvements in specific automation-heavy and enterprise deployment scenarios, enhanced security features, and advanced content management capabilities.
 
@@ -21,8 +21,8 @@ No support, updates, security patches, or guarantees are provided.
 ---
 
 > **Historical note**
-> 
->  All documentation below reflects the system’s design, features, and API
+>
+> All documentation below reflects the system’s design, features, and API
 > as they existed during active development. It is preserved for architectural
 > reference and educational purposes.
 
@@ -38,29 +38,30 @@ This design was motivated by the need for greater control over execution, securi
 
 By decoupling these responsibilities from WordPress, the project aimed to leverage established Enterprise Java capabilities, resulting in:
 
-* **Direct database access**, avoiding repeated WordPress bootstrap and plugin execution overhead
-* **Scheduled and batch jobs** with proper locking, retries, and concurrency control
-* **Application-server–managed threading and resource pools**, instead of request-bound execution
-* **A REST API decoupled from WordPress’ PHP execution model**, enabling reliable integration with external automation systems
-* **Documentation-driven API design** with explicit contracts
-* **Structured metadata handling** with cascading and relational consistency
-* **Type-safe APIs** to reduce common runtime and data-shape errors
-* **Explicit control over database connections, transactions, and isolation levels**
-* **Extensibility by default**, without reliance on WordPress hooks or filters
-* **Reduced attack surface**, by minimizing public exposure of WordPress endpoints commonly targeted by automated attacks against WordPress installations
-* **Observability and audit logging**, enabling detection of abnormal behavior and performance bottlenecks
-* **Developer-friendly modeling of taxonomies and custom fields** for Java-based teams
-* **A WordPress domain abstraction**, designed with future integration into Jakarta EE or Spring ecosystems in mind, including message-driven and batch-oriented enterprise workflows
-* **Compatibility with existing WordPress plugins**, including [Yoast SEO](https://yoast.com/) and [CompressX](https://compressx.io/)
-* **JWT-based authentication**, role-based access control, and request validation
-* **Consistent response formats and structured error handling**
-* **Integration testing, CI/CD readiness, and container-friendly deployment**
+- **Direct database access**, avoiding repeated WordPress bootstrap and plugin execution overhead
+- **Scheduled and batch jobs** with proper locking, retries, and concurrency control
+- **Application-server–managed threading and resource pools**, instead of request-bound execution
+- **A REST API decoupled from WordPress’ PHP execution model**, enabling reliable integration with external automation systems
+- **Documentation-driven API design** with explicit contracts
+- **Structured metadata handling** with cascading and relational consistency
+- **Type-safe APIs** to reduce common runtime and data-shape errors
+- **Explicit control over database connections, transactions, and isolation levels**
+- **Extensibility by default**, without reliance on WordPress hooks or filters
+- **Reduced attack surface**, by minimizing public exposure of WordPress endpoints commonly targeted by automated attacks against WordPress installations
+- **Observability and audit logging**, enabling detection of abnormal behavior and performance bottlenecks
+- **Developer-friendly modeling of taxonomies and custom fields** for Java-based teams
+- **A WordPress domain abstraction**, designed with future integration into Jakarta EE or Spring ecosystems in mind, including message-driven and batch-oriented enterprise workflows
+- **Compatibility with existing WordPress plugins**, including [Yoast SEO](https://yoast.com/) and [CompressX](https://compressx.io/)
+- **JWT-based authentication**, role-based access control, and request validation
+- **Consistent response formats and structured error handling**
+- **Integration testing, CI/CD readiness, and container-friendly deployment**
 
 In short, PostWizardREST was **not intended to replace WordPress**, but to **isolate automation-heavy, security-sensitive, or high-throughput operations** into a system better suited for those concerns, while still using WordPress as the content source of truth.
 
 ## ✨ Features
 
 ### Core Features
+
 - Full CRUD operations for WordPress posts
 - Advanced taxonomy management (categories, tags, custom taxonomies)
 - Extensible metadata system
@@ -68,6 +69,7 @@ In short, PostWizardREST was **not intended to replace WordPress**, but to **iso
 - Scheduled and automated content tasks
 
 ### Security Features
+
 - JWT-based authentication
 - Secure HS256 key generation using `SecureRandom`
 - Role-based access control (RBAC)
@@ -76,6 +78,7 @@ In short, PostWizardREST was **not intended to replace WordPress**, but to **iso
 - Probe and automated scan detection
 
 ### Operational
+
 - Jenkins - CI/CD pipeline integration
 
 ### Logging
@@ -112,68 +115,71 @@ export PWLOG_LEVEL="DEBUG"
 
 #### Core Technologies
 
-* **Java (JDK 21)**
-* **Jakarta EE 10** (platform API, provided by the application server)
-* **Hibernate ORM 7**
-* **MariaDB 10.6+**
-* **JWT (JJWT)**
+- **Java (JDK 21)**
+- **Jakarta EE 10** (platform API, provided by the application server)
+- **Hibernate ORM 7**
+- **MariaDB 10.6+**
+- **JWT (JJWT)**
 
 #### Key Dependencies
 
-* **MariaDB JDBC Driver**
-* **Apache Commons Lang 3**
-* **JSpecify**
-* **Jersey Client**
-* **Jakarta JSON Processing (JSON-P)**
+- **MariaDB JDBC Driver**
+- **Apache Commons Lang 3**
+- **JSpecify**
+- **Jersey Client**
+- **Jakarta JSON Processing (JSON-P)**
 
 #### Development & Testing
 
-* **Maven**
-* **JUnit** (unit and integration testing)
-* **Arquillian** (container-based integration testing)
-* **ShrinkWrap Resolver** (test deployment assembly)
-* **SpotBugs** (static analysis)
-* **fmt-maven-plugin** (code formatting)
-* **Maven WAR Plugin**
+- **Maven**
+- **JUnit** (unit and integration testing)
+- **Arquillian** (container-based integration testing)
+- **ShrinkWrap Resolver** (test deployment assembly)
+- **SpotBugs** (static analysis)
+- **fmt-maven-plugin** (code formatting)
+- **Maven WAR Plugin**
 
 ## 📋 Prerequisites
 
 ### Development
+
 - JDK 21
 - Maven 3.8+
 - MariaDB 10.6+ or MySQL 8.0+
 - Docker (optional)
 
 ### Application Servers
+
 - **Primary:** OpenLiberty 23.0.0.3+
 - **Other Jakarta EE 10 compatible servers:** WildFly 27+, GlassFish 7.x, supported Payara releases
 
-*Note: Some server-specific configuration may be required for non-OpenLiberty deployments.*
+_Note: Some server-specific configuration may be required for non-OpenLiberty deployments._
 
 ## Getting Started
 
 1. Clone the repository
+
    ```bash
    git clone https://github.com/Urbine/PostWizardREST.git
    cd PostWizardREST
-    ```
+   ```
 
 2. Configure database access in:
-
-   * `src/main/liberty/config/server.xml`
-   * `src/main/resources/META-INF/persistence.xml`
+   - `src/main/liberty/config/server.xml`
+   - `src/main/resources/META-INF/persistence.xml`
 
 3. Build the project
 
    ```bash
    mvn -DskipTests package
    ```
-   > **Note**: 
-   > The `-DskipTests` option is used to skip the tests during the build process. 
+
+   > **Note**:
+   > The `-DskipTests` option is used to skip the tests during the build process.
    > At that time in the project's lifecycle, the test suite was executed manually before every commit,
    > so that the pipeline could take care of the remote deployment. Improving that used to be
    > a milestone in the roadmap
-   
+
 4. Deploy the generated WAR to a Jakarta EE 10–compatible application server.
 
 ## API Documentation
@@ -184,23 +190,23 @@ export PWLOG_LEVEL="DEBUG"
 
 | Method | Endpoint         | Description                           | Auth  |
 | -----: | ---------------- | ------------------------------------- | ----- |
-|   POST | `/v1/auth/login` | Authenticate user and issue JWT token | Basic |
+|    GET | `/v1/auth/login` | Authenticate user and issue JWT token | Basic |
 
 ---
 
 #### Posts
 
-| Method | Endpoint                                   | Description                            | Auth |
-| -----: | ------------------------------------------ | -------------------------------------- | ---- |
-|    GET | `/v1/posts/{postId}`                       | Retrieve a single post                 | JWT  |
-|    GET | `/v1/posts/meta/{postId}`                  | Retrieve metadata for a post           | JWT  |
-|    GET | `/v1/posts/meta/dump`                      | Retrieve metadata for all posts        | JWT  |
-|    GET | `/v1/posts/dump?type={postType}`           | Retrieve posts by type                 | JWT  |
-|   POST | `/v1/posts/{postId}`                       | Update post content                    | JWT  |
-|   POST | `/v1/posts/batch`                          | Batch update multiple posts            | JWT  |
-|   POST | `/v1/posts/meta/{postId}`                  | Update post metadata                   | JWT  |
-|   POST | `/v1/posts/meta/batch`                     | Batch update post metadata             | JWT  |
-|   POST | `/v1/posts/featured/randomize?limit={int}` | Randomize featured posts (e.g. videos) | JWT  |
+| Method | Endpoint                               | Description                            | Auth |
+| -----: | -------------------------------------- | -------------------------------------- | ---- |
+|    GET | `/v1/posts/{postId}`                   | Retrieve a single post                 | JWT  |
+|    GET | `/v1/posts/meta/{postId}`              | Retrieve metadata for a post           | JWT  |
+|    GET | `/v1/posts/meta/dump`                  | Retrieve metadata for all posts        | JWT  |
+|    GET | `/v1/posts/dump?type={postType}`       | Retrieve posts by type                 | JWT  |
+|   POST | `/v1/posts/{postId}`                   | Update post content                    | JWT  |
+|   POST | `/v1/posts/batch`                      | Batch update multiple posts            | JWT  |
+|   POST | `/v1/posts/meta/{postId}`              | Update post metadata                   | JWT  |
+|   POST | `/v1/posts/meta/batch`                 | Batch update post metadata             | JWT  |
+|    GET | `/v1/posts/randomfeatured?limit={int}` | Randomize featured posts (e.g. videos) | JWT  |
 
 ---
 
@@ -216,13 +222,13 @@ export PWLOG_LEVEL="DEBUG"
 
 #### Conventions
 
-* **Auth**:
+- **Auth**:
+  - `Basic` → used only for token issuance
+  - `JWT` → required for all protected endpoints
 
-  * `Basic` → used only for token issuance
-  * `JWT` → required for all protected endpoints
-* **Content-Type**: `application/json`
-* **Responses**: Consistent JSON structure with structured error payloads
-* **Batch endpoints**: Accept arrays of objects
+- **Content-Type**: `application/json`
+- **Responses**: Consistent JSON structure with structured error payloads
+- **Batch endpoints**: Accept arrays of objects
 
 ---
 
@@ -235,14 +241,14 @@ JWT-based authentication with **Basic Auth** used only to obtain the initial tok
 ##### Login (Get JWT)
 
 ```http
-POST /v1/auth/login
+GET /v1/auth/login
 Authorization: Basic base64(username:password)
 Content-Type: application/json
 ```
 
 ```bash
 # Local cURL example:
-curl -X POST "http://localhost:9080/PostWizardREST/v1/auth/login" \
+curl -X GET "http://localhost:9080/PostWizardREST/v1/auth/login" \
   -H "Authorization: Basic $(echo -n 'username:password' | base64)" \
   -H "Content-Type: application/json"
 ```
@@ -263,7 +269,7 @@ curl -X POST "http://localhost:9080/PostWizardREST/v1/auth/login" \
 Authorization: Bearer <jwt>
 ```
 
-*Tokens are valid for 1 hour and must be refreshed after expiration.*
+_Tokens are valid for 1 hour and must be refreshed after expiration._
 
 ---
 
@@ -271,10 +277,10 @@ Authorization: Bearer <jwt>
 
 ##### Read
 
-* `GET /v1/posts/{postId}` — Get post
-* `GET /v1/posts/meta/{postId}` — Get post metadata
-* `GET /v1/posts/meta/dump` — Get all post metadata
-* `GET /v1/posts/dump?type={postType}` — Get posts by type (`post`, `attachment`, `all`)
+- `GET /v1/posts/{postId}` — Get post
+- `GET /v1/posts/meta/{postId}` — Get post metadata
+- `GET /v1/posts/meta/dump` — Get all post metadata
+- `GET /v1/posts/dump?type={postType}` — Get posts by type (`post`, `attachment`, `all`)
 
 ---
 
@@ -303,7 +309,7 @@ Content-Type: application/json
 
 ```json
 {
-  "thumbUrl": "http://example.com/thumb.jpg",
+  "thumbURL": "http://example.com/thumb.jpg",
   "yoastFocusKw": "java",
   "yoastMetaDesc": "Yoast-compatible meta description"
 }
@@ -313,8 +319,8 @@ Content-Type: application/json
 
 ##### Batch Operations
 
-* `POST /v1/posts/batch` — Batch post updates
-* `POST /v1/posts/meta/batch` — Batch metadata updates
+- `POST /v1/posts/batch` — Batch post updates
+- `POST /v1/posts/meta/batch` — Batch metadata updates
 
 ```json
 [
@@ -328,7 +334,7 @@ Content-Type: application/json
 ##### Featured Content
 
 ```http
-POST /v1/posts/featured/randomize?limit={int}
+GET /v1/posts/randomfeatured?limit={int}
 ```
 
 Randomizes featured posts (e.g. videos).
@@ -401,7 +407,7 @@ src/main/java/net/ygbstudio/postwizard/
 ├── mappers/        # Exception mappers
 ├── models/         # Domain models
 ├── rest/           # REST endpoints
-├── service/        # Business logic
+├── services/        # Business logic
 ├── tasks/          # Scheduled tasks
 └── utils/          # Utilities
 ```
