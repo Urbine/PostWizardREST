@@ -13,7 +13,8 @@ import net.ygbstudio.postwizard.dto.ErrorResponse;
 
 /**
  * Exception mapper for handling NoSuchElementException and converting it to a standardized error
- * response.
+ * response. As this ExceptionMapper assumes that the client does not know which element was
+ * missing, or if there was a missing object at all, the exception returns a 500 status code.
  *
  * <p>This class implements the ExceptionMapper interface to catch NoSuchElementException instances
  * thrown during request processing. It generates a Response object with an appropriate HTTP status
