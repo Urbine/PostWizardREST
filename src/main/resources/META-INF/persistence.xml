@@ -21,8 +21,6 @@
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.MariaDBDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 
@@ -38,8 +36,6 @@
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.MariaDBDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 
@@ -55,8 +51,6 @@
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.MariaDBDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 
@@ -72,8 +66,6 @@
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.MariaDBDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 
@@ -89,8 +81,6 @@
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.MariaDBDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 
@@ -106,8 +96,6 @@
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.MariaDBDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 
@@ -123,8 +111,6 @@
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.MariaDBDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 
