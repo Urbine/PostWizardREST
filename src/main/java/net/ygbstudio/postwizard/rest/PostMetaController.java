@@ -161,7 +161,7 @@ public class PostMetaController {
     boolean isPostMetaPost = postMetaService.hasMetaFields(postId);
     boolean isWPost = postService.postExists(postId);
 
-    if (postId >= 0) {
+    if (postId > 0) {
       if (!isPostMetaPost && !isWPost) {
         return handleNotFound(() -> "Post ID " + postId + " not found", postMetaControllerLog);
 

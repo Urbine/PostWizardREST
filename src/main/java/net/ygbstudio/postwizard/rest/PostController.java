@@ -258,7 +258,7 @@ public class PostController {
   @GET
   @Path("randomfeatured")
   public Response randomiseFeaturedVideos(@QueryParam("limit") @DefaultValue("10") int limit) {
-    if (limit < 0) {
+    if (limit <= 0) {
       return handleBadRequest(() -> "Limit has to be greater than 0", postDataControllerLog);
     } else {
       try {
