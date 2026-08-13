@@ -159,7 +159,8 @@ public final class Helpers implements Util {
 
   /**
    * Retrieves an enum constant from a string value, with an option to match irrespectively of case.
-   * This method uses a regex pattern to match the string representation of enum constants.
+   * This method matches the string representation of enum constants exactly, with optional
+   * case-insensitivity.
    *
    * <p>It can be used as validator for enums in a similar way as {@link Helpers#isInEnum}, however,
    * this helper not only checks for existence but also returns the enum constant and provides more
@@ -176,10 +177,12 @@ public final class Helpers implements Util {
       Class<T> enumType, @Nullable String strEnumKey, boolean ignoreCase) {
     if (strEnumKey == null || strEnumKey.isBlank()) return Optional.empty();
 
-    Predicate<String> valuePattern =
-        Pattern.compile(strEnumKey, ignoreCase ? Pattern.CASE_INSENSITIVE : 0).asPredicate();
     return Arrays.stream(enumType.getEnumConstants())
-        .filter(key -> valuePattern.test(key.toString()))
+        .filter(
+            key ->
+                ignoreCase
+                    ? key.toString().equalsIgnoreCase(strEnumKey)
+                    : key.toString().equals(strEnumKey))
         .findFirst();
   }
 
