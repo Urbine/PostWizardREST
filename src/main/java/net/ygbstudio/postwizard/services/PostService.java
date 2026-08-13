@@ -160,11 +160,13 @@ public class PostService {
     inMemoryPost.setModifiedAtGMT(ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime());
 
     if (!isValidPostType(inMemoryPost.getPostType()))
-      if (inMemoryPost.getId() != null && !dbPostManager.postExists(inMemoryPost.getId())) return;
-
-      // postType is set to "null" in order that updatePostEntry() can use
-      // the value of the existing post so as to not overwrite it with an invalid value.
-      else inMemoryPost.setPostType(null);
+      if (inMemoryPost.getId() != null && !dbPostManager.postExists(inMemoryPost.getId())) {
+        return;
+      } else {
+        // postType is set to "null" in order that updatePostEntry() can use
+        // the value of the existing post so as to not overwrite it with an invalid value.
+        inMemoryPost.setPostType(null);
+      }
 
     dbPostManager.updatePostEntry(inMemoryPost, false);
   }
