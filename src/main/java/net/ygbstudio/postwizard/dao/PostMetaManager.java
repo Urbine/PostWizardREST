@@ -194,13 +194,12 @@ public interface PostMetaManager {
   boolean postExists(long postID);
 
   /**
-   * Checks if a specific meta key exists for a given post ID.
+   * Checks if a specific meta key exists in the database.
    *
-   * @param postID the ID of the post to check
    * @param metaKey the meta key to check for existence
    * @return true if the meta key exists for the specified post ID, false otherwise
    */
-  boolean metaKeyExists(long postID, @NonNull String metaKey);
+  boolean metaKeyExists(@NonNull String metaKey);
 
   /**
    * Get random post IDs from the database with a native query. This method is used to obtain a

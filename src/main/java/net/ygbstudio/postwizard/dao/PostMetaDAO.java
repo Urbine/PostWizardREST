@@ -181,7 +181,7 @@ public class PostMetaDAO implements PostMetaManager {
 
   @Transactional(value = TxType.REQUIRED)
   @Override
-  public boolean metaKeyExists(long postId, @NonNull String metaKey) {
+  public boolean metaKeyExists(@NonNull String metaKey) {
     return em.createNamedQuery(PostMetaManager.FIND_POST_BY_META_KEY, WPMeta.class)
         .setParameter("metaKey", metaKey)
         .getResultStream()
