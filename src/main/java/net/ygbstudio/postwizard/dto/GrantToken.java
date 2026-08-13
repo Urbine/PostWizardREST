@@ -8,6 +8,7 @@ package net.ygbstudio.postwizard.dto;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -43,7 +44,7 @@ public class GrantToken {
     super();
     this.accessToken = accessToken;
     this.type = type;
-    this.expirationDate = Instant.now();
+    this.expirationDate = Instant.now().plus(1, ChronoUnit.HOURS);
   }
 
   public String getAccessToken() {
