@@ -47,14 +47,14 @@
     <fileset dir="${server.config.dir}/jdbc" includes="mariadb-java-client-*.jar"/>
     </library>
     
-    <!-- These are dummy creadentials -->
+    <!-- These are dummy credentials -->
     <dataSource id="WordPressLocal" jndiName="jdbc/wm_test" type="javax.sql.DataSource" validationTimeout="30s" >
 	<jdbcDriver libraryRef="mariadbDriver"
                javax.sql.DataSource="org.mariadb.jdbc.MariaDbDataSource"/>
         <properties
             url="jdbc:mariadb://localhost:3306/wm_test"
-            user="wm_test"
-            password="wmtest72!"/>
+            user="${env.DB_USER}"
+            password="${env.DB_PASSWORD}"/>
         <connectionManager
             maxPoolSize="20"
             minPoolSize="5"
