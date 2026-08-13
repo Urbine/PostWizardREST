@@ -58,7 +58,7 @@ public class ProbeProtectionFilter implements Filter {
       response.setHeader("X-Content-Type-Options", "nosniff");
       response.setHeader("X-Frame-Options", "DENY");
       response.setHeader("Referrer-Policy", "no-referrer");
-      request.getRequestDispatcher("/404.jsp").forward(request, response);
+      request.getRequestDispatcher("/WEB-INF/404.jsp").forward(request, response);
       return;
     }
 
@@ -73,7 +73,7 @@ public class ProbeProtectionFilter implements Filter {
       response.setHeader("X-Content-Type-Options", "nosniff");
       response.setHeader("X-Frame-Options", "DENY");
       response.setHeader("Referrer-Policy", "no-referrer");
-      request.getRequestDispatcher("/error.jsp").forward(request, response);
+      request.getRequestDispatcher("/WEB-INF/error.jsp").forward(request, response);
     }
   }
 }

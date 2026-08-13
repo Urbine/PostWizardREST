@@ -37,8 +37,9 @@ public class UnauthorizedResponseFilter implements ContainerResponseFilter {
     ErrorResponse authException =
         new ErrorResponse("Authentication failed", "Invalid Credentials", unauthorizedStatusCode);
 
-    if (resContext.getStatus() == unauthorizedStatusCode)
-      resContext.setEntity(authException.toString());
-    resContext.getHeaders().add("Content-Type", "application/json");
+    if (resContext.getStatus() == unauthorizedStatusCode) {
+      resContext.setEntity(authException);
+      resContext.getHeaders().add("Content-Type", "application/json");
+    }
   }
 }
