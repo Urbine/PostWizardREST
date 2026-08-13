@@ -95,7 +95,7 @@ public final class Logging implements Util {
   }
 
   /**
-   * Picks the logging debug level based on the environment variable "PDLOG_LEVEL".
+   * Picks the logging debug level based on the environment variable "PWLOG_LEVEL".
    *
    * <p>As logging becomes more advanced in this application, this method will accept more values.
    *
