@@ -92,11 +92,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
     String authHeaders = request.getHeader(HttpHeaders.AUTHORIZATION);
 
     logStepIn(
-        authMechanismsLogging,
-        "**** Hit auth mechanism at method with IP " + userIP + " ****",
-        currentURI,
-        authHeaders,
-        context);
+        authMechanismsLogging, "**** Hit auth mechanism at method with IP " + userIP + " ****");
 
     if (currentURI.contains("/auth/login")) {
 
@@ -130,9 +126,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
         authMechanismsLogging,
         "**** Hit Basic Auth mechanism at method "
             + Arrays.toString(getCallingMethod(false))
-            + "****",
-        authHeaders,
-        context);
+            + "****");
 
     String base64EncryptedCreds = authHeaders.substring("Basic ".length());
     String base64UnencryptCreds =
@@ -171,9 +165,7 @@ public class PostWizardAuthMechanisms implements HttpAuthenticationMechanism {
         authMechanismsLogging,
         "**** Hit JWT Auth mechanism at method "
             + Arrays.toString(getCallingMethod(false))
-            + "****",
-        authHeaders,
-        context);
+            + "****");
 
     String jwt = authHeaders.substring("Bearer ".length());
 
